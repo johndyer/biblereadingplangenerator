@@ -26,9 +26,10 @@ Date.prototype.toInputField = function(d) {
 
 // setup checkboxes
 
-var today = new Date();
+var today = new Date(),
+	nextmonth = new Date(today.getFullYear(), today.getMonth()+1, 1);
 
-$('#time-startdate').val(today.toInputField() );
+$('#time-startdate').val(nextmonth.toInputField() );
 // $('#enddate').val((today.getFullYear()+1) + '-' + (today.getMonth()+1) + '-' + today.getDate() );
 $('#time-days').val(365 );
 
@@ -66,10 +67,13 @@ $('.books-section input').on('click', function() {
 		
 		
 	}
+
+	generate();
 });
 
 $('#action button').on('click', generate);
 
+$('#section-days input, #section-options input, #section-format input').on('change', generate);
 
 var planWindow = null; // global variable
 function generate() {
@@ -91,7 +95,10 @@ function generate() {
 	});	
 	
 	
-	var data = getPlanData(startDate, days, booksList, daysList);
+	// BUG
+	var datastartDate = startDate.addDays(1);
+
+	var data = getPlanData(datastartDate, days, booksList, daysList, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
 	console.log(data);
 	
 	console.log('build', formatstyle);
@@ -127,6 +134,14 @@ function generate() {
 }
 
 function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dailyProverb) {
+	
+	var psalmNumber = 1;
+	var psalmMax = 150;
+	var proverbNumber = 1;
+	var proverbMax = 31;
+	var rangeIncludesPsalm = false;
+	var rangeIncludesProverbs = false;
+
 	var
 		data = {
 			startDate: startDate,
@@ -155,8 +170,6 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 			data.readingDays++;
 		}
 	}
-	
-	
 	
 	// get sums of chapters, books, ect.	
 	for (var i=0; i<bookList.length; i++) {
@@ -191,6 +204,9 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 		ended = false;
 					
 	for (var d=1; d<=numberOfDays && !ended; d++) {
+
+		rangeIncludesPsalm = false;
+		rangeIncludesProverb = false;
 		
 		var dayInfo = {
 			day: d,
@@ -345,7 +361,39 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 			
 			//console.log(wordsRemaining);
 		}
-		
+
+		// both ways
+		dayInfo.formattedReading = formatChapterRange(dayInfo.chapters);
+
+		rangeIncludesPsalm = false;
+		rangeIncludesProverb = false;
+		for (var cc=0; cc<dayInfo.chapters.length; cc++) {
+			if (dayInfo.chapters[cc].usfm == 'PSA') {
+				rangeIncludesPsalm = true;
+			}
+			if (dayInfo.chapters[cc].usfm == 'PRO') {
+				rangeIncludesProverb = true;
+			}			
+		}
+
+		if (dailyPsalm && !rangeIncludesPsalm) {
+			dayInfo.formattedReading += '; Ps ' + psalmNumber;
+			psalmNumber++;
+			if (psalmNumber > psalmMax) {
+				psalmNumber = 1;
+			}
+		}
+
+		if (dailyProverb && !rangeIncludesProverb) {
+			dayInfo.formattedReading += '; Pro ' + proverbNumber;
+			proverbNumber++;
+			if (proverbNumber > proverbMax) {
+				proverbNumber = 1;
+			}
+		}		
+
+
+
 	}	
 	
 	return data;	
@@ -508,10 +556,11 @@ function buildlist(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 	var days = data.days;
 	for (var i=0; i<days.length; i++) {
 		var dayInfo = days[i];
-		
+		//var fixeddate = dayInfo.date.addDays(1);
 		//html.push('<tr>');
-		html.push('<span class="date">' + dayInfo.date.monthAbbr() + ' ' + (dayInfo.date.getDate() + 1) + '</span>');		
-		html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
+		html.push('<span class="date">' + dayInfo.date.monthAbbr() + ' ' + (dayInfo.date.getDate()) + '</span>');		
+		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
+		html.push('<span>' + dayInfo.formattedReading + '</span>');		
 		html.push('<br />');
 	}
 	html.push('</tbody>');
@@ -534,20 +583,26 @@ function buildcalendar(data, days, bookList, dayList, dailyPsalm, dailyProverb) 
 	html.push('* { margin: 0; padding: 0; box-sizing: border-box;}');
 	html.push('body { font-size: 12px; line-height: 1.2; font-family: Helvetica; }');
 	html.push('table { border-collapse: collapse; }');		
-	html.push('table td,table th  { padding: 1em; vertical-align: top; width: 14%; border: 1px solid #999; }');	
+	html.push('table td,table th  { padding: 1em; vertical-align: top; width: 14%; border: 1px solid #ccc; }');	
 	html.push('table .date { display: block; font-size: 0.7em; text-align: right; }');		
 	html.push('table .verse { display: block;  }');	
-	html.push('table .monthstart { border-color: #000 #999 #999 #000;  }');		
-	html.push('.section-pentateuch { background: #469eac;  }');		
-	html.push('.section-historical { background: #839f50;  }');	
-	html.push('.section-poetic { background: #beb45a;  }');	
-	html.push('.section-major { background: #b38fa8;  }');	
-	html.push('.section-minor { background: #b18da7;  }');	
-	html.push('.section-gospel { background: #ce1f2c;  }');	
-	html.push('.section-acts { background: #deb545;  }');	
-	html.push('.section-paul { background: #008376;  }');	
-	html.push('.section-general { background: #5d974b;  }');	
-	html.push('.section-revelation { background: #6b6499;  }');	
+	html.push('table .monthstart { border-left-color: #000; border-top-color: #000;  }');		
+	html.push('table .monthend { border-right-color: #000; border-bottom-color: #000; }');			
+	html.push('table .firstweek { border-top-color: #000;  }');		
+	html.push('table .lastweek { border-bottom-color: #000;  }');	
+	
+	if ($('#options-colorcalendar').is(':checked')) {
+		html.push('.section-pentateuch { background: #cbf4fb; #469eac;  }');		
+		html.push('.section-historical { background: #e2f7bd; #839f50;  }');	
+		html.push('.section-poetic { background: #fbf5c3; #beb45a;  }');	
+		html.push('.section-major { background: #f7ddef; #b38fa8;  }');	
+		html.push('.section-minor { background: #f7ddef; #b18da7;  }');	
+		html.push('.section-gospel { background: #fdc6ca; #ce1f2c;  }');	
+		html.push('.section-acts { background: #fbe6ac; #deb545;  }');	
+		html.push('.section-paul { background: #bafdf6; #008376;  }');	
+		html.push('.section-general { background: #c0f9ae; #5d974b;  }');	
+		html.push('.section-revelation { background: #b0a6f3; #6b6499;  }');	
+	}
 	html.push('</style>');
 	
 	
@@ -578,13 +633,27 @@ function buildcalendar(data, days, bookList, dayList, dailyPsalm, dailyProverb) 
 			html.push('<tr>');
 			//html.push('<th>' + weekNumber + '</th>');
 		}
+
+		var firstdayofmonth = new Date(dayInfo.date.getFullYear(), dayInfo.date.getMonth(), 1);
+		var lastdayofmonth = new Date(dayInfo.date.getFullYear(), dayInfo.date.getMonth()+1, 0);
+		var firstday = (dayInfo.date.getDate() == 1);
+		var lastday = (dayInfo.date.getDate() == lastdayofmonth.getDate()  );
+		
+		var firstdayofweek = firstdayofmonth.getDay();
+		var lastdayofweek = lastdayofmonth.getDay();
+		var firstweek = dayInfo.date.getDate() < 7 && dayInfo.date.getDay() < 8 - firstdayofweek;
+		var lastweek = dayInfo.date.getDate() > lastdayofmonth.getDate()-7; //  && dayInfo.date.getDay() < 8 - lastdayofweek;;
 		
 		html.push('<td class="' + 
 					(bookInfo != null ? 'section-' + bookInfo.section : '') + 
-					(dayInfo.date.getMonth() != lastMonth ? ' monthstart' : '') + 
+					(firstday ? ' monthstart' : '') + 
+					(lastday ? ' monthend' : '') + 
+					(firstweek ? ' firstweek' : '') + 
+					(lastweek ? ' lastweek' : '') + 
 			'">' + 
-			'<span class="date">' + (dayInfo.date.getMonth() != lastMonth ? dayInfo.date.monthAbbr() + ' ' : '') + dayInfo.date.getDate() + '</span>' + 
-			'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
+			'<span class="date">' + (firstday ? dayInfo.date.monthAbbr() + ' ' : '') + dayInfo.date.getDate() + '</span>' + 
+			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
+			'<span class="verses">' + dayInfo.formattedReading + '</span>' + 
 		'</td>');		
 		
 		// close on saturday
@@ -624,16 +693,16 @@ function buildbooks(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 		html.push('.days-' + i + ' { width: ' + (0.15 * i + 0.01 * (i-1)) + 'in;  }');	
 	}		
 	
-	html.push('.section-pentateuch { background: #469eac;  }');		
-	html.push('.section-historical { background: #839f50;  }');	
-	html.push('.section-poetic { background: #beb45a;  }');	
-	html.push('.section-major { background: #b38fa8;  }');	
-	html.push('.section-minor { background: #b18da7;  }');	
-	html.push('.section-gospel { background: #ce1f2c;  }');	
-	html.push('.section-acts { background: #deb545;  }');	
-	html.push('.section-paul { background: #008376;  }');	
-	html.push('.section-general { background: #5d974b;  }');	
-	html.push('.section-revelation { background: #6b6499;  }');	
+	html.push('.section-pentateuch { background: #cbf4fb; #469eac;  }');		
+	html.push('.section-historical { background: #e2f7bd; #839f50;  }');	
+	html.push('.section-poetic { background: #fbf5c3; #beb45a;  }');	
+	html.push('.section-major { background: #f7ddef; #b38fa8;  }');	
+	html.push('.section-minor { background: #f7ddef; #b18da7;  }');	
+	html.push('.section-gospel { background: #fdc6ca; #ce1f2c;  }');	
+	html.push('.section-acts { background: #fbe6ac; #deb545;  }');	
+	html.push('.section-paul { background: #bafdf6; #008376;  }');	
+	html.push('.section-general { background: #c0f9ae; #5d974b;  }');	
+	html.push('.section-revelation { background: #b0a6f3; #6b6499;  }');	
 	html.push('</style>');
 	
 	var lastBookUsfm = '',
@@ -717,3 +786,5 @@ function buildbooks(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 	return html.join('\n');
 	
 }
+
+generate();

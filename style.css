@@ -43,6 +43,8 @@ main {
 	color: #fff;
 	border: none;
 	font-size: 1.2em;
+	margin-bottom: 1em;
+	display: none;
 }
 
 #main-footer {
