@@ -1,0 +1,265 @@
+<!doctype html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Bible Reading Plan Generator</title>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	
+	<div id="container">		
+		<header id="main-header">
+			<h1>Bible Reading Plan Generator</h1>
+		</header>
+		
+		<main>
+				
+			<section class="decision" id="section-time">
+				<header>
+					<h2>Time Frame</h2>
+				</header>
+						
+				<div class="decision-body">				
+					Start: 	<input type="date" id="time-startdate" placeholder="Start Date" />
+					Days: 	<input type="number" id="time-days" placeholder="End Date" />
+				</div>
+			</section>			
+			
+			<section class="decision" id="section-books">
+				<header>
+					<h2>Books of the Bible</h2>
+				</header>
+				
+				<div class="decision-body">
+					
+					<div class="books-section">
+						<label class="books-testament"><input type="checkbox" id="section-ot">Old Testament</label>
+
+						<div class="books-list">						
+							<label><input type="checkbox" id="book-GEN" value="GEN">Genesis</label>
+							<label><input type="checkbox" id="book-EXO" value="EXO">Exodus</label>
+							<label><input type="checkbox" id="book-LEV" value="LEV">Leviticus</label>
+							<label><input type="checkbox" id="book-NUM" value="NUM">Numbers</label>
+							<label><input type="checkbox" id="book-DEU" value="DEU">Deuteronomy</label>
+							<label><input type="checkbox" id="book-JOS" value="JOS">Joshua</label>
+							<label><input type="checkbox" id="book-JDG" value="JDG">Judges</label>
+							<label><input type="checkbox" id="book-RUT" value="RUT">Ruth</label>
+							<label><input type="checkbox" id="book-1SA" value="1SA">1 Samuel</label>
+							<label><input type="checkbox" id="book-2SA" value="2SA">2 Samuel</label>
+							<label><input type="checkbox" id="book-1KI" value="1KI">1 Kings</label>
+							<label><input type="checkbox" id="book-2KI" value="2KI">2 Kings</label>
+							<label><input type="checkbox" id="book-1CH" value="1CH">1 Chronicles</label>
+							<label><input type="checkbox" id="book-2CH" value="2CH">2 Chronicles</label>
+							<label><input type="checkbox" id="book-EZR" value="EZR">Ezra</label>
+							<label><input type="checkbox" id="book-NEH" value="NEH">Nehemiah</label>
+							<label><input type="checkbox" id="book-EST" value="EST">Esther</label>
+							<label><input type="checkbox" id="book-JOB" value="JOB">Job</label>
+							<label><input type="checkbox" id="book-PSA" value="PSA">Psalm</label>
+							<label><input type="checkbox" id="book-PRO" value="PRO">Proverbs</label>
+							
+						</div>
+							
+						<div class="books-list">								
+							<label><input type="checkbox" id="book-ECC" value="ECC">Ecclesiastes</label>
+							<label><input type="checkbox" id="book-SNG" value="SNG">Song of Songs</label>
+							<label><input type="checkbox" id="book-ISA" value="ISA">Isaiah</label>
+							<label><input type="checkbox" id="book-JER" value="JER">Jeremiah</label>
+							<label><input type="checkbox" id="book-LAM" value="LAM">Lamentations</label>
+							<label><input type="checkbox" id="book-EZK" value="EZK">Ezekiel</label>
+							<label><input type="checkbox" id="book-DAN" value="DAN">Daniel</label>
+							<label><input type="checkbox" id="book-HOS" value="HOS">Hosea</label>
+							<label><input type="checkbox" id="book-JOL" value="JOL">Joel</label>
+							<label><input type="checkbox" id="book-AMO" value="AMO">Amos</label>
+							<label><input type="checkbox" id="book-OBA" value="OBA">Obadiah</label>
+							<label><input type="checkbox" id="book-JON" value="JON">Jonah</label>
+							<label><input type="checkbox" id="book-MIC" value="MIC">Micah</label>
+							<label><input type="checkbox" id="book-NAM" value="NAM">Nahum</label>
+							<label><input type="checkbox" id="book-HAB" value="HAB">Habakkuk</label>
+							<label><input type="checkbox" id="book-ZEP" value="ZEP">Zephaniah</label>
+							<label><input type="checkbox" id="book-HAG" value="HAG">Haggai</label>
+							<label><input type="checkbox" id="book-ZEC" value="ZEC">Zechariah</label>
+							<label><input type="checkbox" id="book-MAL" value="MAL">Malachi</label>
+						</div>						
+					</div>
+					
+					
+					<div class="books-section">
+						<label class="books-testament"><input type="checkbox" id="section-nt">New Testament</label>
+						
+						<div class="books-list">
+							<label><input type="checkbox" id="book-MAT" value="MAT">Matthew</label>
+							<label><input type="checkbox" id="book-MRK" value="MRK">Mark</label>
+							<label><input type="checkbox" id="book-LUK" value="LUK">Luke</label>
+							<label><input type="checkbox" id="book-JHN" value="JHN">John</label>
+							<label><input type="checkbox" id="book-ACT" value="ACT">Acts</label>
+							<label><input type="checkbox" id="book-ROM" value="ROM">Romans</label>
+							<label><input type="checkbox" id="book-1CO" value="1CO">1 Corinthians</label>
+							<label><input type="checkbox" id="book-2CO" value="2CO">2 Corinthians</label>
+							<label><input type="checkbox" id="book-GAL" value="GAL">Galatians</label>
+							<label><input type="checkbox" id="book-EPH" value="EPH">Ephesians</label>
+							<label><input type="checkbox" id="book-PHP" value="PHP">Philippians</label>
+							<label><input type="checkbox" id="book-COL" value="COL">Colossians</label>
+							<label><input type="checkbox" id="book-1TH" value="1TH">1 Thessalonians</label>
+							<label><input type="checkbox" id="book-2TH" value="2TH">2 Thessalonians</label>
+							
+						</div>
+							
+						<div class="books-list">							
+							
+							<label><input type="checkbox" id="book-1TI" value="1TI">1 Timothy</label>
+							<label><input type="checkbox" id="book-2TI" value="2TI">2 Timothy</label>
+							<label><input type="checkbox" id="book-TIT" value="TIT">Titus</label>
+							<label><input type="checkbox" id="book-PHM" value="PHM">Philemon</label>
+							<label><input type="checkbox" id="book-HEB" value="HEB">Hebrews</label>
+							<label><input type="checkbox" id="book-JAS" value="JAS">James</label>
+							<label><input type="checkbox" id="book-1PE" value="1PE">1 Peter</label>
+							<label><input type="checkbox" id="book-2PE" value="2PE">2 Peter</label>
+							<label><input type="checkbox" id="book-1JN" value="1JN">1 John</label>
+							<label><input type="checkbox" id="book-2JN" value="2JN">2 John</label>
+							<label><input type="checkbox" id="book-3JN" value="3JN">3 John</label>
+							<label><input type="checkbox" id="book-JUD" value="JUD">Jude</label>
+							<label><input type="checkbox" id="book-REV" value="REV">Revelation</label>					
+						</div>
+					</div>				
+				</div>
+			</section>	
+			
+					
+			<section class="decision" id="section-days">
+				<header>
+					<h2>Days of the Week</h2>
+				</header>
+				
+				<div class="decision-body">
+					<!--
+					<div>
+						Start of Week 
+						<select id="week-start-day">
+							<option value="0">Sunday</option>
+							<option value="1">Monday</option>
+							<option value="2">Tuesday</option>
+							<option value="3">Wednesday</option>
+							<option value="4">Thursday</option>
+							<option value="5">Friday</option>
+							<option value="6">Saturday</option>												
+						</select>	
+					</div>	
+					-->	
+				
+					<div>				
+						<label><input type="checkbox" id="days-0" value="0">Sunday</label>
+						<label><input type="checkbox" id="days-1" value="1">Monday</label>
+						<label><input type="checkbox" id="days-2" value="2">Tuesday</label>
+						<label><input type="checkbox" id="days-3" value="3">Wednesday</label>
+						<label><input type="checkbox" id="days-4" value="4">Thursday</label>
+						<label><input type="checkbox" id="days-5" value="5">Friday</label>
+						<label><input type="checkbox" id="days-6" value="6">Saturday</label>			
+
+					</div>					
+				</div>
+			</section>
+						
+			<section class="decision" id="section-options">
+				<header>
+					<h2>Options</h2>
+				</header>
+				
+				<div class="decision-body">
+					<label><input type="checkbox" id="options-psalms">Include Daily Psalm</label>
+					<br />
+					
+					<label><input type="checkbox" id="options-psalms">Include Daily Proverb</label>
+					<br />				
+					
+					<label>
+						<input type="radio" id="formatstyle-list" name="formatstyle" value="list">
+						List
+					</label>
+					
+					<label>
+						<input type="radio" id="formatstyle-calendar" name="formatstyle" value="calendar" checked>
+						Calendar
+					</label>
+					
+					<label>
+						<input type="radio" id="formatstyle-weeks" name="formatstyle" value="weeks">
+						Weeks
+					</label>
+					
+					
+					<label>
+						<input type="radio" id="formatstyle-books" name="formatstyle" value="books">
+						One-Page Books
+					</label>					
+					
+				</div>
+			</section>
+			
+			
+			<div id="action">
+				<button id="generate-button">Generate Plan</button>
+			</div>
+					
+			
+			<iframe id="output">
+				
+				
+			</iframe>
+			
+			
+		</main>
+		
+		<footer id="main-footer">
+			by John Dyer
+		</footer>
+	
+	</div>
+	
+	<script src="jquery.min.js"></script>
+	
+	<script src="bible.js"></script>
+	<script src="bible.data.js"></script>	
+	<script src="bible.data.wordcounts.js"></script>
+	<script src="bible.reference.js"></script>
+	
+	
+	<script src="app.js"></script>
+	
+	<script>
+	/*var html = '';
+	for (var i=0; i<bible.BIBLE_DATA.length; i++) {
+		var book = bible.BIBLE_DATA[i];
+		if (['ot','nt'].indexOf(book.testament) > -1) {
+			html += '<label><input type="checkbox" id="book-' + book.usfm + '" value="' + book.usfm + '">' + book.names.en + '</label>\n';
+		}
+	}
+	
+	console.log(html);
+	*/	
+	
+	/*
+	var wordCountData = {};
+	for (var i=0; i<bible.wordcounts.length; i++) {
+		var book = bible.wordcounts[i],
+			usfm = book[0],
+			counts = book[1],
+			countsArray = [];
+			
+		for (var j=0; j<counts.length; j++) {
+			countsArray[j] = counts[j][1];
+		}
+		
+		wordCountData[usfm.toUpperCase()] = countsArray;
+		
+		
+	}
+	console.log(JSON.stringify(wordCountData));	
+	*/
+	
+	</script>
+
+	
+</body>
+</html>
+	
