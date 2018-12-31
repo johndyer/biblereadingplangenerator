@@ -22,30 +22,33 @@ input[type=date] {
 
 
 #main-header {
-	background-color:#3c43a6;
+	background-color:#563d7c; /* #77530e; #3c43a6; */
 	color: #fff;
 	padding: 1em 0;
 	text-align: center;
 	margin: 0 0 1em 0;
 }
 main {
-	max-width: 800px;
+	max-width: 1200px;
 	margin: 1em auto;
 	padding: 1em;	
 }
-#action {
-	text-align: right;
-}
-#action button {
+
+#settings {
 	
-	padding: 0.75em;
-	background:#32c357;
-	color: #fff;
-	border: none;
-	font-size: 1.2em;
-	margin-bottom: 1em;
-	display: none;
 }
+
+@media (min-width: 700px) {
+	main {
+		display:flex;
+	}
+
+	#settings {
+		width: 250px;
+		margin-right: 20px;
+	}
+}
+
 
 #main-footer {
 	background: #333;
@@ -55,8 +58,12 @@ main {
 	padding: 1em 0 4em;
 }
 
+#main-footer a {
+	color: #eee;
+}
+
 section.decision {
-	border: 1px solid #999;
+	border: 1px solid #ccc;
 	margin: 0 0 1em;
 	padding: 1.5em;
 	overflow: hidden;
@@ -68,16 +75,39 @@ section.decision header {
 }
 
 label {
-	margin: 0 1em 0 0;
+	margin: 0 0 0 0;
 }
 label input {
 	margin-right: 0.5em;	
 }
 
-.books-testament {
+input[type=button] {
+	
+	padding: 0.5em;
+	background:#3fda67;
+	color: #fff;
+	border: none;
+	font-size: 1.0em;
+	border-radius: 4px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+input[type=button]:hover {
+	
+	background:#32c357;
+
+}
+
+#section-options label {
 	display: block;
-	font-weight: bold;
-	clear: both;
+}
+
+#section-format label {
+	display: block;
+}
+
+.books-testament {	
+	margin-left: 1em;
 }
 
 .books-section {
@@ -86,12 +116,133 @@ label input {
 }
 
 .books-list {
-	float: left;
-	padding: 0 0 0 1.0em;	
+	padding: 0 0 1.0em 1.75em;	
+	font-size: 0.9rem;
 }
 
+#section-days label {
+	display: block;
+}
+
+#section-books details summary::-webkit-details-marker {
+	display: none;
+}
+#section-books  details > summary:after {	
+	content: "+"; 
+	color: #000;	
+	float: right; 
+	font-size: 1.0em; 
+	font-weight: bold; 
+	margin: 0 0 0 0; 
+	padding: 0; 
+	text-align: center; 
+	width: 20px;
+}
+#section-books details[open] > summary:after {
+    content: "-";
+}
 
 .books-list label {
 	display: block;
-	
+}
+
+#output {
+	flex: 1 1;
+}
+
+
+@media print {
+	section.decision {
+		display: none;
+	}
+	#settings {
+		display: none;
+	}
+}
+
+
+
+.plan-list {
+	-webkit-column-rule: 1px solid #ccc; 
+	-moz-column-count: 3; 
+	-moz-column-rule: 1px solid #ccc; 
+	column-count: 3; 
+	column-rule: 1px solid #ccc; 
+}
+.plan-list .entry { 
+	display: flex;
+}
+.plan-list .date { 
+	width: 40%; 
+	padding-right: 1.5em; 
+	text-align: right; 	
+}
+.plan-list .verses { 
+	width: 60%; 	
+}
+
+.plan-checkbox .plan-list .verses::before,
+.plan-checkbox .plan-calendar .verses::before {
+	content: '☐ ';
+}
+
+.plan-calendar { border-collapse: collapse; border: 1px solid #000;}		
+.plan-calendar td,.plan-calendar th  { padding: 1em; vertical-align: top; width: 14%; border: 1px solid #ccc; }	
+.plan-calendar th  { border: 1px solid #000; }	
+.plan-calendar .date { display: block; font-size: 0.7em; text-align: right; }		
+.plan-calendar .verse { display: block;  }	
+.plan-calendar .monthstart { border-left-color: #000; border-top-color: #000;  }		
+.plan-calendar .monthend { border-right-color: #000; border-bottom-color: #000; }			
+.plan-calendar .firstweek { border-top-color: #000;  }		
+.plan-calendar .lastweek { border-bottom-color: #000;  }	
+
+
+.plan-color .section-pentateuch { background: #cbf4fb; #469eac;  }		
+.plan-color .section-historical { background: #e2f7bd; #839f50;  }
+.plan-color .section-poetic { background: #fbf5c3; #beb45a;  }
+.plan-color .section-major { background: #f7ddef; #b38fa8;  }
+.plan-color .section-minor { background: #f7ddef; #b18da7;  }
+.plan-color .section-gospel { background: #fdc6ca; #ce1f2c;  }
+.plan-color .section-acts { background: #fbe6ac; #deb545;  }
+.plan-color .section-paul { background: #bafdf6; #008376;  }
+.plan-color .section-general { background: #c0f9ae; #5d974b;  }
+.plan-color .section-revelation { background: #b0a6f3; #6b6499;  }
+
+
+.plan-books {
+	font-size: 10px; line-height: 1.2; font-family: Helvetica; 
+}
+
+.plan-books .book { 
+	margin: 0 0 0.05in 0; 
+	display: flex;
+}
+.plan-books .name { 
+	width: 1in; 
+	-float: left; 
+	margin-right: 0.1in;
+}
+.plan-books .chapters { 
+	flex: 1 1;
+	/* nothign needed */
+}
+
+.plan-books .box { 
+	margin: 0 0.01in 0.05in 0; 
+	border: solid 1px #111; 
+	display: inline-block;
+	padding: 3px;
+    line-height: 1;	
+}
+
+
+.plan-books .title { width: 1in;  }
+
+.plan-books .chapter { min-width: 0.15in;  }
+
+
+iframe.pdf {
+	width: 100%;
+	border: 0;
+	height: 8in;
 }

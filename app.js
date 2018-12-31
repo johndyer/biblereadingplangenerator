@@ -23,38 +23,70 @@ Date.prototype.toInputField = function(d) {
 	return f;
 }
 
+// save
+var saveData = (function () {
+    var a = document.createElement("a");
+    document.body.appendChild(a);
+    a.style = "display: none";
+    return function (blob, fileName) {
+       // var json = JSON.stringify(data),
+        //    blob = new Blob([json], {type: "octet/stream"}),
+        var url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+}());
 
-// setup checkboxes
 
-var today = new Date(),
-	nextmonth = new Date(today.getFullYear(), today.getMonth()+1, 1);
+// EVENTS
+$('#section-time input, ' + 
+	'#section-days input, ' + 
+	'#section-books input, ' + 
+	'#section-options input, ' + 
+	'#section-format input').on('change keyup', updateDisplay);
 
-$('#time-startdate').val(nextmonth.toInputField() );
-// $('#enddate').val((today.getFullYear()+1) + '-' + (today.getMonth()+1) + '-' + today.getDate() );
-$('#time-days').val(365 );
+// traditional ot/nt clicking
+$('.order-traditional input').on('click', adjustBooks);
+$('[name=bibleorder]').on('click', enableTestaments);
 
-// begin with all checked
-$('#section-books input, #section-days input').prop('checked',true);
+$('#download-ics').on('click', downloadics);
+$('#download-pdf').on('click', downloadpdf);
 
-// ot/nt clicking
-$('.books-section input').on('click', function() {
+function enableTestaments() {
 	var check = $(this);
-	if (check.closest('label').hasClass('books-testament')) {
-		
+
+	check
+		.closest('.order-group')
+			.find('input[type=checkbox]')
+				.prop('disabled',false)
+			.end()
+		.siblings('.order-group')
+			.find('input[type=checkbox]')
+			.prop('disabled',true);
+
+}
+
+function adjustBooks() {
+	var check = $(this);
+	
+	if (check.closest('label').hasClass('books-testament')) {		
 		// parent
+		
 		check
-			.closest('.books-section')
+			.closest('details')
 			.find('input')
 			.prop('checked', check.prop('checked'));
 		
 	} else {
 		
-		var parent = check.closest('.books-section').find('.books-testament input');
+		var parent = check.closest('details').find('.books-testament input');
 		
 		if (check.prop('checked')) {
-			// cehck others
+			// check others
 			var allchecked = true;
-			check.closest('.books-section').find('.books-list input').each(function() {
+			check.closest('.books-list').find('input').each(function() {
 				if (!$(this).prop('checked')) {
 					allchecked = false;
 					return false;
@@ -68,72 +100,102 @@ $('.books-section input').on('click', function() {
 		
 	}
 
-	generate();
-});
+	updateDisplay();
+}
 
-$('#action button').on('click', generate);
+function downloadics() {
+	var code = generate('ics');
 
-$('#section-days input, #section-options input, #section-format input').on('change', generate);
+	var blob = new Blob([code], {type: "text/calendar;charset=utf-8"});
+	saveData(blob, 'bibleplan.ics');
 
-var planWindow = null; // global variable
-function generate() {
+	//window.open( "data:text/calendar;charset=utf8," + escape(html));
+
+	//html = html.replace(/\n/gi,'<br>');	
+}
+
+function downloadpdf() {
+	var doc = new jsPDF({unit:'in', format:'letter'}),
+		margin = 0.75;
+
+	// create heading
+	doc.text('Bible Reading Plan', margin, margin, {align:'left'});
+
+	// main code
+	var format = $('input:radio[name="formatstyle"]:checked').val();
+	var code = generate(format);
+	
+	//
+
+	setTimeout(function(){
+        var data = doc.output('datauri')
+		//$('iframe').attr('src', data);
+		$('#output').html('<iframe class="pdf" type="application/pdf" src="' + data + '"></iframe>');
+    }, 10)
+
+	// demo
+	
+
+	//doc.save('bible-reading-plan.pdf')	
+}
+
+function updateDisplay() {
+
+	var format = $('input:radio[name="formatstyle"]:checked').val();
+
+	var code = generate(format);
+
+	if ($('#options-sectioncolors').is(':checked')) {
+		$('#output').addClass('plan-color');
+	} else {
+		$('#output').removeClass('plan-color');
+	}
+
+	if ($('#options-checkbox').is(':checked')) {
+		$('#output').addClass('plan-checkbox');
+	} else {
+		$('#output').removeClass('plan-checkbox');
+	}	
+
+	$('#output').html(code);
+
+	updateUrl();	
+}
+
+function generate(format) {
 	
 	var 
 		startDate = new Date($('#time-startdate').val()),
-		days = parseInt($('#time-days').val(), 10),
-		formatstyle = $('input:radio[name="formatstyle"]:checked').val(),
-		booksList = [],
-		daysList = [];
+		duration = parseInt($('#time-days').val(), 10),
+		books = [],
+		daysOfWeek = [],
+		order = $('input:radio[name="bibleorder"]:checked').val();
 	
+	daysOfWeek = $('#section-days input:checked').map(function() { 
+		return parseInt($(this).val(), 10) - 1;
+	}).get();
+
 	
-	$('.books-list input:checked').each(function() { 
-		booksList.push( $(this).val() );
-	});
-	
-	$('#section-days input:checked').each(function() { 
-		daysList.push( parseInt($(this).val(), 10) );
-	});	
+ 	if (order == 'traditional') {
+		books = $('.order-traditional .books-list input[type=checkbox]:checked').map(function(index, el) { 
+			return $(this).val();
+		}).get();	
+	} else if (order == 'chronological') {
+		books = $('.order-chronological input[type=checkbox]:checked').map(function(index, el) { 
+			return $(this).val();
+		}).get();
+	}
 	
 	
 	// BUG
 	var datastartDate = startDate.addDays(1);
-
-	var data = getPlanData(datastartDate, days, booksList, daysList, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
-	console.log(data);
+	var data = getPlanData(order, datastartDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
+	var code = window['build' + format](data, startDate, duration, books, daysOfWeek);	
 	
-	console.log('build', formatstyle);
-	var html = window['build' + formatstyle](data, startDate, days, booksList, daysList);
-	
-	
-	
-	/*
-	if (planWindow == null || planWindow.closed) {
-		planWindow = window.open('about:blank', 'BiblePlanWindow', 'resizable,scrollbars,status');
-	} else {
-		planWindow.focus();
-	}
-	
-	planWindow.document.write('<!doctype html><html><head><title>Bible Plan</title></head><body>' + html + '</body></html>');
-	*/
-	
-	
-	var iframe = $('#output')
-		.css({height: '20em', width: '100%'})
-		.show()
-		[0];
-		
-	var iframeDoc = (iframe.contentWindow) ?
-					 iframe.contentWindow : 
-					 (iframe.contentDocument.document) ? iframe.contentDocument.document : iframe.contentDocument;
-	iframeDoc.document.open();
-	iframeDoc.document.write(html);
-	iframeDoc.document.close();
-	
-	$(iframe).height( $(iframeDoc).height() );
-	
+	return code;
 }
 
-function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dailyProverb) {
+function getPlanData(order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb) {
 	
 	var psalmNumber = 1;
 	var psalmMax = 150;
@@ -147,7 +209,7 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 			startDate: startDate,
 			numberOfDays: numberOfDays,
 			bookList: bookList,			
-			dayList: dayList,			
+			dayList: daysOfWeek,			
 			totalBooks: 0,
 			totalChapters: 0,
 			totalVerses: 0,
@@ -157,39 +219,56 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 			wordsPerDay: 0,
 			minPerDay: 0,
 			readingDays: 0,
-			days: [],								
+			days: [],
+			chapters: [],								
 		};
 		
 	
 		
-	// get days
+	// count reading days (within the plan length)
 	for (var i=0; i<numberOfDays; i++) {
 		var date = startDate.addDays(i);
 		// is this an included day
-		if (dayList.indexOf(date.getDay()) > -1) {
+		if (daysOfWeek.indexOf(date.getDay()) > -1) {
 			data.readingDays++;
 		}
 	}
 	
-	// get sums of chapters, books, ect.	
-	for (var i=0; i<bookList.length; i++) {
-		var usfm = bookList[i],
-			bookInfo = bible.BIBLE_DATA_USFM[ usfm ];
+	if (order == 'traditional') {
+		// get sums of chapters, books, ect.	
+		for (var i=0; i<bookList.length; i++) {
+			var usfm = bookList[i],
+				bookInfo = bible.BIBLE_DATA_USFM[ usfm ];
+			
+			// chapters
+			data.totalChapters += bookInfo.verses.length; 
+			
+			// verses
+			for (var j=0; j<bookInfo.verses.length; j++) {
+				data.totalVerses += bookInfo.verses[j];	
+				data.totalWords += bookInfo.words[j];			
+			}		
+		}
 		
-		// chapters
-		data.totalChapters += bookInfo.verses.length; 
-		
-		// verses
-		for (var j=0; j<bookInfo.verses.length; j++) {
-			data.totalVerses += bookInfo.verses[j];	
-			data.totalWords += bookInfo.words[j];			
+		data.chaptersPerDay = data.totalChapters/data.readingDays;
+		data.versesPerDay = data.totalVerses/data.readingDays;
+		data.wordsPerDay = data.totalWords/data.readingDays;
+		//data.minPerDay = data.totalWords/reading_days/wpm;
+	} else {
+
+		var chapters = [];
+
+		if (bookList.indexOf('ot') > -1) {
+			chapters = chapters.concat( bible.plans.chronological.ot );
+		}
+		if (bookList.indexOf('nt') > -1) {
+			chapters = chapters.concat( bible.plans.chronological.nt );
 		}		
+
+		data.chapters = chapters;
+		data.totalChapters = chapters.length;
+		data.chaptersPerDay = data.totalChapters/data.readingDays;
 	}
-	
-	data.chaptersPerDay = data.totalChapters/data.readingDays,
-	data.versesPerDay = data.totalVerses/data.readingDays;
-	data.wordsPerDay = data.totalWords/data.readingDays;
-	//data.minPerDay = data.totalWords/reading_days/wpm;	
 	
 	
 	// create an entry for each day	
@@ -198,6 +277,7 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 		currentBookIndex = 0,
 		currentBookUsfm = bookList[currentBookIndex],
 		currentChapterNumber = 1,
+		chapterIndex = 0,
 		chaptersRemaining = 0,
 		wordsRemaining = 0,
 		date = startDate,
@@ -222,144 +302,179 @@ function getPlanData(startDate, numberOfDays, bookList, dayList, dailyPsalm, dai
 		date = date.addDays(1);
 		
 		// skip unused days
-		if (dayList.indexOf( dayInfo.date.getDay() ) == -1 ) {
-			dayInfo.formattedReading = '---';
+		if (daysOfWeek.indexOf( dayInfo.date.getDay() ) == -1 ) {
+			dayInfo.formattedReading = '';
 			continue;
 		}
 			
-		var logic = 'words';
-		
-		
-		if (logic == 'chapters') {
+
+		if (order == 'traditional') {
+			var logic = 'words';
 			
-			var chaptersForToday = data.chaptersPerDay + chaptersRemaining;
-
-			while (chaptersForToday > 1) {
-				var bookInfo = bible.BIBLE_DATA_USFM[currentBookUsfm];
-				if (bookInfo == null) {
-					break;
-				}				
+			if (logic == 'chapters') {
 				
-				// check if there is still a chapter in this book. If not, iterate)
-				if (currentChapterNumber > bookInfo.verses.length) {
-					lastBookIndex = currentBookIndex;
-					currentBookIndex++;
-					currentChapterNumber = 1;
-					currentBookUsfm = bookList[currentBookIndex];				
-					bookInfo = bible.BIBLE_DATA_USFM[ currentBookUsfm ];
+				var chaptersForToday = data.chaptersPerDay + chaptersRemaining;
 
+				while (chaptersForToday > 1) {
+					var bookInfo = bible.BIBLE_DATA_USFM[currentBookUsfm];
 					if (bookInfo == null) {
 						break;
+					}				
+					
+					// check if there is still a chapter in this book. If not, iterate)
+					if (currentChapterNumber > bookInfo.verses.length) {
+						lastBookIndex = currentBookIndex;
+						currentBookIndex++;
+						currentChapterNumber = 1;
+						currentBookUsfm = bookList[currentBookIndex];				
+						bookInfo = bible.BIBLE_DATA_USFM[ currentBookUsfm ];
+
+						if (bookInfo == null) {
+							break;
+						}
 					}
+					
+					// add this next one
+					dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
+						
+					// total up verses for the day
+					dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
+					dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
+		
+					lastBookIndex = currentBookIndex;
+					currentChapterNumber++;
+					chaptersForToday--;
 				}
 				
-				// add this next one
-				dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
+				// double check we get remaining chapters
+				if (d == numberOfDays && bookInfo != null) {
+					while (currentChapterNumber <= bookInfo.verses.length) {
+						dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
+						
+						dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
+						dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
+							
+						lastChapterNumber = currentChapterNumber;			
+						currentChapterNumber++;
+					}
+				}	
+				
+				chaptersRemaining = chaptersForToday;		
+				
+			} else if (logic == 'words') {
+				
+				var
+					wordsForDay = data.wordsPerDay + wordsRemaining,			
+					lastChapterNumber = 0;
+							
+				while (wordsForDay > 0) {
+					var bookInfo = bible.BIBLE_DATA_USFM[currentBookUsfm];
 					
-				// total up verses for the day
-				dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
-				dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
-	
-				lastBookIndex = currentBookIndex;
-				currentChapterNumber++;
+					// check if the number of words is more or less than half of what's left
+					var wordsInChapter = bookInfo.words[currentChapterNumber-1];
+					if (wordsInChapter/2 > wordsForDay) {
+						// go to next day
+						break;
+					}
+					
+					// add this next one
+					dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
+						
+					// total up verses for the day
+					dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
+					dayInfo.wordsForToday += wordsInChapter;
+		
+					wordsForDay = wordsForDay - wordsInChapter;
+								
+					// store
+					lastBookUsfm = currentBookUsfm;
+					lastChapterNumber = currentChapterNumber;
+					
+					
+					// iterate
+					currentChapterNumber++;
+					
+					if (currentBookUsfm == 'REV' && currentChapterNumber == 23) {
+						console.log('whoops');
+					}
+					
+					// check if there is still a chapter in this book. If not, move to next book
+					if (currentChapterNumber > bookInfo.verses.length) {
+						lastBookIndex = currentBookIndex;
+						
+						// if this is the last book, then stop
+						if (currentBookIndex == bookList.length-1) {
+							bookInfo = null;
+							ended = true;					
+							break;
+						}
+						
+						currentBookIndex++;
+										
+						// reset to next book
+						currentChapterNumber = 1;				
+						currentBookUsfm = bookList[currentBookIndex];				
+						bookInfo = bible.BIBLE_DATA_USFM[ currentBookUsfm ];
+						if (typeof bookInfo == 'undefined') {
+							bookInfo = null;
+							ended = true;						
+							break;	
+						}
+					}			
+				}
+		
+				// is this the final day? 
+				// if so, double check we get remaining chapters
+				if (d == numberOfDays && bookInfo != null) {
+					while (currentChapterNumber <= bookInfo.verses.length) {
+						dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
+						
+						dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
+						dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
+							
+						lastChapterNumber = currentChapterNumber;			
+						currentChapterNumber++;
+					}
+				}
+							
+				// store the remainder for the next day
+				wordsRemaining = wordsForDay;
+				
+				//console.log(wordsRemaining);
+			}
+		} else {
+			// chronological
+
+			var chaptersForToday = data.chaptersPerDay + chaptersRemaining;
+
+			while (chaptersForToday > 1 && chapterIndex < data.chapters.length) {
+							
+				// get this 
+				var chapter = data.chapters[chapterIndex],
+					parts = chapter.split('_'),
+					usfm = parts[0],
+					chapterNumber = parseInt(parts[1], 10);
+
+				
+				// add this one
+				dayInfo.chapters.push({usfm:usfm, chapter: chapterNumber});			
+									
+				
+				// iterate
+				chapterIndex++;
 				chaptersForToday--;
 			}
 			
 			// double check we get remaining chapters
-			if (d == numberOfDays && bookInfo != null) {
-				while (currentChapterNumber <= bookInfo.verses.length) {
-					dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
-					
-					dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
-					dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
-						
-					lastChapterNumber = currentChapterNumber;			
-					currentChapterNumber++;
-				}
-			}	
-			
-			chaptersRemaining = chaptersForToday;		
-			
-		} else if (logic == 'words') {
-			
-			var
-				wordsForDay = data.wordsPerDay + wordsRemaining,			
-				lastChapterNumber = 0;
-						
-			while (wordsForDay > 0) {
-				var bookInfo = bible.BIBLE_DATA_USFM[currentBookUsfm];
-				
-				// check if the number of words is more or less than half of what's left
-				var wordsInChapter = bookInfo.words[currentChapterNumber-1];
-				if (wordsInChapter/2 > wordsForDay) {
-					// go to next day
-					break;
-				}
-				
-				// add this next one
-				dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
-					
-				// total up verses for the day
-				dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
-				dayInfo.wordsForToday += wordsInChapter;
-	
-				wordsForDay = wordsForDay - wordsInChapter;
+			// if (d == numberOfDays) {
+			// 	while (chapterIndex < data.chapters.length) {
+			// 		dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
 							
-				// store
-				lastBookUsfm = currentBookUsfm;
-				lastChapterNumber = currentChapterNumber;
-				
-				
-				// iterate
-				currentChapterNumber++;
-				
-				if (currentBookUsfm == 'REV' && currentChapterNumber == 23) {
-					console.log('whoops');
-				}
-				
-				// check if there is still a chapter in this book. If not, move to next book
-				if (currentChapterNumber > bookInfo.verses.length) {
-					lastBookIndex = currentBookIndex;
-					
-					// if this is the last book, then stop
-					if (currentBookIndex == bookList.length-1) {
-						bookInfo = null;
-						ended = true;					
-						break;
-					}
-					
-					currentBookIndex++;
-									
-					// reset to next book
-					currentChapterNumber = 1;				
-					currentBookUsfm = bookList[currentBookIndex];				
-					bookInfo = bible.BIBLE_DATA_USFM[ currentBookUsfm ];
-					if (typeof bookInfo == 'undefined') {
-						bookInfo = null;
-						ended = true;						
-						break;	
-					}
-				}			
-			}
-	
-			// is this the final day? 
-			// if so, double check we get remaining chapters
-			if (d == numberOfDays && bookInfo != null) {
-				while (currentChapterNumber <= bookInfo.verses.length) {
-					dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
-					
-					dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
-					dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
-						
-					lastChapterNumber = currentChapterNumber;			
-					currentChapterNumber++;
-				}
-			}
-						
-			// store the remainder for the next day
-			wordsRemaining = wordsForDay;
+			// 		chapterIndex++;
+			// 	}
+			// }	
 			
-			//console.log(wordsRemaining);
+			chaptersRemaining = chaptersForToday;
 		}
 
 		// both ways
@@ -513,62 +628,58 @@ function buildlist(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 	
 
 	var html = [];
-	/*
-	html.push('<style>');
-	html.push('* { margin: 0; padding: 0; box-sizing: border-box;}');
-	html.push('body { font-size: 16px; line-height: 1.2; font-family: Helvetica; }');	
-	html.push('table td,table th { padding: 0.35em; vertical-align: top;  }');	
-	html.push('table th { white-space: nowrap;  }');	
-	html.push('</style>');
+
 	
-	
-	html.push('<table>');
-	
-	html.push('<tbody>');
-	
-	var days = data.days;
-	for (var i=0; i<days.length; i++) {
-		var dayInfo = days[i];
-		
-		html.push('<tr>');
-		html.push('<th>' + dayInfo.date.pretty() + '</th>');		
-		html.push('<td>' + formatChapterRange(dayInfo.chapters) + '</td>');
-		html.push('<td>' + dayInfo.versesForToday + '</td>');
-		html.push('<td>' + dayInfo.wordsForToday + '</td>');		
-		html.push('<td>' + (dayInfo.wordsForToday / 200.0).toString() + '&nbsp;mins' + '</td>');				
-		
-		html.push('</tr>');
-	}
-	html.push('</tbody>');
-	html.push('</table>');
-	*/
-	
-	html.push('<style>');
-	html.push('* { margin: 0; padding: 0; box-sizing: border-box;}');
-	html.push('body { font-size: 12px; line-height: 1.2; font-family: Helvetica; }');	
-	html.push('#container { padding: 3em; -webkit-column-count: 3; -webkit-column-rule: 1px solid #ccc; -moz-column-count: 3; -moz-column-rule: 1px solid #ccc; column-count: 3; column-rule: 1px solid #ccc; }');	
-		html.push('.date { width: 5em; padding-right: 1.5em; text-align: right; display: inline-block; }');	
-	html.push('</style>');
-	
-	
-	html.push('<div id="container">');
+	html.push('<div class="plan-list">');
 		
 	var days = data.days;
 	for (var i=0; i<days.length; i++) {
-		var dayInfo = days[i];
+		var dayInfo = days[i],
+			bookInfo = dayInfo.chapters.length > 0 ? bible.BIBLE_DATA_USFM[dayInfo.chapters[0].usfm] : null;
 		//var fixeddate = dayInfo.date.addDays(1);
 		//html.push('<tr>');
-		html.push('<span class="date">' + dayInfo.date.monthAbbr() + ' ' + (dayInfo.date.getDate()) + '</span>');		
+		html.push('<div class="entry section-' + (bookInfo != null ? bookInfo.section : '') + '">');
+		html.push('<div class="date">' + dayInfo.date.monthAbbr() + ' ' + (dayInfo.date.getDate()) + '</div>');		
 		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
-		html.push('<span>' + dayInfo.formattedReading + '</span>');		
-		html.push('<br />');
+		if (dayInfo.formattedReading != '') {
+			html.push('<div class="verses">' + dayInfo.formattedReading + '</div>');		
+		}
+		html.push('</div>');
 	}
-	html.push('</tbody>');
-	html.push('</table>');
-	
-	
+
+	html.push('</div>');	
 	
 	return html.join('\n');
+	
+}
+
+function buildics(data, days, bookList, dayList) {
+	
+
+	var ics = [];	
+	
+	ics.push('BEGIN:VCALENDAR');
+	ics.push('VERSION:2.0');
+	ics.push('PRODID:-//hacksw/handcal//NONSGML v1.0//EN');
+		
+	var days = data.days;
+	for (var i=0; i<days.length; i++) {
+		var dayInfo = days[i],
+			formattedDate = dayInfo.date.getFullYear().toString() + (dayInfo.date.getMonth()+1).toString().padStart(2,'0') + dayInfo.date.getDate().toString().padStart(2,'0');
+		
+		if (dayInfo.formattedReading != '' && dayInfo.formattedReading != '---') {
+			ics.push('BEGIN:VEVENT');
+			ics.push('DTSTAMP:' + formattedDate + 'T000000Z');
+			ics.push('DTSTART;VALUE=DATE:' + formattedDate + '');
+			ics.push('DTEND;VALUE=DATE:' + formattedDate + '');
+			ics.push('SUMMARY:' + dayInfo.formattedReading);		
+			ics.push('END:VEVENT');
+		}
+	}
+
+	ics.push('END:VCALENDAR');
+
+	return ics.join('\n');
 	
 }
 
@@ -579,34 +690,8 @@ function buildcalendar(data, days, bookList, dayList, dailyPsalm, dailyProverb) 
 	var daysOfWeek = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	
 	var html = [];
-	html.push('<style>');
-	html.push('* { margin: 0; padding: 0; box-sizing: border-box;}');
-	html.push('body { font-size: 12px; line-height: 1.2; font-family: Helvetica; }');
-	html.push('table { border-collapse: collapse; }');		
-	html.push('table td,table th  { padding: 1em; vertical-align: top; width: 14%; border: 1px solid #ccc; }');	
-	html.push('table .date { display: block; font-size: 0.7em; text-align: right; }');		
-	html.push('table .verse { display: block;  }');	
-	html.push('table .monthstart { border-left-color: #000; border-top-color: #000;  }');		
-	html.push('table .monthend { border-right-color: #000; border-bottom-color: #000; }');			
-	html.push('table .firstweek { border-top-color: #000;  }');		
-	html.push('table .lastweek { border-bottom-color: #000;  }');	
-	
-	if ($('#options-colorcalendar').is(':checked')) {
-		html.push('.section-pentateuch { background: #cbf4fb; #469eac;  }');		
-		html.push('.section-historical { background: #e2f7bd; #839f50;  }');	
-		html.push('.section-poetic { background: #fbf5c3; #beb45a;  }');	
-		html.push('.section-major { background: #f7ddef; #b38fa8;  }');	
-		html.push('.section-minor { background: #f7ddef; #b18da7;  }');	
-		html.push('.section-gospel { background: #fdc6ca; #ce1f2c;  }');	
-		html.push('.section-acts { background: #fbe6ac; #deb545;  }');	
-		html.push('.section-paul { background: #bafdf6; #008376;  }');	
-		html.push('.section-general { background: #c0f9ae; #5d974b;  }');	
-		html.push('.section-revelation { background: #b0a6f3; #6b6499;  }');	
-	}
-	html.push('</style>');
-	
-	
-	html.push('<table>');
+
+	html.push('<table class="plan-calendar">');
 	
 	// create daily heading
 	html.push('<thead><tr>');
@@ -653,7 +738,7 @@ function buildcalendar(data, days, bookList, dayList, dailyPsalm, dailyProverb) 
 			'">' + 
 			'<span class="date">' + (firstday ? dayInfo.date.monthAbbr() + ' ' : '') + dayInfo.date.getDate() + '</span>' + 
 			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
-			'<span class="verses">' + dayInfo.formattedReading + '</span>' + 
+			(dayInfo.formattedReading != '' ? '<span class="verses">' + dayInfo.formattedReading + '</span>' : '') + 
 		'</td>');		
 		
 		// close on saturday
@@ -678,51 +763,22 @@ function buildbooks(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 	
 	var html = [];
 	html.push('<style>');
-	html.push('* { margin: 0; padding: 0; box-sizing: border-box;}');
-	html.push('body { font-size: 7pt; line-height: 1.2; font-family: Helvetica; color: #fff; }');	
-	
-	html.push('.clear { clear:both; }');
-	html.push('.box { margin: 0 0.01in 0.05in 0; border: solid 1px #111; height: 0.15in; padding: 1pt; display: inline-block;}');		
-	html.push('.book { margin: 0 0 0.05in 0; }');	
-		html.push('.name { width: 1in; float: left; margin-right: 0.1in;}');	
-		html.push('.title { width: 1in;  }');	
-		html.push('.chapters { width: 3in; float: left; }');		
-		html.push('.chapter { width: 0.15in;  }');	
-		
+			
 	for (var i=2; i<20; i++) {
-		html.push('.days-' + i + ' { width: ' + (0.15 * i + 0.01 * (i-1)) + 'in;  }');	
+	//	html.push('.plan-books  .chapters-' + i + ' { min-width: ' + (0.25 * i + 0.01 * (i-1)) + 'in;  }');	
 	}		
-	
-	html.push('.section-pentateuch { background: #cbf4fb; #469eac;  }');		
-	html.push('.section-historical { background: #e2f7bd; #839f50;  }');	
-	html.push('.section-poetic { background: #fbf5c3; #beb45a;  }');	
-	html.push('.section-major { background: #f7ddef; #b38fa8;  }');	
-	html.push('.section-minor { background: #f7ddef; #b18da7;  }');	
-	html.push('.section-gospel { background: #fdc6ca; #ce1f2c;  }');	
-	html.push('.section-acts { background: #fbe6ac; #deb545;  }');	
-	html.push('.section-paul { background: #bafdf6; #008376;  }');	
-	html.push('.section-general { background: #c0f9ae; #5d974b;  }');	
-	html.push('.section-revelation { background: #b0a6f3; #6b6499;  }');	
+		
 	html.push('</style>');
 	
+	html.push('<div class="plan-books">');
+
 	var lastBookUsfm = '',
 		lastChapterNumber = 0;
-		
-	/*
-	for (var bookId in bookList) {
-		var bookInfo = bible.BIBLE_DATA_USFM[bookId];
-		
-		html.push('<div class="book" class="' + '');
-		
-		
-	}
-	*/	
 	
-
 	for (var i=0; i<data.days.length; i++) {
 		var dayInfo = data.days[i];
 		
-		console.log(i);
+		//console.log(i);
 		
 		// ignore empty days
 		if (dayInfo.chapters.length == 0) {
@@ -737,7 +793,7 @@ function buildbooks(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 				
 				// close last one
 				if (lastBookUsfm != '') {					
-					html.push('</div><div class="clear"></div></div>');
+					html.push('</div></div>');
 				}
 				
 				// open this one
@@ -752,23 +808,26 @@ function buildbooks(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 			//html.push('<span class="box chapter section-' + bookInfo.section + '">' + chapter.chapter + '</span>');
 			
 			// how many days is this run?
-			var daysCount = 1,
-				foundEnd = false;
+			var chaptersOnThisDay = 1,
+				foundEnd = false,
+				startChapter = dayInfo.chapters[j].chapter,
+				endChapter = dayInfo.chapters[dayInfo.chapters.length-1].chapter;
 			
 			j++;
 			while (j<dayInfo.chapters.length && !foundEnd) {
 				var nextchapter = dayInfo.chapters[j];
 				if (nextchapter.usfm == chapter.usfm) {
-					daysCount++;
+					chaptersOnThisDay++;
 					j++;
 				} else {
 					j--;
 					foundEnd = true;
+					endChapter = dayInfo.chapters[j].chapter;
 				}
 			}
 			
-			html.push('<span class="box chapter section-' + bookInfo.section + ' days-' + daysCount + '">' + 
-				(dayInfo.date.getMonth()+1) + '/' + (dayInfo.date.getDate()+1) + 
+			html.push('<span class="box chapter section-' + bookInfo.section + ' chapters-' + chaptersOnThisDay + '">' + 
+				(dayInfo.date.getMonth()+1) + '/' + (dayInfo.date.getDate()) + ': ' + startChapter + (startChapter != endChapter ? '-' + endChapter : '') +
 			'</span>');
 			
 			lastBookUsfm = chapter.usfm;	
@@ -781,10 +840,210 @@ function buildbooks(data, days, bookList, dayList, dailyPsalm, dailyProverb) {
 	
 	// close last one	
 	html.push('</div><div class="clear"></div></div>');	
+
+	// close container
+	html.push('</div>');
 	
 	
 	return html.join('\n');
 	
 }
 
-generate();
+function updateUrl() {
+	// params
+	var start = $('#time-startdate').val(),
+		total = $('#time-days').val(),
+		format = $('input[name=formatstyle]:checked').val(),
+		order = $('input[name=bibleorder]:checked').val(),	
+		daysofweek = $( '#section-days input:checked' ).map(function() {
+			return $( this ).val();
+		  })
+		  .get()
+		  .join( ',' ),
+		books = [];
+
+	if (order == 'traditional') {
+		if ($('.order-traditional .section-ot').is(':checked')) {
+			books.push('ot');
+		} else {
+			$('.order-traditional .section-ot').closest('details').find('.books-list input').each(function() {
+				if ($(this).is(':checked'))
+					books.push($(this).val());
+			});
+		}
+
+		if ($('.order-traditional .section-nt').is(':checked')) {
+			books.push('nt');
+		} else {
+			$('.order-traditional .section-nt').closest('details').find('.books-list input').each(function() {
+				if ($(this).is(':checked'))
+					books.push($(this).val());
+			});
+		}		
+	} else {
+		if ($('.order-chronological .section-ot').is(':checked')) {
+			books.push('ot');		
+		}
+		if ($('.order-chronological .section-nt').is(':checked')) {
+			books.push('nt');
+		}
+	}
+
+	// update URL
+	history.replaceState({}, 'page', 
+				'?start=' + start + 
+				'&total=' + total + 
+				'&format=' + format + 
+				'&order=' + order + 
+				'&daysofweek=' + daysofweek + 
+				'&books=' + books.join(',') + 
+			
+				'&checkbox=' + ($('#options-checkbox').is(':checked') ? '1' : '0') +
+				'&colors=' + ($('#options-sectioncolors').is(':checked') ? '1' : '0') +
+				'&psalm=' + ($('#options-dailypsalm').is(':checked') ? '1' : '0') +
+				'&proverb=' + ($('#options-dailyproverb').is(':checked') ? '1' : '0') +
+				
+		  		''				
+				);
+
+	
+}
+
+
+function startup() {
+
+	var urlParams = new URLSearchParams(window.location.search);
+
+	// start
+	var startdate = null;
+	if (urlParams.has('start')) {		
+		startdate = new Date(urlParams.get('start'));
+		// time zone screws it up?
+		if (startdate) {
+			startdate = startdate.addDays(1);
+		}
+	}
+	if (!startdate) {
+		var today = new Date(),
+		startdate = new Date(today.getFullYear(), today.getMonth()+1, 1);
+	}
+	$('#time-startdate').val(startdate.toInputField() );		
+
+	// total days
+	var total = null;
+	if (urlParams.has('total')) {
+		total = urlParams.get('total');
+	}
+	if (!total) {
+		total = 365;	
+	}	
+	$('#time-days').val( total );	
+	
+
+	// format
+	var format = '';
+	if (urlParams.has('format')) {		
+		format = urlParams.get('format');
+	} else {
+		format = 'calendar';
+	}
+	$('input[name=formatstyle][value=' + format + ']').prop('checked', true);
+
+	// days of week
+	var daysofweek = '';
+	if (urlParams.has('daysofweek')) {		
+		daysofweek = urlParams.get('daysofweek')
+	} else {
+		daysofweek = '1,2,3,4,5,6,7';
+	}
+	daysofweek = daysofweek.split(',');
+	for (var i=0; i<daysofweek.length; i++) {
+		var dayval = daysofweek[i];
+		$('#days-' + dayval).prop('checked', true);
+	}
+
+	// order
+	var order = '';
+	if (urlParams.has('order')) {		
+		order = urlParams.get('order');
+	} else {
+		order = 'traditional';
+	}
+	$('input[name=bibleorder][value=' + order + ']').prop('checked', true);
+	
+
+	// books of bible	
+	var books = '';
+	if (order == 'traditional') {
+		if (urlParams.has('books')) {		
+			books = urlParams.get('books');
+			books = books.split(',');
+
+			if (books.indexOf('ot') > -1) {
+				$('.order-traditional .section-ot')					
+					.closest('details')
+					.find('input')
+					.prop('checked',true);
+			}
+			if (books.indexOf('nt') > -1) {
+				$('.order-traditional .section-nt')					
+					.closest('details')
+					.find('input')
+					.prop('checked',true);
+			}			
+
+			for (var i=0; i<books.length; i++) {
+				$('#book-' + books[i]).prop('checked',true);
+			}
+
+		} else {
+			$('.order-traditional input').prop('checked',true);
+		}
+		
+		$('.order-chronological input[type=checkbox]')
+			.prop('checked',true)
+			.prop('disabled',true);
+	} else {
+		if (urlParams.has('books')) {		
+			books = urlParams.get('books');
+			books = books.split(',');
+
+			if (books.indexOf('ot') > -1) {
+				$('.order-chronological .section-ot')
+					.prop('checked',true);
+			}
+			if (books.indexOf('nt') > -1) {
+				$('.order-chronological .section-nt')					
+					.prop('checked',true);
+			}			
+		} else {
+			$('.order-chronological input').prop('checked',true);
+		}
+
+		$('.order-traditional input[type=checkbox]')
+			.prop('checked',true)
+			.prop('disabled',true);
+	}
+	
+
+
+	// options
+	if (urlParams.get('checkbox') == '1' || urlParams.get('checkbox') == '' || !urlParams.has('checkbox')) {	
+		$('#options-checkbox').prop('checked',true);
+	}	
+	if (urlParams.get('colors') == '1') {	
+		$('#options-sectioncolors').prop('checked',true);	
+	}
+	if (urlParams.get('dailypsalm') == '1') {	
+		$('#options-dailypsalm').prop('checked',true);	
+	}
+	if (urlParams.get('dailyproverb') == '1') {	
+		$('#options-dailyproverb').prop('checked',true);	
+	}
+
+
+	
+
+	updateDisplay();
+}
+startup();
