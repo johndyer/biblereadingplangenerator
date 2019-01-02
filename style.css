@@ -184,6 +184,8 @@ input[type=button]:hover {
 .plan-checkbox .plan-list .verses::before,
 .plan-checkbox .plan-calendar .verses::before {
 	content: '☐ ';
+	content: '\2610 ';
+	padding-right: 0.25em;
 }
 
 .plan-calendar { border-collapse: collapse; border: 1px solid #000;}		
