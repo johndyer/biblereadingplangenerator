@@ -4,7 +4,7 @@
 $('#section-time input, ' + 
 	'#section-days input, ' + 
 	'#section-books input, ' + 
-	'#section-options input, ' + 
+	'#section-options input, #options-language, ' + 
 	'#section-format input').on('change keyup', updateDisplay);
 
 // traditional ot/nt clicking
@@ -64,7 +64,8 @@ function adjustBooks() {
 }
 
 function downloadics() {
-	var code = generate('ics');
+	var lang = $('#options-language').val();
+	var code = generate(lang, 'ics');
 
 	var blob = new Blob([code], {type: "text/calendar;charset=utf-8"});
 	saveData(blob, 'bibleplan.ics');
@@ -102,8 +103,9 @@ function downloadpdf() {
 function updateDisplay() {
 
 	var format = $('input:radio[name="formatstyle"]:checked').val();
+	var lang = $('#options-language').val();
 
-	var code = generate(format);
+	var code = generate(lang, format);
 
 	if ($('#options-sectioncolors').is(':checked')) {
 		$('#output').addClass('plan-color');
@@ -117,12 +119,20 @@ function updateDisplay() {
 		$('#output').removeClass('plan-checkbox');
 	}	
 
-	$('#output').html(code);
+	$('#output')
+		.attr('lang', lang)
+		.html(code);
+
+	if (["ar","he"].indexOf(lang) > -1) {
+		$('#output').attr('dir','rtl');
+	} else {
+		$('#output').attr('dir','ltr');
+	}
 
 	updateUrl();	
 }
 
-function generate(format) {
+function generate(lang, format) {
 	
 	var 
 		startDate = new Date($('#time-startdate').val()),
@@ -147,10 +157,10 @@ function generate(format) {
 	}
 	
 	
-	// BUG
+	// BUG	
 	var datastartDate = startDate.addDays(1);
-	var data = getPlanData(order, datastartDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
-	var code = window['build' + format](data, startDate, duration, books, daysOfWeek);	
+	var data = getPlanData(lang, order, datastartDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
+	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek);	
 	
 	return code;
 }
@@ -162,6 +172,7 @@ function updateUrl() {
 		total = $('#time-days').val(),
 		format = $('input[name=formatstyle]:checked').val(),
 		order = $('input[name=bibleorder]:checked').val(),	
+		lang = $('#options-language').val(),	
 		daysofweek = $( '#section-days input:checked' ).map(function() {
 			return $( this ).val();
 		  })
@@ -169,31 +180,31 @@ function updateUrl() {
 		  .join( ',' ),
 		books = [];
 
+	
 	if (order == 'traditional') {
-		if ($('.order-traditional .section-ot').is(':checked')) {
-			books.push('ot');
-		} else {
-			$('.order-traditional .section-ot').closest('details').find('.books-list input').each(function() {
-				if ($(this).is(':checked'))
-					books.push($(this).val());
-			});
+
+		for (var i=0; i<bible.TESTAMENTS.length; i++) {
+			var testament = bible.TESTAMENTS[i];
+
+			if ($('.order-traditional input[value="' + testament + '"]').is(':checked')) {
+				books.push(testament);
+			} else {
+				$('.order-traditional .section-' + testament  + ' .books-list input').each(function() {
+					if ($(this).is(':checked'))
+						books.push($(this).val());
+				});
+			}			
 		}
 
-		if ($('.order-traditional .section-nt').is(':checked')) {
-			books.push('nt');
-		} else {
-			$('.order-traditional .section-nt').closest('details').find('.books-list input').each(function() {
-				if ($(this).is(':checked'))
-					books.push($(this).val());
-			});
-		}		
 	} else {
-		if ($('.order-chronological .section-ot').is(':checked')) {
-			books.push('ot');		
+		for (var i=0; i<bible.TESTAMENTS.length; i++) {
+			var testament = bible.TESTAMENTS[i];
+
+			if ($('.order-chronological input[value="' + testament + '"]').is(':checked')) {
+				books.push(testament);
+			}
 		}
-		if ($('.order-chronological .section-nt').is(':checked')) {
-			books.push('nt');
-		}
+		
 	}
 
 	// update URL
@@ -204,22 +215,80 @@ function updateUrl() {
 				'&order=' + order + 
 				'&daysofweek=' + daysofweek + 
 				'&books=' + books.join(',') + 
+				'&lang=' + lang + 
 			
 				'&checkbox=' + ($('#options-checkbox').is(':checked') ? '1' : '0') +
 				'&colors=' + ($('#options-sectioncolors').is(':checked') ? '1' : '0') +
 				'&psalm=' + ($('#options-dailypsalm').is(':checked') ? '1' : '0') +
 				'&proverb=' + ($('#options-dailyproverb').is(':checked') ? '1' : '0') +
-				
-		  		''				
+
+		  		''		
 				);
 
 	
+}
+
+function createBookLists() {
+
+	var lang = $('#options-language').val();
+
+	for (var i=0; i<bible.TESTAMENTS.length; i++) {
+		var testament = bible.TESTAMENTS[i],
+			testament_list = bible[testament + "_BOOKS"];
+
+		// find list
+		var list = $('.order-traditional .section-' + testament + ' .books-list')
+					.empty();	
+					
+		console.log(list);
+
+		for (var j=0; j<testament_list.length; j++) {
+			var usfm = testament_list[j],
+				book = bible.BIBLE_DATA[ usfm ];
+
+			console.log(usfm);
+
+			list.append(
+				$('<label><input type="checkbox" value="' + usfm + '">' + bible.getName(book, lang) + '</label>')
+			);
+		}
+
+	}
 }
 
 
 function startup() {
 
 	var urlParams = new URLSearchParams(window.location.search);
+
+	// lang
+	var lang = '';
+	if (urlParams.has('lang')) {		
+		lang = urlParams.get('lang');
+	} else {
+		lang = 'en';
+		var language = window.navigator.userLanguage || window.navigator.language;
+
+		if (language) {
+			var option = $('#options-language option[value="' + language + '"]');
+			if (option.length > 0) {
+				lang = language;
+			} else {
+				var shortLanguage = language.split('-')[0];
+				option = $('#options-language option[value="' + shortLanguage + '"]');
+				if (option.length > 0) {
+					lang = shortLanguage;
+				}
+			}
+		}		
+	}
+	$('#options-language').val(lang);
+
+
+	createBookLists();
+
+
+	
 
 	// start
 	var startdate = null;
@@ -280,31 +349,29 @@ function startup() {
 	
 
 	// books of bible	
-	var books = '';
+	var books = '';		
 	if (order == 'traditional') {
 		if (urlParams.has('books')) {		
 			books = urlParams.get('books');
 			books = books.split(',');
 
-			if (books.indexOf('ot') > -1) {
-				$('.order-traditional .section-ot')					
-					.closest('details')
-					.find('input')
-					.prop('checked',true);
-			}
-			if (books.indexOf('nt') > -1) {
-				$('.order-traditional .section-nt')					
-					.closest('details')
-					.find('input')
-					.prop('checked',true);
-			}			
+			for (var i=0; i<bible.TESTAMENTS.length; i++) {
+				var testament = bible.TESTAMENTS[i];
 
+				if (books.indexOf(testament) > -1) {
+					$('.order-traditional .section-' + testament + ' input	')						
+						.prop('checked',true);
+				}
+			}
+			
 			for (var i=0; i<books.length; i++) {
-				$('#book-' + books[i]).prop('checked',true);
+				$('input[value="' + books[i] + '"]').prop('checked',true);
 			}
 
 		} else {
-			$('.order-traditional input').prop('checked',true);
+			// 
+			$('.order-traditional .section-OT input').prop('checked',true);
+			$('.order-traditional .section-NT input').prop('checked',true);
 		}
 		
 		$('.order-chronological input[type=checkbox]')
@@ -315,14 +382,15 @@ function startup() {
 			books = urlParams.get('books');
 			books = books.split(',');
 
-			if (books.indexOf('ot') > -1) {
-				$('.order-chronological .section-ot')
-					.prop('checked',true);
+			for (var i=0; i<bible.TESTAMENTS.length; i++) {
+				var testament = bible.TESTAMENTS[i];
+
+				if (books.indexOf(testament) > -1) {
+					$('.order-chronological input[value="' + testament + '"]')
+						.prop('checked',true);
+				}
 			}
-			if (books.indexOf('nt') > -1) {
-				$('.order-chronological .section-nt')					
-					.prop('checked',true);
-			}			
+			
 		} else {
 			$('.order-chronological input').prop('checked',true);
 		}
@@ -347,8 +415,6 @@ function startup() {
 	if (urlParams.get('dailyproverb') == '1') {	
 		$('#options-dailyproverb').prop('checked',true);	
 	}
-
-
 	
 
 	updateDisplay();

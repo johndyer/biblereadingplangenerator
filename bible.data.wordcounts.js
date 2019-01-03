@@ -68,8 +68,10 @@ var wordcounts = {
 "REV":[1836,758,582,363,411,536,453,392,572,323,533,485,536,655,235,567,528,759,601,494,709,575]
 }
 
-for (var id in wordcounts) {
-	bible.BIBLE_DATA_USFM[id].words = wordcounts[id];
+for (var usfm in wordcounts) {
+	if (wordcounts.hasOwnProperty(usfm)) {
+		bible.BIBLE_DATA[usfm].words = wordcounts[usfm];
+	}
 }
 
 exports.wordcounts = wordcounts;

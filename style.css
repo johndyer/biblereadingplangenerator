@@ -19,6 +19,12 @@ input[type=date] {
 	font-size: 1em;;
 	height: 2em;
 }
+select {
+	font-family: Arial;
+	padding: 0.25em;
+	font-size: 1em;
+	height: 2em;
+}
 
 
 #main-header {
@@ -36,6 +42,10 @@ main {
 
 #settings {
 	
+}
+
+#options-language {
+	margin-bottom: 1em;;
 }
 
 @media (min-width: 700px) {
@@ -161,27 +171,41 @@ input[type=button]:hover {
 }
 
 
+.plan-weeks {
+	display: flex;
+	flex-wrap: wrap;
+}
+.week-block {
+	margin-bottom: 1em;
+	width: 33%;
+}
+.week-block .week {
+	font-weight: bold;
+}
+
 
 .plan-list {
-	-webkit-column-rule: 1px solid #ccc; 
+	---webkit-column-rule: 1px solid #ccc; 
 	-moz-column-count: 3; 
-	-moz-column-rule: 1px solid #ccc; 
+	--moz-column-rule: 1px solid #ccc; 
 	column-count: 3; 
-	column-rule: 1px solid #ccc; 
+	--column-rule: 1px solid #ccc; 
 }
+.plan-weeks .entry,
 .plan-list .entry { 
 	display: flex;
 }
-.plan-list .date { 
-	width: 40%; 
+.entry .date { 
+	width: 30%; 
 	padding-right: 1.5em; 
 	text-align: right; 	
 }
-.plan-list .verses { 
-	width: 60%; 	
+.entry .verses { 
+	width: 70%; 	
 }
 
 .plan-checkbox .plan-list .verses::before,
+.plan-checkbox .plan-weeks .verses::before,
 .plan-checkbox .plan-calendar .verses::before {
 	content: '☐ ';
 	content: '\2610 ';
@@ -206,9 +230,10 @@ input[type=button]:hover {
 .plan-color .section-minor { background: #f7ddef; #b18da7;  }
 .plan-color .section-gospel { background: #fdc6ca; #ce1f2c;  }
 .plan-color .section-acts { background: #fbe6ac; #deb545;  }
-.plan-color .section-paul { background: #bafdf6; #008376;  }
+.plan-color .section-pauline, .plan-color .section-pastoral { background: #bafdf6; #008376;  }
 .plan-color .section-general { background: #c0f9ae; #5d974b;  }
 .plan-color .section-revelation { background: #b0a6f3; #6b6499;  }
+.plan-color .section-deuterocanonical { background: #efefef;   }
 
 
 .plan-books {

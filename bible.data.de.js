@@ -1,0 +1,4 @@
+bible.addNames("de",
+bible.DEFAULT_BIBLE,
+    ["Genesis","Exodus","Levitikus","Numeri","Deuteronomium","Josua","Richter","Rut","1.Samuel","2.Samuel","1.Könige","2.Könige","1.Chronik","2.Chronik","Esra","Nehemia","Ester","Hiob","Psalter","Sprüche","Prediger","Hohelied","Jesaja","Jeremia","Klagelieder","Hesekiel","Daniel","Hosea","Joel","Amos","Obadja","Jona","Micha","Nahum","Habakuk","Zefanja","Haggai","Sacharja","Maleachi","Matthäus","Markus","Lukas","Johannes","Apostelgeschichte","Römer","1.Korinther","2.Korinther","Galater","Epheser","Philipper","Kolosser","1.Thessalonicher","2.Thessalonicher","1.Timotheus","2.Timotheus","Titus","Philemon","Hebräer","Jakobus","1.Petrus","2.Petrus","1.Johannes","2.Johannes","3.Johannes","Judas","Offenbarung"],
+);

@@ -2,17 +2,17 @@
 Date.prototype.addDays = function(d) {
 	return new Date(this.getTime() + d*24*60*60*1000);
 }
-var months = 'Jan Feb Mar Apr May Jun July Aug Sep Oct Nov Dec'.split(' ');
-Date.prototype.pretty = function(d) {
+Date.prototype.pretty = function() {
 	return months[this.getMonth()] + ' ' + this.getDate() + ', ' + this.getFullYear();
 }
-Date.prototype.monthAbbr = function(d) {
-	return months[this.getMonth()];
+Date.prototype.monthAbbr = function(lang) {
+    return this.toLocaleDateString(lang, {month:"short"});
+	//return months[this.getMonth()];
 }
-Date.prototype.formatted = function(d) {
+Date.prototype.formatted = function() {
 	return this.getFullYear() + '/' + (1+this.getMonth()) + '/' + this.getDate();
 }
-Date.prototype.toInputField = function(d) {
+Date.prototype.toInputField = function() {
 	
 	var t = this,
 		m = t.getMonth()+1,
