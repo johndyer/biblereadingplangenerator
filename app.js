@@ -68,24 +68,75 @@ function downloadics() {
 	var code = generate(lang, 'ics');
 
 	var blob = new Blob([code], {type: "text/calendar;charset=utf-8"});
-	saveData(blob, 'bibleplan.ics');
-
-	//window.open( "data:text/calendar;charset=utf8," + escape(html));
-
-	//html = html.replace(/\n/gi,'<br>');	
+	saveData(blob, 'bibleplan.ics');	
 }
 
 function downloadpdf() {
-	var doc = new jsPDF({unit:'in', format:'letter'}),
-		margin = 0.75;
+	var doc = new jsPDF('p', 'pt', 'letter'); //({unit:'in', format:'letter'}),
+		//margin = 0.75;
+		margin = 50;
 
 	// create heading
 	doc.text('Bible Reading Plan', margin, margin, {align:'left'});
 
 	// main code
 	var format = $('input:radio[name="formatstyle"]:checked').val();
-	var code = generate(format);
+	var lang = $('#options-language').val();
+	var html = generate(lang, format, doc);
+
+	setTimeout(function(){
+        var data = doc.output('datauri')
+		//$('iframe').attr('src', data);
+		$('#output').html('<iframe class="pdf" type="application/pdf" src="' + data + '"></iframe>');
+    }, 10);	
+
+	//console.log(html);
+
+	//html = '<table><tr><td>test</td><td>cell 2</td></tr></table>';
+
+    specialElementHandlers = {
+        // element with id of "bypass" - jQuery style selector
+        '#bypassme': function (element, renderer) {
+            // true = "handled elsewhere, bypass text extraction"
+            return true
+        }
+    };
+    margins = {
+        top: 80,
+        bottom: 60,
+        left: 40,
+        width: 522
+	};
 	
+	doc.fromHTML(
+		html, // HTML string or DOM elem ref.
+		margins.left, // x coord
+		margins.top, { // y coord
+			'width': margins.width, // max width of content on PDF
+			'elementHandlers': specialElementHandlers
+		},
+	
+		function (dispose) {
+			// dispose: object with X, Y of the last line add to the PDF 
+			//          this allow the insertion of new lines after html
+			//doc.save('Test.pdf');
+			var data = doc.output('datauri')
+			$('#output').html('<iframe class="pdf" type="application/pdf" src="' + data + '"></iframe>');
+		}, margins);	
+
+	return;
+
+	doc.fromHTML(html, 10, 20, { width: 50 }, {
+		callback: function (doc) {
+		  //doc.save();
+		  var data = doc.output('datauri')
+		  //$('iframe').attr('src', data);
+		  $('#output').html('<iframe class="pdf" type="application/pdf" src="' + data + '"></iframe>');
+			 
+		}
+	 });
+	
+	 //return;
 	//
 
 	setTimeout(function(){
@@ -98,6 +149,16 @@ function downloadpdf() {
 	
 
 	//doc.save('bible-reading-plan.pdf')	
+}
+
+
+function buildpdf(lang, data, days, bookList, dayList, doc) {
+	
+	
+
+
+
+	return '';
 }
 
 function updateDisplay() {
@@ -132,7 +193,7 @@ function updateDisplay() {
 	updateUrl();	
 }
 
-function generate(lang, format) {
+function generate(lang, format, doc) {
 	
 	var 
 		startDate = new Date($('#time-startdate').val()),
@@ -160,7 +221,7 @@ function generate(lang, format) {
 	// BUG	
 	var datastartDate = startDate.addDays(1);
 	var data = getPlanData(lang, order, datastartDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
-	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek);	
+	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, doc);	
 	
 	return code;
 }
@@ -240,13 +301,13 @@ function createBookLists() {
 		var list = $('.order-traditional .section-' + testament + ' .books-list')
 					.empty();	
 					
-		console.log(list);
+		//console.log(list);
 
 		for (var j=0; j<testament_list.length; j++) {
 			var usfm = testament_list[j],
 				book = bible.BIBLE_DATA[ usfm ];
 
-			console.log(usfm);
+			//console.log(usfm);
 
 			list.append(
 				$('<label><input type="checkbox" value="' + usfm + '">' + bible.getName(book, lang) + '</label>')
@@ -311,7 +372,12 @@ function startup() {
 		total = urlParams.get('total');
 	}
 	if (!total) {
-		total = 365;	
+		total = 365;
+		// check for leap year
+		year = startdate.getYear();
+		if ( ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0) ) {
+			total = 366;
+		}	
 	}	
 	$('#time-days').val( total );	
 	

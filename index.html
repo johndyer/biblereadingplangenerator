@@ -4,12 +4,14 @@
 	<meta charset="utf-8">	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Bible Reading Plan Generator</title>
-	<link rel="stylesheet" href="style.css?v=2019-07-13" />
+
+	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css?v=2019-12-30" />
 
 	<meta property="og:title" content="Bible Reading Plan Generator" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
-	<meta property="og:url" content="http://j.hn/lab/biblereadingplangenerator/" />
-	<meta property="og:image" content="http://j.hn/lab/biblereadingplangenerator/demo.png" />
+	<meta property="og:url" content="http://biblereadingplangenerator.com/" />
+	<meta property="og:image" content="http://biblereadingplangenerator.com/biblereadingplandemo.png" />
 </head>
 <body>
 	
@@ -68,16 +70,10 @@
 						<input type="radio" id="formatstyle-books" name="formatstyle" value="books">
 						Books
 					</label>					
-					
-					<!--
-					
-					<label>
-						<input type="radio" id="formatstyle-weeks" name="formatstyle" value="weeks">
-						Weeks
-					</label>
+				
 
-					<input type="button" id="download-pdf" value="Get PDF">
-					-->		
+					<input type="button" id="download-pdf" value="Get PDF" style="display:inline;">
+						
 					
 					<input type="button" id="download-ics" value="Download iCal">
 					
@@ -188,23 +184,24 @@
 	
 	<script src="jquery.min.js"></script>
 	<script src="jspdf.min.js"></script>
-	<script src="helpers.js?v=2019-07-13"></script>
+	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
+	<script src="helpers.js?v=2019-12-30"></script>
 	
-	<script src="bible.data.js?v=2019-07-13"></script>
-	<script src="bible.data.sv.js?v=2019-07-13"></script>
-	<script src="bible.data.es.js?v=2019-07-13"></script>
-	<script src="bible.data.fr.js?v=2019-07-13"></script>
-	<script src="bible.data.de.js?v=2019-07-13"></script>
-	<script src="bible.data.ar.js?v=2019-07-13"></script>
-	<script src="bible.data.hi.js?v=2019-07-13"></script>
-	<script src="bible.data.zh-TW.js?v=2019-07-13"></script>
-	<script src="bible.data.zh-CN.js?v=2019-07-13"></script>
-	<script src="bible.data.wordcounts.js?v=2019-07-13"></script>
-	<script src="bible.reference.js?v=2019-07-13"></script>
-	<script src="bible.plans.js?v=2019-07-13"></script>
+	<script src="bible.data.js?v=2019-12-30"></script>
+	<script src="bible.data.sv.js?v=2019-12-30"></script>
+	<script src="bible.data.es.js?v=2019-12-30"></script>
+	<script src="bible.data.fr.js?v=2019-12-30"></script>
+	<script src="bible.data.de.js?v=2019-12-30"></script>
+	<script src="bible.data.ar.js?v=2019-12-30"></script>
+	<script src="bible.data.hi.js?v=2019-12-30"></script>
+	<script src="bible.data.zh-TW.js?v=2019-12-30"></script>
+	<script src="bible.data.zh-CN.js?v=2019-12-30"></script>
+	<script src="bible.data.wordcounts.js?v=2019-12-30"></script>
+	<script src="bible.reference.js?v=2019-12-30"></script>
+	<script src="bible.plans.js?v=2019-12-30"></script>
 	
-	<script src="plans.js?v=2019-07-13"></script>
-	<script src="app.js?v=2019-07-13"></script>
+	<script src="plans.js?v=2019-12-30"></script>
+	<script src="app.js?v=2019-12-30"></script>
 	
 
 	<script type="text/javascript">

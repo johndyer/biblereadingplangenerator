@@ -6,7 +6,9 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 	var proverbNumber = 1;
 	var proverbMax = 31;
 	var rangeIncludesPsalm = false;
-	var rangeIncludesProverbs = false;
+	var rangeIncludesProverb = false;
+
+	var combineNTandOT = true;
 
 	var
 		data = {
@@ -24,7 +26,8 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 			minPerDay: 0,
 			readingDays: 0,
 			days: [],
-			chapters: [],								
+			chapters: [],	
+			chapterGroups: [],							
 		};
 		
 	
@@ -39,6 +42,11 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 	}
 	
 	if (order == 'traditional') {
+
+		var otlist = [],
+			ntlist = [],
+			completeList = [];
+
 		// get sums of chapters, books, ect.	
 		for (var i=0; i<bookList.length; i++) {
 			var usfm = bookList[i],
@@ -51,26 +59,64 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 			for (var j=0; j<bookInfo.chapters.length; j++) {
 				data.totalVerses += bookInfo.chapters[j];	
 				data.totalWords += (bookInfo.words) ? bookInfo.words[j] : 500;			
-			}		
+
+				chapterCode = usfm + '_' + (j+1);
+				if (combineNTandOT) {
+					completeList.push(chapterCode);
+				} else {
+					if (bible.NT_BOOKS.indexOf(usfm) > -1) {
+						ntlist.push(chapterCode);
+					} else if (bible.OT_BOOKS.indexOf(usfm) > -1 || bible.DC_BOOKS.indexOf(usfm) > -1) {
+						otlist.push(chapterCode);
+					}
+				}					
+			}	
 		}
 		
+		if (combineNTandOT) {
+			data.chapterGroups.push(completeList);
+		} else {
+			if (otlist.length > 0) {
+				data.chapterGroups.push(otlist);
+			}
+			if (ntlist.length > 0) {
+				data.chapterGroups.push(ntlist);	
+			}			
+		}
+
+		data.chapters = [].concat.apply([], data.chapterGroups);
 		data.chaptersPerDay = data.totalChapters/data.readingDays;
 		data.versesPerDay = data.totalVerses/data.readingDays;
 		data.wordsPerDay = data.totalWords/data.readingDays;
-		//data.minPerDay = data.totalWords/reading_days/wpm;
+		//data.minPerDay = data.totalWords/reading_days/wpm;		
+
 	} else {
 
-		var chapters = [];
+		if (combineNTandOT) {
+			if (bookList.indexOf('OT') > -1) {
+				data.chapterGroups.push( bible.plans.chronological.OT );
+			}
+			if (bookList.indexOf('NT') > -1) {
+				data.chapterGroups.push( bible.plans.chronological.NT );
+			}			
 
-		if (bookList.indexOf('OT') > -1) {
-			chapters = chapters.concat( bible.plans.chronological.OT );
+		} else {
+
+			var chapters = [];
+
+			if (bookList.indexOf('OT') > -1) {
+				chapters = chapters.concat( bible.plans.chronological.OT );
+			}
+			if (bookList.indexOf('NT') > -1) {
+				chapters = chapters.concat( bible.plans.chronological.NT );
+			}	
+					
+			data.chapterGroups.push(chapters);
 		}
-		if (bookList.indexOf('NT') > -1) {
-			chapters = chapters.concat( bible.plans.chronological.NT );
-		}		
 
-		data.chapters = chapters;
-		data.totalChapters = chapters.length;
+		// merge down
+		data.chapters = [].concat.apply([], data.chapterGroups);
+		data.totalChapters = data.chapters.length;
 		data.chaptersPerDay = data.totalChapters/data.readingDays;
 	}
 	
@@ -89,9 +135,6 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 		ended = false;
 					
 	for (var d=1; d<=numberOfDays && !ended; d++) {
-
-		rangeIncludesPsalm = false;
-		rangeIncludesProverb = false;
 		
 		var dayInfo = {
 			day: d,
@@ -112,182 +155,79 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 			continue;
 		}  
 			
+		var logic = 'chapters'; //'words';
 
-		if (order == 'traditional') {
-			var logic = 'words';
-			
-			if (logic == 'chapters') {
+		if (logic == 'chapters') {
 				
-				var chaptersForToday = data.chaptersPerDay + chaptersRemaining;
-
-				while (chaptersForToday > 1) {
-					var bookInfo = bible.BIBLE_DATA[currentBookUsfm];
-					if (bookInfo == null) {
-						break;
-					}				
-					
-					// check if there is still a chapter in this book. If not, iterate)
-					if (currentChapterNumber > bookInfo.verses.length) {
-						lastBookIndex = currentBookIndex;
-						currentBookIndex++;
-						currentChapterNumber = 1;
-						currentBookUsfm = bookList[currentBookIndex];				
-						bookInfo = bible.BIBLE_DATA[ currentBookUsfm ];
-
-						if (bookInfo == null) {
-							break;
-						}
-					}
-					
-					// add this next one
-					dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
-						
-					// total up verses for the day
-					dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
-					dayInfo.wordsForToday += bookInfo.words ? bookInfo.words[currentChapterNumber-1] : 500;
-		
-					lastBookIndex = currentBookIndex;
-					currentChapterNumber++;
-					chaptersForToday--;
-				}
-				
-				// double check we get remaining chapters
-				if (d == numberOfDays && bookInfo != null) {
-					while (currentChapterNumber <= bookInfo.verses.length) {
-						dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
-						
-						dayInfo.versesForToday += bookInfo.verses[currentChapterNumber-1];
-						dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
-							
-						lastChapterNumber = currentChapterNumber;			
-						currentChapterNumber++;
-					}
-				}	
-				
-				chaptersRemaining = chaptersForToday;		
-				
-			} else if (logic == 'words') {
-				
-				var
-					wordsForDay = data.wordsPerDay + wordsRemaining,			
-					lastChapterNumber = 0;
-							
-				while (wordsForDay > 0) {
-					var bookInfo = bible.BIBLE_DATA[currentBookUsfm];
-					
-					// check if the number of words is more or less than half of what's left
-					var wordsInChapter = bookInfo.words ? bookInfo.words[currentChapterNumber-1] : 500;
-					if (wordsInChapter/2 > wordsForDay && firstDayWithReadingHasPassed) {
-						// go to next day
-						//console.log('skipping', d);
-						break;
-					}
-					firstDayWithReadingHasPassed = true;
-
-					// add this next one
-					dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
-						
-					// total up verses for the day
-					dayInfo.versesForToday += bookInfo.chapters[currentChapterNumber-1];
-					dayInfo.wordsForToday += wordsInChapter;
-		
-					wordsForDay = wordsForDay - wordsInChapter;
-								
-					// store
-					lastBookUsfm = currentBookUsfm;
-					lastChapterNumber = currentChapterNumber;
-					
-					
-					// iterate
-					currentChapterNumber++;
-					
-					if (currentBookUsfm == 'REV' && currentChapterNumber == 23) {
-						console.log('whoops');
-					}
-					
-					// check if there is still a chapter in this book. If not, move to next book
-					if (currentChapterNumber > bookInfo.chapters.length) {
-						lastBookIndex = currentBookIndex;
-						
-						// if this is the last book, then stop
-						if (currentBookIndex == bookList.length-1) {
-							bookInfo = null;
-							ended = true;					
-							break;
-						}
-						
-						currentBookIndex++;
-										
-						// reset to next book
-						currentChapterNumber = 1;				
-						currentBookUsfm = bookList[currentBookIndex];				
-						bookInfo = bible.BIBLE_DATA[ currentBookUsfm ];
-						if (typeof bookInfo == 'undefined') {
-							bookInfo = null;
-							ended = true;						
-							break;	
-						}
-					}			
-				}
-		
-				// is this the final day? 
-				// if so, double check we get remaining chapters
-				if (d == numberOfDays && bookInfo != null) {
-					while (currentChapterNumber <= bookInfo.chapters.length) {
-						dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
-						
-						dayInfo.versesForToday += bookInfo.verses ? bookInfo.chapters[currentChapterNumber-1] : 500;
-						dayInfo.wordsForToday += bookInfo.words[currentChapterNumber-1];
-							
-						lastChapterNumber = currentChapterNumber;			
-						currentChapterNumber++;
-					}
-				}
-							
-				// store the remainder for the next day
-				wordsRemaining = wordsForDay;
-				
-				//console.log(wordsRemaining);
-			}
-		} else {
-			// chronological
-
 			var chaptersForToday = data.chaptersPerDay + chaptersRemaining;
 
-			if (!firstDayWithReadingHasPassed && chaptersForToday < 1) {
-				chaptersForToday = 1;
-				firstDayWithReadingHasPassed = true;
+			// last one
+			if (d == numberOfDays) {
+				chaptersForToday = data.chapters.length - chapterIndex + 1;
 			}
 
-			while (chaptersForToday >= 1 && chapterIndex < data.chapters.length) {
-							
-				// get this 
-				var chapter = data.chapters[chapterIndex],
-					parts = chapter.split('_'),
-					usfm = parts[0],
-					chapterNumber = parseInt(parts[1], 10);
-
+			while (chaptersForToday > 1) {
+				var chapterCode = data.chapters[chapterIndex],
+					parts = chapterCode.split('_');
 				
-				// add this one
-				dayInfo.chapters.push({usfm:usfm, chapter: chapterNumber});			
-									
+				currentBookUsfm = parts[0]
+				currentChapterNumber = parseInt(parts[1], 10);
+				bookInfo = bible.BIBLE_DATA[currentBookUsfm];
 				
-				// iterate
-				chapterIndex++;
+				// add this next one
+				dayInfo.chapters.push({usfm: currentBookUsfm, chapter: currentChapterNumber});			
+					
+				// total up verses for the day
+				dayInfo.versesForToday += bookInfo.chapters[currentChapterNumber-1];
+				dayInfo.wordsForToday += bookInfo.words ? bookInfo.words[currentChapterNumber-1] : 500;
+					
 				chaptersForToday--;
+				chapterIndex++;
 			}
 			
-			// double check we get remaining chapters
-			// if (d == numberOfDays) {
-			// 	while (chapterIndex < data.chapters.length) {
-			// 		dayInfo.chapters.push({ usfm: currentBookUsfm, chapter: currentChapterNumber });			
-							
-			// 		chapterIndex++;
-			// 	}
-			// }	
+			chaptersRemaining = chaptersForToday;		
 			
-			chaptersRemaining = chaptersForToday;
+		} else if (logic == 'words') {
+			
+			var wordsForDay = data.wordsPerDay + wordsRemaining;
+
+			// last one
+			if (d == numberOfDays) {
+				wordsForDay = 10000000; // temp: just a big number 
+			}			
+						
+			while (wordsForDay > 0 && chapterIndex < data.chapters.length) {
+				var chapterCode = data.chapters[chapterIndex],
+					parts = chapterCode.split('_');
+				
+				currentBookUsfm = parts[0]
+				currentChapterNumber = parseInt(parts[1], 10);
+				bookInfo = bible.BIBLE_DATA[currentBookUsfm];
+				
+				// check if the number of words is more or less than half of what's left
+				var wordsInChapter = bookInfo.words ? bookInfo.words[currentChapterNumber-1] : 500;
+				if (wordsInChapter/2 > wordsForDay && firstDayWithReadingHasPassed) {
+					break;
+				}
+				firstDayWithReadingHasPassed = true;
+
+				// add this next one
+				dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
+					
+				// total up verses for the day
+				dayInfo.versesForToday += bookInfo.chapters[currentChapterNumber-1];
+				dayInfo.wordsForToday += wordsInChapter;
+	
+				wordsForDay = wordsForDay - wordsInChapter;	
+				
+				chapterIndex++;						
+			}
+						
+			// store the remainder for the next day
+			wordsRemaining = wordsForDay;
+			
 		}
+
 
 		// both ways
 		dayInfo.formattedReading = formatChapterRange(lang, dayInfo.chapters);
