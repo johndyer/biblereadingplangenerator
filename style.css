@@ -167,6 +167,19 @@ input[type=button]:hover {
 
 
 @media print {
+	#main-header, #main-footer {
+		background: #fff;
+		color: #333;
+	}
+
+	#main-header {
+		
+	}
+	#main-footer a {
+		color: #333;
+		text-decoration: none;
+	}
+
 	section.decision {
 		display: none;
 	}
@@ -220,6 +233,13 @@ input[type=button]:hover {
 	content: '☐ ';
 	content: '\2610 ';
 	padding-right: 0.25em;
+}
+
+.plan-checkbox .plan-list .verses,
+.plan-checkbox .plan-weeks .verses,
+.plan-checkbox .plan-calendar .verses {
+	text-indent: -17px;
+	padding-left: 20px;
 }
 
 .plan-calendar { border-collapse: collapse; border: 1px solid #000;}		
