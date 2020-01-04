@@ -1,5 +1,5 @@
 
-function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb) {
+function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb, combineOTandNT) {
 	
 	var psalmNumber = 1;
 	var psalmMax = 150;
@@ -8,29 +8,38 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 	var rangeIncludesPsalm = false;
 	var rangeIncludesProverb = false;
 
-	var combineNTandOT = true;
 
-	var
-		data = {
+	var data = {
 			startDate: startDate,
 			numberOfDays: numberOfDays,
 			bookList: bookList,			
-			dayList: daysOfWeek,			
-			totalBooks: 0,
-			totalChapters: 0,
-			totalVerses: 0,
-			totalWords: 0,		
-			chaptersPerDay: 0,
-			versesPerDay: 0,
-			wordsPerDay: 0,
-			minPerDay: 0,
+			dayList: daysOfWeek,	
 			readingDays: 0,
-			days: [],
-			chapters: [],	
+			days: [],			
 			chapterGroups: [],							
 		};
-		
-	
+
+	const chapterGroupModel = {
+		name: 'default',
+		// totals
+		chapters: [], 
+		totalBooks: 0,
+		totalChapters: 0,
+		totalVerses: 0,
+		totalWords: 0,		
+		chaptersPerDay: 0,
+		versesPerDay: 0,
+		wordsPerDay: 0,
+
+		// for daily iterations
+		chaptersRemaining: 0,
+		wordsRemaining: 0,
+		firstDayWithReadingHasPassed: false,
+		currentBookIndex: 0,
+		currentBookUsfm: null,
+		currentChapterNumber: -1,
+		chapterIndex: 0,		
+	};
 		
 	// count reading days (within the plan length)
 	for (var i=0; i<numberOfDays; i++) {
@@ -40,111 +49,153 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 			data.readingDays++;
 		}
 	}
+
+	// first/main list
+	data.chapterGroups.push( Object.create(chapterGroupModel) );
 	
+	// create chapter lists and groups
 	if (order == 'traditional') {
 
-		var otlist = [],
-			ntlist = [],
-			completeList = [];
+		// determine if a second group is needed
+		if (combineOTandNT) {
+			var hasNT = false,
+				hasOT = false;
 
-		// get sums of chapters, books, ect.	
+			for (var i=0; i<bookList.length; i++) {
+				var usfm = bookList[i];
+				if (bible.NT_BOOKS.indexOf(usfm) > -1) {
+					hasNT = true;
+				}
+				if (bible.OT_BOOKS.indexOf(usfm) > -1 || bible.DC_BOOKS.indexOf(usfm) > -1) {
+					hasOT = true;
+				}
+			}
+
+			if (hasOT && hasNT) {
+				// NT list
+				data.chapterGroups.push( Object.create(chapterGroupModel) );
+
+				data.chapterGroups[0].name = 'OT';
+				data.chapterGroups[1].name = 'NT';				
+				data.chapterGroups[1].chapters = [];
+			}
+		}
+
+		// create list
 		for (var i=0; i<bookList.length; i++) {
 			var usfm = bookList[i],
-				bookInfo = bible.BIBLE_DATA[ usfm ];
-			
+				bookInfo = bible.BIBLE_DATA[ usfm ],
+				chapterGroup = null;
+
+			// find the correct group to add this chapter to
+			if (combineOTandNT && bible.NT_BOOKS.indexOf(usfm) > -1 && data.chapterGroups.length > 1) {
+				chapterGroup = data.chapterGroups[1];
+			} else {
+				chapterGroup = data.chapterGroups[0];
+			}
+
 			// chapters
-			data.totalChapters += bookInfo.chapters.length; 
-			
-			// verses
-			for (var j=0; j<bookInfo.chapters.length; j++) {
-				data.totalVerses += bookInfo.chapters[j];	
-				data.totalWords += (bookInfo.words) ? bookInfo.words[j] : 500;			
-
+			for (var j=0; j<bookInfo.chapters.length; j++) {				
 				chapterCode = usfm + '_' + (j+1);
-				if (combineNTandOT) {
-					completeList.push(chapterCode);
-				} else {
-					if (bible.NT_BOOKS.indexOf(usfm) > -1) {
-						ntlist.push(chapterCode);
-					} else if (bible.OT_BOOKS.indexOf(usfm) > -1 || bible.DC_BOOKS.indexOf(usfm) > -1) {
-						otlist.push(chapterCode);
-					}
-				}					
+				
+				chapterGroup.chapters.push(chapterCode);				
 			}	
 		}
+
+	} else if (order == 'chronological') {
+		// chronological
+
+		if (bookList.indexOf('OT') > -1) {
+			data.chapterGroups[0].chapters = data.chapterGroups[0].chapters.concat( bible.plans.chronological.OT );
+		}		
+
+		if (bookList.indexOf('NT') > -1) {
+			var ntChapterGroup = data.chapterGroups[0];
+			if (combineOTandNT) {
+				// NT list
+				data.chapterGroups.push( Object.create( chapterGroupModel) );
+				
+				ntChapterGroup = data.chapterGroups[1];
+
+				data.chapterGroups[0].name = 'OT';
+				data.chapterGroups[1].name = 'NT';
+				data.chapterGroups[1].chapters = [];
+			}
+			ntChapterGroup.chapters = ntChapterGroup.chapters.concat( bible.plans.chronological.NT );
+		}
+	} else if (order == 'mcheyne') {
+		data.chapterGroups.push( Object.create( chapterGroupModel) );
+		data.chapterGroups.push( Object.create( chapterGroupModel) );
+		data.chapterGroups.push( Object.create( chapterGroupModel) );
+
+		data.chapterGroups[0].chapters = bible.plans.mcheyne["1"];
+		data.chapterGroups[1].chapters = bible.plans.mcheyne["2"];
+		data.chapterGroups[2].chapters = bible.plans.mcheyne["3"];
+		data.chapterGroups[3].chapters = bible.plans.mcheyne["4"];
+	} else if (order == 'thematic') {	
 		
-		if (combineNTandOT) {
-			data.chapterGroups.push(completeList);
-		} else {
-			if (otlist.length > 0) {
-				data.chapterGroups.push(otlist);
-			}
-			if (ntlist.length > 0) {
-				data.chapterGroups.push(ntlist);	
-			}			
-		}
+		var chapterArray = [],
+			themes = ['epistles','law','history','psalms','poetry','prophecy','gospels'];
+		
+		themes.forEach(function(themeName) {
+			chapterArray = chapterArray.concat(bible.plans.thematic[themeName]);
+		});
 
-		data.chapters = [].concat.apply([], data.chapterGroups);
-		data.chaptersPerDay = data.totalChapters/data.readingDays;
-		data.versesPerDay = data.totalVerses/data.readingDays;
-		data.wordsPerDay = data.totalWords/data.readingDays;
-		//data.minPerDay = data.totalWords/reading_days/wpm;		
-
-	} else {
-
-		if (combineNTandOT) {
-			if (bookList.indexOf('OT') > -1) {
-				data.chapterGroups.push( bible.plans.chronological.OT );
-			}
-			if (bookList.indexOf('NT') > -1) {
-				data.chapterGroups.push( bible.plans.chronological.NT );
-			}			
-
-		} else {
-
-			var chapters = [];
-
-			if (bookList.indexOf('OT') > -1) {
-				chapters = chapters.concat( bible.plans.chronological.OT );
-			}
-			if (bookList.indexOf('NT') > -1) {
-				chapters = chapters.concat( bible.plans.chronological.NT );
-			}	
-					
-			data.chapterGroups.push(chapters);
-		}
-
-		// merge down
-		data.chapters = [].concat.apply([], data.chapterGroups);
-		data.totalChapters = data.chapters.length;
-		data.chaptersPerDay = data.totalChapters/data.readingDays;
+		data.chapterGroups[0].chapters = chapterArray;
 	}
 	
-	
+	// calculate totals
+	data.chapterGroups.forEach(function(chapterGroup) {
+
+		chapterGroup.chapters.forEach(function(chapterCode, index) {
+			if (chapterCode) {
+				var parts = chapterCode.split('_');			
+					usfm = parts[0]
+					chapterNumber = parseInt(parts[1], 10);
+					bookInfo = bible.BIBLE_DATA[usfm];
+				
+				// total up verses and words for group
+				chapterGroup.totalVerses += bookInfo.chapters[chapterNumber-1];	
+				chapterGroup.totalWords += (bookInfo.words) ? bookInfo.words[chapterNumber-1] : 500;
+			} else {
+				debugger;
+			}
+		});
+
+		// full totals
+		chapterGroup.totalChapters = chapterGroup.chapters.length;
+		chapterGroup.chaptersPerDay = chapterGroup.totalChapters/data.readingDays;
+		chapterGroup.versesPerDay = chapterGroup.totalVerses/data.readingDays;
+		chapterGroup.wordsPerDay = chapterGroup.totalWords/data.readingDays;
+	});
+		
 	// create an entry for each day	
 	var date = startDate,
-		lastBookIndex = -1,
-		currentBookIndex = 0,
-		currentBookUsfm = bookList[currentBookIndex],
-		currentChapterNumber = 1,
-		chapterIndex = 0,
-		chaptersRemaining = 0,
-		wordsRemaining = 0,
-		firstDayWithReadingHasPassed = false,
-		date = startDate,
 		ended = false;
 					
 	for (var d=1; d<=numberOfDays && !ended; d++) {
 		
 		var dayInfo = {
 			day: d,
-			date: date,
+			date: date,			
+			chapterGroups: [],
+
+			// merged down from groups
+			formattedReading: '',
+			chapters: [],
 			wordsForToday: 0,
 			versesForToday: 0,
-			formattedReading: '',
-			chapters: []
 		};		
 		data.days.push(dayInfo);
+
+		// create groups
+		data.chapterGroups.forEach(function(chapterGroup) {
+			dayInfo.chapterGroups.push({			
+				wordsForToday: 0,
+				versesForToday: 0,			
+				chapters: [],
+			});
+		});
 		
 		// iterate the date here, because we'll skip days below
 		date = date.addDays(1);
@@ -157,79 +208,112 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 			
 		var logic = 'chapters'; //'words';
 
+		var urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.get('logic') == 'words') {
+			logic = 'words';
+		}
+
 		if (logic == 'chapters') {
-				
-			var chaptersForToday = data.chaptersPerDay + chaptersRemaining;
 
-			// last one
-			if (d == numberOfDays) {
-				chaptersForToday = data.chapters.length - chapterIndex + 1;
-			}
+			// create a list of chapters for this day 
+			// from all the chapters groups
 
-			while (chaptersForToday > 1) {
-				var chapterCode = data.chapters[chapterIndex],
-					parts = chapterCode.split('_');
-				
-				currentBookUsfm = parts[0]
-				currentChapterNumber = parseInt(parts[1], 10);
-				bookInfo = bible.BIBLE_DATA[currentBookUsfm];
-				
-				// add this next one
-				dayInfo.chapters.push({usfm: currentBookUsfm, chapter: currentChapterNumber});			
+			data.chapterGroups.forEach(function(dataChapterGroup, chapterGroupIndex) {
+
+				var dayChapterGroup = dayInfo.chapterGroups[chapterGroupIndex];
+
+				var chaptersForToday = dataChapterGroup.chaptersPerDay + dataChapterGroup.chaptersRemaining;
+
+				if (d == 1 && chaptersForToday < 1) {
+					chaptersForToday = 1;
+				}
+
+				// last one
+				if (d == numberOfDays) {
+					chaptersForToday = dataChapterGroup.chapters.length - dataChapterGroup.chapterIndex + 1;
+				}
+	
+				while (chaptersForToday >= 1 && dataChapterGroup.chapterIndex < dataChapterGroup.chapters.length) {
+					var chapterCode = dataChapterGroup.chapters[dataChapterGroup.chapterIndex],
+						parts = chapterCode.split('_');
 					
-				// total up verses for the day
-				dayInfo.versesForToday += bookInfo.chapters[currentChapterNumber-1];
-				dayInfo.wordsForToday += bookInfo.words ? bookInfo.words[currentChapterNumber-1] : 500;
+					dataChapterGroup.currentBookUsfm = parts[0]
+					dataChapterGroup.currentChapterNumber = parseInt(parts[1], 10);
+					bookInfo = bible.BIBLE_DATA[dataChapterGroup.currentBookUsfm];
 					
-				chaptersForToday--;
-				chapterIndex++;
-			}
-			
-			chaptersRemaining = chaptersForToday;		
-			
+					// add this next one
+					dayChapterGroup.chapters.push({
+										usfm: dataChapterGroup.currentBookUsfm, 
+										chapter: dataChapterGroup.currentChapterNumber
+									});			
+						
+					// total up verses for the day
+					dayChapterGroup.versesForToday += bookInfo.chapters[dataChapterGroup.currentChapterNumber-1];
+					dayChapterGroup.wordsForToday += bookInfo.words ? bookInfo.words[dataChapterGroup.currentChapterNumber-1] : 500;
+						
+					chaptersForToday--;
+					dataChapterGroup.chapterIndex++;
+				}
+				
+				dataChapterGroup.chaptersRemaining = chaptersForToday;
+			});
+							
 		} else if (logic == 'words') {
 			
-			var wordsForDay = data.wordsPerDay + wordsRemaining;
+			data.chapterGroups.forEach(function(dataChapterGroup, chapterGroupIndex) {
 
-			// last one
-			if (d == numberOfDays) {
-				wordsForDay = 10000000; // temp: just a big number 
-			}			
-						
-			while (wordsForDay > 0 && chapterIndex < data.chapters.length) {
-				var chapterCode = data.chapters[chapterIndex],
-					parts = chapterCode.split('_');
-				
-				currentBookUsfm = parts[0]
-				currentChapterNumber = parseInt(parts[1], 10);
-				bookInfo = bible.BIBLE_DATA[currentBookUsfm];
-				
-				// check if the number of words is more or less than half of what's left
-				var wordsInChapter = bookInfo.words ? bookInfo.words[currentChapterNumber-1] : 500;
-				if (wordsInChapter/2 > wordsForDay && firstDayWithReadingHasPassed) {
-					break;
-				}
-				firstDayWithReadingHasPassed = true;
+				var dayChapterGroup = dayInfo.chapterGroups[chapterGroupIndex];
 
-				// add this next one
-				dayInfo.chapters.push({usfm:currentBookUsfm, chapter: (currentChapterNumber)});			
+				var wordsForDay = dataChapterGroup.wordsPerDay + dataChapterGroup.wordsRemaining;
+
+				// last one
+				if (d == numberOfDays) {
+					wordsForDay = 10000000; // temp: just a big number 
+				}			
+							
+				while (wordsForDay > 0 && dataChapterGroup.chapterIndex < dataChapterGroup.chapters.length) {
+					var chapterCode = dataChapterGroup.chapters[dataChapterGroup.chapterIndex],
+						parts = chapterCode.split('_');
 					
-				// total up verses for the day
-				dayInfo.versesForToday += bookInfo.chapters[currentChapterNumber-1];
-				dayInfo.wordsForToday += wordsInChapter;
-	
-				wordsForDay = wordsForDay - wordsInChapter;	
-				
-				chapterIndex++;						
-			}
+					dataChapterGroup.currentBookUsfm = parts[0];
+					dataChapterGroup.currentChapterNumber = parseInt(parts[1], 10);
+					bookInfo = bible.BIBLE_DATA[dataChapterGroup.currentBookUsfm];
+					
+					// check if the number of words is more or less than half of what's left
+					var wordsInChapter = bookInfo.words ? bookInfo.words[dataChapterGroup.currentChapterNumber-1] : 500;
+					if (wordsInChapter/2 > wordsForDay && firstDayWithReadingHasPassed) {
+						break;
+					}
+					firstDayWithReadingHasPassed = true;
+
+					// add this next one
+					dayChapterGroup.chapters.push({
+							usfm: dataChapterGroup.currentBookUsfm, 
+							chapter: dataChapterGroup.currentChapterNumber});			
 						
-			// store the remainder for the next day
-			wordsRemaining = wordsForDay;
+					// total up verses for the day
+					dayChapterGroup.versesForToday += bookInfo.chapters[dataChapterGroup.currentChapterNumber-1];
+					dayChapterGroup.wordsForToday += wordsInChapter;
+		
+					wordsForDay = wordsForDay - wordsInChapter;	
+					
+					dataChapterGroup.chapterIndex++;						
+				}
+							
+				// store the remainder for the next day
+				dataChapterGroup.wordsRemaining = wordsForDay;
+			});
 			
 		}
 
 
-		// both ways
+		// merge down and format		
+		dayInfo.chapterGroups.forEach(function(dayChapterGroup) {
+			dayInfo.wordsForToday += dayChapterGroup.wordsForToday;
+			dayInfo.versesForToday += dayChapterGroup.versesForToday;
+			dayInfo.chapters = dayInfo.chapters.concat(dayChapterGroup.chapters);
+		});
+
 		dayInfo.formattedReading = formatChapterRange(lang, dayInfo.chapters);
 
 		rangeIncludesPsalm = false;
@@ -326,6 +410,11 @@ function formatChapterRangeComma(lang, chapters, isFullname) {
 	return formatted;
 }
 
+function formatChapterGroupsRange(lang, chapterGroups, isFullname) {
+	var mergedChapters = [].concat.apply([], chapterGroups);
+	return formatChapterRange(lang, mergedChapters, isFullName)
+}
+
 function formatChapterRange(lang, chapters, isFullname) {
 	
 	isFullname = isFullname || false;
@@ -401,18 +490,24 @@ function formatChapterRange(lang, chapters, isFullname) {
 
 
 
-function buildlist(lang, data, days, bookList, dayList, dailyPsalm, dailyProverb) {
+function buildlist(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
 	var html = [];
 
 	html.push('<div class="plan-list">');
 		
-	var days = data.days;
+	var days = data.days,
+		lastMonth = -1;
+
 	for (var i=0; i<days.length; i++) {
 		var dayInfo = days[i],
 			bookInfo = dayInfo.chapters.length > 0 ? bible.BIBLE_DATA[dayInfo.chapters[0].usfm] : null;
 		//var fixeddate = dayInfo.date.addDays(1);
 		//html.push('<tr>');
+		if (lastMonth != dayInfo.date.getMonth()) {
+			html.push('<div class="entry month-divider">' + dayInfo.date.monthName(lang) + '</div>');
+		}
+
 		html.push('<div class="entry section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
 		html.push('<div class="date">' + dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate()) + '</div>');		
 		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
@@ -420,6 +515,8 @@ function buildlist(lang, data, days, bookList, dayList, dailyPsalm, dailyProverb
 			html.push('<div class="verses">' + dayInfo.formattedReading + '</div>');		
 		}
 		html.push('</div>');
+
+		lastMonth = dayInfo.date.getMonth();
 	}
 
 	html.push('</div>');	
@@ -428,7 +525,7 @@ function buildlist(lang, data, days, bookList, dayList, dailyPsalm, dailyProverb
 	
 }
 
-function buildweeks(lang, data, days, bookList, dayList, dailyPsalm, dailyProverb) {
+function buildweeks(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
 	var html = [],
 		weekNumber = 1;
@@ -475,7 +572,7 @@ function buildweeks(lang, data, days, bookList, dayList, dailyPsalm, dailyProver
 }
 
 
-function buildics(lang, data, days, bookList, dayList) {
+function buildics(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
 
 	var ics = [];	
@@ -483,17 +580,25 @@ function buildics(lang, data, days, bookList, dayList) {
 	ics.push('BEGIN:VCALENDAR');
 	ics.push('VERSION:2.0');
 	ics.push('PRODID:-//hacksw/handcal//NONSGML v1.0//EN');
+
+	function formatDate(date) {
+		return date.getFullYear().toString() + 
+				(date.getMonth()+1).toString().padStart(2,'0') + 
+				date.getDate().toString().padStart(2,'0');
+	}
 		
 	var days = data.days;
 	for (var i=0; i<days.length; i++) {
 		var dayInfo = days[i],
-			formattedDate = dayInfo.date.getFullYear().toString() + (dayInfo.date.getMonth()+1).toString().padStart(2,'0') + dayInfo.date.getDate().toString().padStart(2,'0');
+			startFormatted = formatDate(dayInfo.date),
+			endDate = dayInfo.date.addDays(1),
+			endFormatted = formatDate(endDate);
 		
 		if (dayInfo.formattedReading != '' && dayInfo.formattedReading != '---') {
 			ics.push('BEGIN:VEVENT');
-			ics.push('DTSTAMP:' + formattedDate + 'T000000Z');
-			ics.push('DTSTART;VALUE=DATE:' + formattedDate + '');
-			ics.push('DTEND;VALUE=DATE:' + formattedDate + '');
+			//ics.push('DTSTAMP:' + startFormatted + 'T000000Z');
+			ics.push('DTSTART;VALUE=DATE:' + startFormatted + '');
+			ics.push('DTEND;VALUE=DATE:' + endFormatted + '');
 			ics.push('SUMMARY:' + dayInfo.formattedReading);		
 			ics.push('END:VEVENT');
 		}
@@ -507,7 +612,7 @@ function buildics(lang, data, days, bookList, dayList) {
 
 
 
-function buildcalendar(lang, data, days, bookList, dayList, dailyPsalm, dailyProverb) {
+function buildcalendar(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
 	//var daysOfWeek = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	
@@ -564,7 +669,17 @@ function buildcalendar(lang, data, days, bookList, dayList, dailyPsalm, dailyPro
 			'">' + 
 			'<span class="date">' + (firstday ? dayInfo.date.monthAbbr(lang) + ' ' : '') + dayInfo.date.getDate() + '</span>' + 
 			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
-			(dayInfo.formattedReading != '' ? '<span class="verses">' + dayInfo.formattedReading + '</span>' : '') + 
+			(dayInfo.formattedReading != '' ? 
+				'<span class="verses">' + dayInfo.formattedReading + '</span>' +
+				(showStats ?
+					'<span class="stats">' +
+						'words: ' + dayInfo.wordsForToday + 
+						'<br>' +
+						'verses: ' + dayInfo.versesForToday + 
+					'</span>' 
+					: '')
+				: '') + 
+			
 		'</td>');		
 		
 		// close on saturday
@@ -583,7 +698,7 @@ function buildcalendar(lang, data, days, bookList, dayList, dailyPsalm, dailyPro
 	
 }
 
-function buildbooks(lang, data, days, bookList, dayList, dailyPsalm, dailyProverb) {
+function buildbooks(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
 	var html = [];
 	html.push('<style>');

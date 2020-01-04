@@ -9,6 +9,10 @@ Date.prototype.monthAbbr = function(lang) {
     return this.toLocaleDateString(lang, {month:"short"});
 	//return months[this.getMonth()];
 }
+Date.prototype.monthName = function(lang) {
+    return this.toLocaleDateString(lang, {month:"long"});
+	//return months[this.getMonth()];
+}
 Date.prototype.formatted = function() {
 	return this.getFullYear() + '/' + (1+this.getMonth()) + '/' + this.getDate();
 }

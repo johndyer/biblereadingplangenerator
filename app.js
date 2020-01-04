@@ -8,7 +8,7 @@ $('#section-time input, ' +
 	'#section-format input').on('change keyup', updateDisplay);
 
 // traditional ot/nt clicking
-$('.order-traditional input').on('click', adjustBooks);
+$('.order-traditional').on('click', 'input', adjustBooks);
 $('[name=bibleorder]').on('click', enableTestaments);
 
 $('#download-ics').on('click', downloadics);
@@ -31,16 +31,18 @@ function enableTestaments() {
 function adjustBooks() {
 	var check = $(this);
 	
+	// OT or NT main label
 	if (check.closest('label').hasClass('books-testament')) {		
-		// parent
 		
+		// set all the children to match this one
 		check
 			.closest('details')
 			.find('input')
 			.prop('checked', check.prop('checked'));
 		
 	} else {
-		
+		// this is all the child books
+
 		var parent = check.closest('details').find('.books-testament input');
 		
 		if (check.prop('checked')) {
@@ -196,7 +198,8 @@ function updateDisplay() {
 function generate(lang, format, doc) {
 	
 	var 
-		startDate = new Date($('#time-startdate').val()),
+		dateparts = $('#time-startdate')[0].value.split('-'),
+		startDate = new Date(parseInt(dateparts[0], 10), parseInt(dateparts[1], 10)-1, parseInt(dateparts[2], 10)), //.val()),
 		duration = parseInt($('#time-days').val(), 10),
 		books = [],
 		daysOfWeek = [],
@@ -219,9 +222,9 @@ function generate(lang, format, doc) {
 	
 	
 	// BUG	
-	var datastartDate = startDate.addDays(1);
-	var data = getPlanData(lang, order, datastartDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'));
-	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, doc);	
+	//var datastartDate = startDate.addDays(1);
+	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'));
+	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'));	
 	
 	return code;
 }
@@ -280,8 +283,10 @@ function updateUrl() {
 			
 				'&checkbox=' + ($('#options-checkbox').is(':checked') ? '1' : '0') +
 				'&colors=' + ($('#options-sectioncolors').is(':checked') ? '1' : '0') +
-				'&psalm=' + ($('#options-dailypsalm').is(':checked') ? '1' : '0') +
-				'&proverb=' + ($('#options-dailyproverb').is(':checked') ? '1' : '0') +
+				'&dailypsalm=' + ($('#options-dailypsalm').is(':checked') ? '1' : '0') +
+				'&dailyproverb=' + ($('#options-dailyproverb').is(':checked') ? '1' : '0') +
+				'&otntoverlap=' + ($('#options-otntoverlap').is(':checked') ? '1' : '0') +
+				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
 
 		  		''		
 				);
@@ -353,12 +358,14 @@ function startup() {
 
 	// start
 	var startdate = null;
-	if (urlParams.has('start')) {		
-		startdate = new Date(urlParams.get('start'));
+	if (urlParams.has('start')) {	
+		var dateparts = urlParams.get('start').split('-');
+		
+		startdate = new Date(parseInt(dateparts[0], 10), parseInt(dateparts[1], 10)-1,parseInt(dateparts[2], 10));
 		// time zone screws it up?
-		if (startdate) {
-			startdate = startdate.addDays(1);
-		}
+		//if (startdate) {
+		//	startdate = startdate.addDays(1);
+		//}
 	}
 	if (!startdate) {
 		var today = new Date(),
@@ -481,6 +488,12 @@ function startup() {
 	if (urlParams.get('dailyproverb') == '1') {	
 		$('#options-dailyproverb').prop('checked',true);	
 	}
+	if (urlParams.get('otntoverlap') == '1') {	
+		$('#options-otntoverlap').prop('checked',true);	
+	}	
+	if (urlParams.get('stats') == '1') {	
+		$('#options-stats').prop('checked',true);	
+	}		
 	
 
 	updateDisplay();

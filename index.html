@@ -6,7 +6,7 @@
 	<title>Bible Reading Plan Generator</title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2019-12-30" />
+	<link rel="stylesheet" href="style.css?v=2020-01-02c" />
 
 	<meta property="og:title" content="Bible Reading Plan Generator" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -29,7 +29,7 @@
 						
 				<div class="decision-body">				
 					Start: 	<input type="date" id="time-startdate" placeholder="Start Date" />
-					Days: 	<input type="number" id="time-days" placeholder="End Date" />
+					Days: 	<input type="number" id="time-days" placeholder="Days in plan" />
 				</div>
 			</section>
 			
@@ -72,9 +72,8 @@
 					</label>					
 				
 
-					<input type="button" id="download-pdf" value="Get PDF" style="display:inline;">
-						
-					
+					<input type="button" id="download-pdf" value="Get PDF" style="display:none;">
+											
 					<input type="button" id="download-ics" value="Download iCal">
 					
 					
@@ -130,6 +129,11 @@
 						<br>
 						<label class="books-testament"><input type="checkbox" class="section-nt" value="NT" >New Testament</label>
 					</div>
+
+					<div class="order-mcheyne order-group">
+						<br>
+						<label><input type="radio" name="bibleorder" value="mcheyne" >M'Cheyne</label>						
+					</div>							
 				</div>
 			</section>	
 			
@@ -156,13 +160,17 @@
 				</header>
 				
 				<div class="decision-body">
-					<label><input type="checkbox" id="options-checkbox"> Checkbox</label>
+					<label><input type="checkbox" id="options-checkbox"> Include Checkbox</label>
 
 					<label><input type="checkbox" id="options-sectioncolors"> Section Colors</label>
 
 					<label><input type="checkbox" id="options-dailypsalm" > Daily Psalm</label>					
 					
 					<label><input type="checkbox" id="options-dailyproverb" > Daily Proverb</label>
+
+					<label><input type="checkbox" id="options-otntoverlap" > OT/NT Overlap</label>
+
+					<label><input type="checkbox" id="options-stats"> Show Stats</label>
 				</div>
 			</section>
 
@@ -177,7 +185,7 @@
 		</main>
 		
 		<footer id="main-footer">
-			by <a href="https://twitter.com/johndyer/">John Dyer</a>
+			by <a href="https://j.hn/">John Dyer</a> (<a href="https://twitter.com/johndyer/">twitter</a> | <a href="https://donteathefruit.com/">blog</a>)
 		</footer>
 	
 	</div>
@@ -185,23 +193,23 @@
 	<script src="jquery.min.js"></script>
 	<script src="jspdf.min.js"></script>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2019-12-30"></script>
+	<script src="helpers.js?v=2020-01-02c"></script>
 	
-	<script src="bible.data.js?v=2019-12-30"></script>
-	<script src="bible.data.sv.js?v=2019-12-30"></script>
-	<script src="bible.data.es.js?v=2019-12-30"></script>
-	<script src="bible.data.fr.js?v=2019-12-30"></script>
-	<script src="bible.data.de.js?v=2019-12-30"></script>
-	<script src="bible.data.ar.js?v=2019-12-30"></script>
-	<script src="bible.data.hi.js?v=2019-12-30"></script>
-	<script src="bible.data.zh-TW.js?v=2019-12-30"></script>
-	<script src="bible.data.zh-CN.js?v=2019-12-30"></script>
-	<script src="bible.data.wordcounts.js?v=2019-12-30"></script>
-	<script src="bible.reference.js?v=2019-12-30"></script>
-	<script src="bible.plans.js?v=2019-12-30"></script>
+	<script src="bible.data.js?v=2020-01-02c"></script>
+	<script src="bible.data.sv.js?v=2020-01-02c"></script>
+	<script src="bible.data.es.js?v=2020-01-02c"></script>
+	<script src="bible.data.fr.js?v=2020-01-02c"></script>
+	<script src="bible.data.de.js?v=2020-01-02c"></script>
+	<script src="bible.data.ar.js?v=2020-01-02c"></script>
+	<script src="bible.data.hi.js?v=2020-01-02c"></script>
+	<script src="bible.data.zh-TW.js?v=2020-01-02c"></script>
+	<script src="bible.data.zh-CN.js?v=2020-01-02c"></script>
+	<script src="bible.data.wordcounts.js?v=2020-01-02c"></script>
+	<script src="bible.reference.js?v=2020-01-02c"></script>
+	<script src="bible.plans.js?v=2020-01-02c"></script>
 	
-	<script src="plans.js?v=2019-12-30"></script>
-	<script src="app.js?v=2019-12-30"></script>
+	<script src="plans.js?v=2020-01-02c"></script>
+	<script src="app.js?v=2020-01-02c"></script>
 	
 
 	<script type="text/javascript">
