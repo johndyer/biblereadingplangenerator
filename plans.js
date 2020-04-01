@@ -1,5 +1,5 @@
 
-function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb, combineOTandNT) {
+function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb, combineOTandNT, logic) {
 	
 	var psalmNumber = 1;
 	var psalmMax = 150;
@@ -198,22 +198,17 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 		});
 		
 		// iterate the date here, because we'll skip days below
-		date = date.addDays(1);
+		date = date.incrimentDay(); // date.addDays(1);
 		
 		// skip unused days
 		if (daysOfWeek.indexOf( dayInfo.date.getDay() ) == -1 ) {
 			dayInfo.formattedReading = '';
 			continue;
-		}  
-			
-		var logic = 'chapters'; //'words';
-
-		var urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.get('logic') == 'words') {
-			logic = 'words';
 		}
 
-		if (logic == 'chapters') {
+		switch (logic) {
+			default:
+			case 'chapters':
 
 			// create a list of chapters for this day 
 			// from all the chapters groups
@@ -257,8 +252,9 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 				
 				dataChapterGroup.chaptersRemaining = chaptersForToday;
 			});
+			break;
 							
-		} else if (logic == 'words') {
+		case 'words':
 			
 			data.chapterGroups.forEach(function(dataChapterGroup, chapterGroupIndex) {
 
@@ -303,7 +299,7 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 				// store the remainder for the next day
 				dataChapterGroup.wordsRemaining = wordsForDay;
 			});
-			
+			break;
 		}
 
 
@@ -676,6 +672,8 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 						'words: ' + dayInfo.wordsForToday + 
 						'<br>' +
 						'verses: ' + dayInfo.versesForToday + 
+						'<br>' +
+						'minutes: ' + (dayInfo.wordsForToday/250).toFixed(2) + 						
 					'</span>' 
 					: '')
 				: '') + 

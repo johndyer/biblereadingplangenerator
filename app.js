@@ -4,7 +4,7 @@
 $('#section-time input, ' + 
 	'#section-days input, ' + 
 	'#section-books input, ' + 
-	'#section-options input, #options-language, ' + 
+	'#section-options input, #section-options select, #options-language, ' + 
 	'#section-format input').on('change keyup', updateDisplay);
 
 // traditional ot/nt clicking
@@ -223,7 +223,7 @@ function generate(lang, format, doc) {
 	
 	// BUG	
 	//var datastartDate = startDate.addDays(1);
-	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'));
+	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-logic').val());
 	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'));	
 	
 	return code;
@@ -236,7 +236,8 @@ function updateUrl() {
 		total = $('#time-days').val(),
 		format = $('input[name=formatstyle]:checked').val(),
 		order = $('input[name=bibleorder]:checked').val(),	
-		lang = $('#options-language').val(),	
+		lang = $('#options-language').val(),
+		logic = $('#options-logic').val(),	
 		daysofweek = $( '#section-days input:checked' ).map(function() {
 			return $( this ).val();
 		  })
@@ -280,6 +281,7 @@ function updateUrl() {
 				'&daysofweek=' + daysofweek + 
 				'&books=' + books.join(',') + 
 				'&lang=' + lang + 
+				'&logic=' + logic + 
 			
 				'&checkbox=' + ($('#options-checkbox').is(':checked') ? '1' : '0') +
 				'&colors=' + ($('#options-sectioncolors').is(':checked') ? '1' : '0') +
@@ -287,6 +289,7 @@ function updateUrl() {
 				'&dailyproverb=' + ($('#options-dailyproverb').is(':checked') ? '1' : '0') +
 				'&otntoverlap=' + ($('#options-otntoverlap').is(':checked') ? '1' : '0') +
 				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
+				
 
 		  		''		
 				);
@@ -493,6 +496,10 @@ function startup() {
 	}	
 	if (urlParams.get('stats') == '1') {	
 		$('#options-stats').prop('checked',true);	
+	}	
+
+	if (urlParams.get('logic') != '' && urlParams.get('logic') != null) {	
+		$('#options-logic').val(urlParams.get('logic'));	
 	}		
 	
 

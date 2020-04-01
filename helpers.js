@@ -2,6 +2,11 @@
 Date.prototype.addDays = function(d) {
 	return new Date(this.getTime() + d*24*60*60*1000);
 }
+Date.prototype.incrimentDay = function() {
+    var next = new Date(this);
+    next.setDate(next.getDate() + 1);
+	return next;
+}
 Date.prototype.pretty = function() {
 	return months[this.getMonth()] + ' ' + this.getDate() + ', ' + this.getFullYear();
 }
