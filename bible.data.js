@@ -578,6 +578,19 @@ bible.NT_BOOKS = ["MAT","MRK","LUK","JHN","ACT","ROM","1CO","2CO","GAL","EPH","P
  */
 bible.DC_BOOKS =["TOB","JDT","ADE","WIS","SIR","BAR","LJE","S3Y","SUS","BEL","1MA","2MA","1ES","MAN","PS2","3MA","2ES","4MA"];
 
+/**
+ * @description Default order of Deuterocanonical books
+ */
+bible.TANAKH_BOOKS = ["GEN","EXO","LEV","NUM","DEU",
+"JOS","JDG","1SA","2SA","1KI","2KI",
+"ISA","JER","EZK",
+"HOS","JOL","AMO","OBA","JON","MIC","NAM","HAB","ZEP","HAG","ZEC","MAL",
+"PSA","PRO","JOB",
+"SNG","RUT","LAM","ECC","EST",
+"DAN","EZR","NEH","1CH","2CH"];
+
+
+
 
 
 /**

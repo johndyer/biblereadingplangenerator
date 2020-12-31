@@ -1,3 +1,30 @@
+/*
+(function() {
+	
+	var totalVerses = 0;
+	
+	for (var i=0; i<bible.pericopes.length;i++ ) {
+		totalVerses += bible.pericopes[i].range.length;
+	}
+	console.log('pericopes total', totalVerses);
+
+})();
+
+(function() {
+	
+	var totalVerses = 0;
+	
+	for (var i=0; i<bible.DEFAULT_BIBLE.length;i++ ) {
+		var book = bible.BIBLE_DATA[bible.DEFAULT_BIBLE[i]];
+		for (var j=0; j<book.chapters.length; j++) {
+			totalVerses += book.chapters[j];
+		}
+	}
+	console.log('bible total', totalVerses);
+
+})();
+*/
+
 
 
 // EVENTS
@@ -8,7 +35,7 @@ $('#section-time input, ' +
 	'#section-format input').on('change keyup', updateDisplay);
 
 // traditional ot/nt clicking
-$('.order-traditional').on('click', 'input', adjustBooks);
+$('.order-traditional, .order-tanakh').on('click', 'input', adjustBooks);
 $('[name=bibleorder]').on('click', enableTestaments);
 
 $('#download-ics').on('click', downloadics);
@@ -210,8 +237,8 @@ function generate(lang, format, doc) {
 	}).get();
 
 	
- 	if (order == 'traditional') {
-		books = $('.order-traditional .books-list input[type=checkbox]:checked').map(function(index, el) { 
+ 	if (order == 'traditional' || order == 'tanakh') {
+		books = $('.order-' + order + ' .books-list input[type=checkbox]:checked').map(function(index, el) { 
 			return $(this).val();
 		}).get();	
 	} else if (order == 'chronological') {
@@ -223,7 +250,7 @@ function generate(lang, format, doc) {
 	
 	// BUG	
 	//var datastartDate = startDate.addDays(1);
-	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-logic').val());
+	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val());
 	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'));	
 	
 	return code;
@@ -288,6 +315,7 @@ function updateUrl() {
 				'&dailypsalm=' + ($('#options-dailypsalm').is(':checked') ? '1' : '0') +
 				'&dailyproverb=' + ($('#options-dailyproverb').is(':checked') ? '1' : '0') +
 				'&otntoverlap=' + ($('#options-otntoverlap').is(':checked') ? '1' : '0') +
+				'&reverse=' + ($('#options-reverse').is(':checked') ? '1' : '0') +
 				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
 				
 
@@ -301,6 +329,7 @@ function createBookLists() {
 
 	var lang = $('#options-language').val();
 
+	// Traditional
 	for (var i=0; i<bible.TESTAMENTS.length; i++) {
 		var testament = bible.TESTAMENTS[i],
 			testament_list = bible[testament + "_BOOKS"];
@@ -321,8 +350,20 @@ function createBookLists() {
 				$('<label><input type="checkbox" value="' + usfm + '">' + bible.getName(book, lang) + '</label>')
 			);
 		}
-
 	}
+
+	// Tanakh
+	var tanakh_list = $('.order-tanakh .section-OT .books-list').empty();
+	for (var j=0; j<bible.TANAKH_BOOKS.length; j++) {
+		var usfm = bible.TANAKH_BOOKS[j],
+			book = bible.BIBLE_DATA[ usfm ];
+
+		//console.log(usfm);
+		tanakh_list.append(
+			$('<label><input type="checkbox" value="' + usfm + '">' + bible.getName(book, lang) + '</label>')
+		);
+	}
+
 }
 
 
@@ -425,55 +466,92 @@ function startup() {
 	
 
 	// books of bible	
-	var books = '';		
-	if (order == 'traditional') {
-		if (urlParams.has('books')) {		
-			books = urlParams.get('books');
-			books = books.split(',');
+	var books = '';	
+	switch (order) {	
+		case 'traditional':
+			if (urlParams.has('books')) {		
+				books = urlParams.get('books');
+				books = books.split(',');
 
-			for (var i=0; i<bible.TESTAMENTS.length; i++) {
-				var testament = bible.TESTAMENTS[i];
+				for (var i=0; i<bible.TESTAMENTS.length; i++) {
+					var testament = bible.TESTAMENTS[i];
 
-				if (books.indexOf(testament) > -1) {
-					$('.order-traditional .section-' + testament + ' input	')						
-						.prop('checked',true);
+					if (books.indexOf(testament) > -1) {
+						$('.order-traditional .section-' + testament + ' input	')						
+							.prop('checked',true);
+					}
 				}
+				
+				for (var i=0; i<books.length; i++) {
+					$('input[value="' + books[i] + '"]').prop('checked',true);
+				}
+
+			} else {
+				// 
+				$('.order-traditional .section-OT input').prop('checked',true);
+				$('.order-traditional .section-NT input').prop('checked',true);
 			}
 			
-			for (var i=0; i<books.length; i++) {
-				$('input[value="' + books[i] + '"]').prop('checked',true);
-			}
+			$('.order-chronological input[type=checkbox]')
+				.prop('checked',true)
+				.prop('disabled',true);
 
-		} else {
-			// 
-			$('.order-traditional .section-OT input').prop('checked',true);
-			$('.order-traditional .section-NT input').prop('checked',true);
-		}
-		
-		$('.order-chronological input[type=checkbox]')
-			.prop('checked',true)
-			.prop('disabled',true);
-	} else {
-		if (urlParams.has('books')) {		
-			books = urlParams.get('books');
-			books = books.split(',');
+			$('.order-tanakh input[type=checkbox]')
+				.prop('checked',true)
+				.prop('disabled',true);	
+			break;	
+		case 'tanakh':
+			if (urlParams.has('books')) {		
+				books = urlParams.get('books');
+				books = books.split(',');
 
-			for (var i=0; i<bible.TESTAMENTS.length; i++) {
-				var testament = bible.TESTAMENTS[i];
-
-				if (books.indexOf(testament) > -1) {
-					$('.order-chronological input[value="' + testament + '"]')
-						.prop('checked',true);
+				if (books[0] == 'OT') {
+					$('.order-tanakh .section-OT input').prop('checked',true);
 				}
+				
+				for (var i=0; i<books.length; i++) {
+					$('input[value="' + books[i] + '"]').prop('checked',true);
+				}
+
+			} else {
+				$('.order-tanakh .section-OT input').prop('checked',true);
 			}
 			
-		} else {
-			$('.order-chronological input').prop('checked',true);
-		}
+			$('.order-traditional input[type=checkbox]')
+				.prop('checked',true)
+				.prop('disabled',true);
 
-		$('.order-traditional input[type=checkbox]')
-			.prop('checked',true)
-			.prop('disabled',true);
+			$('.order-chronological input[type=checkbox]')
+				.prop('checked',true)
+				.prop('disabled',true);	
+			break;
+
+		default:	
+	
+			if (urlParams.has('books')) {		
+				books = urlParams.get('books');
+				books = books.split(',');
+
+				for (var i=0; i<bible.TESTAMENTS.length; i++) {
+					var testament = bible.TESTAMENTS[i];
+
+					if (books.indexOf(testament) > -1) {
+						$('.order-chronological input[value="' + testament + '"]')
+							.prop('checked',true);
+					}
+				}
+				
+			} else {
+				$('.order-chronological input').prop('checked',true);
+			}
+
+			$('.order-traditional input[type=checkbox]')
+				.prop('checked',true)
+				.prop('disabled',true);
+
+			$('.order-tanakh input[type=checkbox]')
+				.prop('checked',true)
+				.prop('disabled',true);			
 	}
 	
 
@@ -493,7 +571,11 @@ function startup() {
 	}
 	if (urlParams.get('otntoverlap') == '1') {	
 		$('#options-otntoverlap').prop('checked',true);	
+	}
+	if (urlParams.get('reverse') == '1') {	
+		$('#options-reverse').prop('checked',true);	
 	}	
+	
 	if (urlParams.get('stats') == '1') {	
 		$('#options-stats').prop('checked',true);	
 	}	

@@ -6,7 +6,7 @@
 	<title>Bible Reading Plan Generator</title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2020-08-15" />
+	<link rel="stylesheet" href="style.css?v=2020-12-20" />
 
 	<meta property="og:title" content="Bible Reading Plan Generator" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -121,6 +121,7 @@
 						</details>
 					</div>
 					
+					
 					<div class="order-chronological order-group">
 						<br>
 						<label><input type="radio" name="bibleorder" value="chronological" >Chronological</label>
@@ -130,10 +131,28 @@
 						<label class="books-testament"><input type="checkbox" class="section-nt" value="NT" >New Testament</label>
 					</div>
 
+
+					<div class="order-tanakh order-group">
+						<br>
+						<label><input type="radio" name="bibleorder" value="tanakh">Tanakh</label>
+						
+						<details class="section-OT">
+							<summary>
+								<label class="books-testament"><input type="checkbox" value="OT">Hebrew Bible</label>
+							</summary>
+
+							<div class="books-list">						
+								
+							</div>						
+						</details>						
+
+					</div>	
+
+
 					<div class="order-mcheyne order-group">
 						<br>
 						<label><input type="radio" name="bibleorder" value="mcheyne" >M'Cheyne</label>						
-					</div>							
+					</div>																
 				</div>
 			</section>	
 			
@@ -170,13 +189,16 @@
 					<label><input type="checkbox" id="options-dailyproverb" > Daily Proverb</label>
 
 					<label><input type="checkbox" id="options-otntoverlap" > OT/NT Overlap</label>
+					
+					<label><input type="checkbox" id="options-reverse" > Reverse</label>
 
 					<label><input type="checkbox" id="options-stats"> Show Stats</label>
 
 					<label>Divide by
 						<select id="options-logic">
-							<option value="chapters" selected>Chapters</option>
-							<option value="words">Words</option>
+							<option value="chapters" >Number of Chapters</option>
+							<option value="words" selected>Words per Chapter</option>
+							<option value="pericopes">Pericopes</option>
 						</select>
 					</label> 
 						
@@ -197,7 +219,7 @@
 		</main>
 		
 		<footer id="main-footer">
-			by <a href="https://j.hn/">John Dyer</a> (<a href="https://twitter.com/johndyer/">twitter</a> | <a href="https://donteathefruit.com/">blog</a>)
+			by <a href="https://j.hn/">John Dyer</a> (@<a href="https://twitter.com/johndyer/">johndyer</a>)
 		</footer>
 	
 	</div>
@@ -205,23 +227,25 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2020-08-15"></script>
+	<script src="helpers.js?v=2020-12-20"></script>
 	
-	<script src="bible.data.js?v=2020-08-15"></script>
-	<script src="bible.data.sv.js?v=2020-08-15"></script>
-	<script src="bible.data.es.js?v=2020-08-15"></script>
-	<script src="bible.data.fr.js?v=2020-08-15"></script>
-	<script src="bible.data.de.js?v=2020-08-15"></script>
-	<script src="bible.data.ar.js?v=2020-08-15"></script>
-	<script src="bible.data.hi.js?v=2020-08-15"></script>
-	<script src="bible.data.zh-TW.js?v=2020-08-15"></script>
-	<script src="bible.data.zh-CN.js?v=2020-08-15"></script>
-	<script src="bible.data.wordcounts.js?v=2020-08-15"></script>
-	<script src="bible.reference.js?v=2020-08-15"></script>
-	<script src="bible.plans.js?v=2020-08-15"></script>
+	<script src="bible.data.js?v=2020-12-20"></script>
+	<script src="bible.data.sv.js?v=2020-12-20"></script>
+	<script src="bible.data.es.js?v=2020-12-20"></script>
+	<script src="bible.data.fr.js?v=2020-12-20"></script>
+	<script src="bible.data.de.js?v=2020-12-20"></script>
+	<script src="bible.data.ar.js?v=2020-12-20"></script>
+	<script src="bible.data.hi.js?v=2020-12-20"></script>
+	<script src="bible.data.zh-TW.js?v=2020-12-20"></script>
+	<script src="bible.data.zh-CN.js?v=2020-12-20"></script>
+	<script src="bible.data.wordcounts.js?v=2020-12-20"></script>
+	<script src="bible.reference.js?v=2020-12-20"></script>
+	<script src="bible.plans.js?v=2020-12-20"></script>
+	<script src="bible.pericopes.js?v=2020-12-20"></script>
 	
-	<script src="plans.js?v=2020-08-15"></script>
-	<script src="app.js?v=2020-08-15"></script>
+	<script src="plans.js?v=2020-12-20"></script>
+	
+	<script src="app.js?v=2020-12-20"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
