@@ -648,12 +648,14 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 	
 	var formatted = '',
 		firstPericope = pericopes[0],
-		firstBook = bible.BIBLE_DATA[firstPericope.start.split('_')[0]],
+		firstBookUsfm = firstPericope.start.split('_')[0],
+		firstBook = bible.BIBLE_DATA[firstBookUsfm],
 		firstChapter = parseInt(firstPericope.start.split('_')[1], 10),
 		firstVerse = parseInt(firstPericope.start.split('_')[2], 10),
 		
 		lastPericope = pericopes[pericopes.length-1],
-		lastBook = bible.BIBLE_DATA[lastPericope.end.split('_')[0]],
+		lastBookUsfm = lastPericope.end.split('_')[0],
+		lastBook = bible.BIBLE_DATA[lastBookUsfm],
 		lastChapter = parseInt(lastPericope.end.split('_')[1], 10),
 		lastVerse = parseInt(lastPericope.end.split('_')[2], 10),
 		lastVerseMax = lastBook.chapters[lastChapter-1];
@@ -662,21 +664,24 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 	formatted += bible.getAbbr(firstBook, lang) + ' ' + firstChapter;
 		
 	// show verse if the book or chapter is different
-	if (firstBook.usfm !== lastBook.usfm || firstChapter !== lastChapter || firstVerse !== 1 || lastVerse !== lastVerseMax) {
-				
-		if (firstVerse !== 1 || lastVerse !== lastVerseMax) {
+	if (firstBookUsfm !== lastBookUsfm || firstChapter !== lastChapter || firstVerse !== 1 || lastVerse !== lastVerseMax) {
+		
+		// show the verse with the chapter
+		if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
 			formatted += ':' + firstVerse;
 		}
 
 		formatted += '–';
 
-		if (firstBook.usfm !== lastBook.usfm) {
-			formatted += bible.getAbbr(lastBook, lang);
+		// show the final book
+		if (firstBookUsfm !== lastBookUsfm) {
+			formatted += bible.getAbbr(lastBook, lang) + ' ';
 		}
 
-		if (firstChapter !== lastChapter) {
+		// show the final chapter an verse
+		if (firstBookUsfm !== lastBookUsfm || firstChapter !== lastChapter) {
 			formatted += lastChapter;
-			if (firstVerse !== 1 || lastVerse !== lastVerseMax) {
+			if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
 				formatted += ':' + lastVerse;
 			} 
 		} else {
