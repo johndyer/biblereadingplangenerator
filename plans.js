@@ -697,7 +697,8 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 
 function buildlist(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
-	var html = [];
+	var html = [],
+		today = new Date();
 
 	html.push('<div class="plan-list">');
 		
@@ -713,7 +714,7 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 			html.push('<div class="entry month-divider">' + dayInfo.date.monthName(lang) + '</div>');
 		}
 
-		html.push('<div class="entry section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
+		html.push('<div class="entry ' + (isSameDay(today, dayInfo.date) ? ' is-today': '') + ' section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
 		html.push('<div class="date">' + dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate()) + '</div>');		
 		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
 		if (dayInfo.formattedReading != '') {
@@ -733,7 +734,8 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 function buildweeks(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
 	var html = [],
-		weekNumber = 1;
+		weekNumber = 1,
+		today = new Date();
 
 	html.push('<div class="plan-weeks">');
 
@@ -758,7 +760,7 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 			continue;
 		}
 			
-		html.push('<div class="entry section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
+		html.push('<div class="entry ' + (isSameDay(today, dayInfo.date) ? ' is-today': '') + ' section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
 		html.push('<div class="date">' + dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate()) + '</div>');		
 		
 		if (dayInfo.formattedReading != '') {
@@ -776,6 +778,11 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 	
 }
 
+function isSameDay(d1, d2) {
+	return d1.getFullYear() === d2.getFullYear() &&
+	  d1.getDate() === d2.getDate() &&
+	  d1.getMonth() === d2.getMonth();
+  }
 
 function buildics(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
@@ -821,7 +828,8 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 	
 	//var daysOfWeek = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	
-	var html = [];
+	var html = [],
+		today = new Date();
 
 	html.push('<table class="plan-calendar">');
 	
@@ -871,6 +879,7 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 					(lastday ? ' monthend' : '') + 
 					(firstweek ? ' firstweek' : '') + 
 					(lastweek ? ' lastweek' : '') + 
+					(isSameDay(today, dayInfo.date) ? ' is-today': '') +
 			'">' + 
 			'<span class="date">' + (firstday ? dayInfo.date.monthAbbr(lang) + ' ' : '') + dayInfo.date.getDate() + '</span>' + 
 			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
@@ -909,7 +918,9 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 
 function buildbooks(lang, data, startDate, duration, bookList, dayList, showStats) {
 	
-	var html = [];
+	var html = [],
+		today = new Date();
+
 	html.push('<style>');
 			
 	for (var i=2; i<20; i++) {
@@ -974,7 +985,7 @@ function buildbooks(lang, data, startDate, duration, bookList, dayList, showStat
 				}
 			}
 			
-			html.push('<span class="box chapter section-' + bible.SECTIONS[bookInfo.section] + ' chapters-' + chaptersOnThisDay + '">' + 
+			html.push('<span class="box chapter ' + (isSameDay(today, dayInfo.date) ? ' is-today': '') + ' section-' + bible.SECTIONS[bookInfo.section] + ' chapters-' + chaptersOnThisDay + '">' + 
 				(dayInfo.date.getMonth()+1) + '/' + (dayInfo.date.getDate()) + ': ' + startChapter + (startChapter != endChapter ? '-' + endChapter : '') +
 			'</span>');
 			
