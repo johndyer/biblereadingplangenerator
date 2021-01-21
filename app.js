@@ -40,6 +40,7 @@ $('[name=bibleorder]').on('click', enableTestaments);
 
 $('#download-ics').on('click', downloadics);
 $('#download-pdf').on('click', downloadpdf);
+$('#download-csv').on('click', downloadcsv);
 
 function enableTestaments() {
 	var check = $(this);
@@ -98,6 +99,14 @@ function downloadics() {
 
 	var blob = new Blob([code], {type: "text/calendar;charset=utf-8"});
 	saveData(blob, 'bibleplan.ics');	
+}
+
+function downloadcsv() {
+	var lang = $('#options-language').val();
+	var code = generate(lang, 'csv');
+
+	var blob = new Blob([code], {type: "text/csv;charset=utf-8"});
+	saveData(blob, 'bibleplan.csv');	
 }
 
 function downloadpdf() {

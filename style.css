@@ -208,6 +208,10 @@ input[type=button]:hover {
 	font-weight: bold;
 	margin-bottom: 6px;
 }
+.month-divider {
+	font-weight: bold;
+	margin: 6px 0;	
+}
 
 @media (max-width: 800px) {
 	.week-block {

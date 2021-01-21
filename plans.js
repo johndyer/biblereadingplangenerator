@@ -822,6 +822,25 @@ function buildics(lang, data, startDate, duration, bookList, dayList, showStats)
 	
 }
 
+function buildcsv(lang, data, startDate, duration, bookList, dayList, showStats) {
+
+	let csv = [];
+	
+	csv.push('"Date","Passage"' + (showStats ? ',"Verse Count"' : ''));
+		
+	for (var i=0; i<data.days.length; i++) {
+		let dayInfo = data.days[i],
+			formattedDate = dayInfo.date.getFullYear().toString() + '-' +
+							(dayInfo.date.getMonth()+1).toString().padStart(2,'0') +  '-' +
+							dayInfo.date.getDate().toString().padStart(2,'0');
+			
+
+		csv.push('"' + formattedDate + '","' + dayInfo.formattedReading + '"' + (showStats ? ',"' + dayInfo.versesForToday + '"' : ''));
+	}
+
+	return csv.join('\n');
+}
+
 
 
 function buildcalendar(lang, data, startDate, duration, bookList, dayList, showStats) {
