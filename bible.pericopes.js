@@ -14481,23 +14481,23 @@ bible.pericopes = [
 	{
 		"heading": "Israel’s Sons",
 		"start": "1CH_2_1",
-		"end": "1CH_2_2",
+		"end": "1CH_2_8",
 		"range": [
 			"1CH_2_1",
-			"1CH_2_2"
-		]
-	},
-	{
-		"heading": "Judah",
-		"start": "1CH_2_3",
-		"end": "1CH_4_23",
-		"range": [
+			"1CH_2_2",
 			"1CH_2_3",
 			"1CH_2_4",
 			"1CH_2_5",
 			"1CH_2_6",
 			"1CH_2_7",
 			"1CH_2_8",
+		]
+	},
+	{
+		"heading": "Geneology of David",
+		"start": "1CH_2_3",
+		"end": "1CH_2_55",
+		"range": [			
 			"1CH_2_9",
 			"1CH_2_10",
 			"1CH_2_11",
@@ -14544,7 +14544,14 @@ bible.pericopes = [
 			"1CH_2_52",
 			"1CH_2_53",
 			"1CH_2_54",
-			"1CH_2_55",
+			"1CH_2_55"
+		]
+	},
+	{
+		"heading": "Family of David",
+		"start": "1CH_3_1",
+		"end": "1CH_3_24",
+		"range": [			
 			"1CH_3_3",
 			"1CH_3_4",
 			"1CH_3_5",
@@ -14567,6 +14574,13 @@ bible.pericopes = [
 			"1CH_3_22",
 			"1CH_3_23",
 			"1CH_3_24",
+		]
+	},
+	{
+		"heading": "Judah",
+		"start": "1CH_4_1",
+		"end": "1CH_4_23",
+		"range": [			
 			"1CH_4_1",
 			"1CH_4_2",
 			"1CH_4_3",
@@ -18731,7 +18745,7 @@ bible.pericopes = [
 	{
 		"heading": "Job",
 		"start": "JOB_23_1",
-		"end": "JOB_24_25",
+		"end": "JOB_23_17",
 		"range": [
 			"JOB_23_1",
 			"JOB_23_2",
@@ -18750,6 +18764,13 @@ bible.pericopes = [
 			"JOB_23_15",
 			"JOB_23_16",
 			"JOB_23_17",
+		]
+	},
+	{
+		"heading": "Job",
+		"start": "JOB_24_1",
+		"end": "JOB_24_25",
+		"range": [			
 			"JOB_24_1",
 			"JOB_24_2",
 			"JOB_24_3",
@@ -18879,7 +18900,7 @@ bible.pericopes = [
 	{
 		"heading": "Job’s Final Defense",
 		"start": "JOB_29_1",
-		"end": "JOB_31_40",
+		"end": "JOB_29_25",
 		"range": [
 			"JOB_29_1",
 			"JOB_29_2",
@@ -18905,7 +18926,14 @@ bible.pericopes = [
 			"JOB_29_22",
 			"JOB_29_23",
 			"JOB_29_24",
-			"JOB_29_25",
+			"JOB_29_25"
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_30_1",
+		"end": "JOB_30_31",
+		"range": [			
 			"JOB_30_1",
 			"JOB_30_2",
 			"JOB_30_3",
@@ -18937,6 +18965,13 @@ bible.pericopes = [
 			"JOB_30_29",
 			"JOB_30_30",
 			"JOB_30_31",
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_31_1",
+		"end": "JOB_31_40",
+		"range": [			
 			"JOB_31_1",
 			"JOB_31_2",
 			"JOB_31_3",
@@ -18982,7 +19017,7 @@ bible.pericopes = [
 	{
 		"heading": "Elihu",
 		"start": "JOB_32_1",
-		"end": "JOB_37_24",
+		"end": "JOB_32_22",
 		"range": [
 			"JOB_32_1",
 			"JOB_32_2",
@@ -19006,6 +19041,13 @@ bible.pericopes = [
 			"JOB_32_20",
 			"JOB_32_21",
 			"JOB_32_22",
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_33_1",
+		"end": "JOB_33_33",
+		"range": [			
 			"JOB_33_1",
 			"JOB_33_2",
 			"JOB_33_3",
@@ -19039,6 +19081,13 @@ bible.pericopes = [
 			"JOB_33_31",
 			"JOB_33_32",
 			"JOB_33_33",
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_34_1",
+		"end": "JOB_34_37",
+		"range": [			
 			"JOB_34_1",
 			"JOB_34_2",
 			"JOB_34_3",
@@ -19076,6 +19125,13 @@ bible.pericopes = [
 			"JOB_34_35",
 			"JOB_34_36",
 			"JOB_34_37",
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_35_1",
+		"end": "JOB_35_16",
+		"range": [			
 			"JOB_35_1",
 			"JOB_35_2",
 			"JOB_35_3",
@@ -19092,6 +19148,13 @@ bible.pericopes = [
 			"JOB_35_14",
 			"JOB_35_15",
 			"JOB_35_16",
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_36_1",
+		"end": "JOB_36_33",
+		"range": [			
 			"JOB_36_1",
 			"JOB_36_2",
 			"JOB_36_3",
@@ -19125,6 +19188,13 @@ bible.pericopes = [
 			"JOB_36_31",
 			"JOB_36_32",
 			"JOB_36_33",
+		]
+	},
+	{
+		"heading": "Job’s Final Defense",
+		"start": "JOB_29_1",
+		"end": "JOB_31_40",
+		"range": [			
 			"JOB_37_1",
 			"JOB_37_2",
 			"JOB_37_3",
@@ -19154,7 +19224,7 @@ bible.pericopes = [
 	{
 		"heading": "The Lord Speaks",
 		"start": "JOB_38_1",
-		"end": "JOB_41_34",
+		"end": "JOB_38_41",
 		"range": [
 			"JOB_38_1",
 			"JOB_38_2",
@@ -19197,6 +19267,13 @@ bible.pericopes = [
 			"JOB_38_39",
 			"JOB_38_40",
 			"JOB_38_41",
+		]
+	},
+	{
+		"heading": "The Lord Speaks",
+		"start": "JOB_39_1",
+		"end": "JOB_39_30",
+		"range": [			
 			"JOB_39_1",
 			"JOB_39_2",
 			"JOB_39_3",
@@ -19227,6 +19304,13 @@ bible.pericopes = [
 			"JOB_39_28",
 			"JOB_39_29",
 			"JOB_39_30",
+		]
+	},
+	{
+		"heading": "The Lord Speaks",
+		"start": "JOB_40_1",
+		"end": "JOB_40_24",
+		"range": [			
 			"JOB_40_1",
 			"JOB_40_2",
 			"JOB_40_3",
@@ -19251,6 +19335,13 @@ bible.pericopes = [
 			"JOB_40_22",
 			"JOB_40_23",
 			"JOB_40_24",
+		]
+	},
+	{
+		"heading": "The Lord Speaks",
+		"start": "JOB_41_1",
+		"end": "JOB_41_34",
+		"range": [			
 			"JOB_41_1",
 			"JOB_41_2",
 			"JOB_41_3",
@@ -28088,7 +28179,7 @@ bible.pericopes = [
 	{
 		"heading": "A Message About Babylon",
 		"start": "JER_50_1",
-		"end": "JER_51_64",
+		"end": "JER_50_46",
 		"range": [
 			"JER_50_1",
 			"JER_50_2",
@@ -28136,6 +28227,13 @@ bible.pericopes = [
 			"JER_50_44",
 			"JER_50_45",
 			"JER_50_46",
+		]
+	},
+	{
+		"heading": "A Message About Babylon",
+		"start": "JER_51_1",
+		"end": "JER_51_64",
+		"range": [			
 			"JER_51_1",
 			"JER_51_2",
 			"JER_51_3",
@@ -28253,7 +28351,7 @@ bible.pericopes = [
 	{
 		"heading": "Lam",
 		"start": "LAM_1_1",
-		"end": "LAM_5_22",
+		"end": "LAM_1_22",
 		"range": [
 			"LAM_1_1",
 			"LAM_1_2",
@@ -28276,7 +28374,14 @@ bible.pericopes = [
 			"LAM_1_19",
 			"LAM_1_20",
 			"LAM_1_21",
-			"LAM_1_22",
+			"LAM_1_22"
+		]
+	},
+	{
+		"heading": "Lam",
+		"start": "LAM_2_1",
+		"end": "LAM_2_22",
+		"range": [			
 			"LAM_2_1",
 			"LAM_2_2",
 			"LAM_2_3",
@@ -28299,6 +28404,13 @@ bible.pericopes = [
 			"LAM_2_20",
 			"LAM_2_21",
 			"LAM_2_22",
+		]
+	},
+	{
+		"heading": "Lam",
+		"start": "LAM_3_1",
+		"end": "LAM_3_66",
+		"range": [			
 			"LAM_3_1",
 			"LAM_3_2",
 			"LAM_3_3",
@@ -28365,6 +28477,13 @@ bible.pericopes = [
 			"LAM_3_64",
 			"LAM_3_65",
 			"LAM_3_66",
+		]
+	},
+	{
+		"heading": "Lam",
+		"start": "LAM_4_1",
+		"end": "LAM_4_22",
+		"range": [			
 			"LAM_4_1",
 			"LAM_4_2",
 			"LAM_4_3",
@@ -28386,7 +28505,14 @@ bible.pericopes = [
 			"LAM_4_19",
 			"LAM_4_20",
 			"LAM_4_21",
-			"LAM_4_22",
+			"LAM_4_22"
+		]
+	},
+	{
+		"heading": "Lam",
+		"start": "LAM_5_1",
+		"end": "LAM_5_22",
+		"range": [			
 			"LAM_5_1",
 			"LAM_5_2",
 			"LAM_5_3",
@@ -29399,7 +29525,7 @@ bible.pericopes = [
 	{
 		"heading": "A Prophecy Against Egypt",
 		"start": "EZK_29_1",
-		"end": "EZK_32_32",
+		"end": "EZK_29_21",
 		"range": [
 			"EZK_29_1",
 			"EZK_29_2",
@@ -29422,6 +29548,13 @@ bible.pericopes = [
 			"EZK_29_19",
 			"EZK_29_20",
 			"EZK_29_21",
+		]
+	},
+	{
+		"heading": "A Prophecy Against Egypt",
+		"start": "EZK_30_1",
+		"end": "EZK_30_26",
+		"range": [			
 			"EZK_30_1",
 			"EZK_30_2",
 			"EZK_30_3",
@@ -29448,6 +29581,13 @@ bible.pericopes = [
 			"EZK_30_24",
 			"EZK_30_25",
 			"EZK_30_26",
+		]
+	},
+	{
+		"heading": "A Prophecy Against Egypt",
+		"start": "EZK_31_1",
+		"end": "EZK_31_18",
+		"range": [		
 			"EZK_31_1",
 			"EZK_31_2",
 			"EZK_31_3",
@@ -29466,6 +29606,13 @@ bible.pericopes = [
 			"EZK_31_16",
 			"EZK_31_17",
 			"EZK_31_18",
+		]
+	},
+	{
+		"heading": "A Prophecy Against Egypt",
+		"start": "EZK_32_1",
+		"end": "EZK_32_32",
+		"range": [			
 			"EZK_32_1",
 			"EZK_32_2",
 			"EZK_32_3",
@@ -29704,7 +29851,7 @@ bible.pericopes = [
 	{
 		"heading": "The Lord’s Great Victory Over the Nations",
 		"start": "EZK_38_1",
-		"end": "EZK_39_29",
+		"end": "EZK_38_23",
 		"range": [
 			"EZK_38_1",
 			"EZK_38_2",
@@ -29728,7 +29875,14 @@ bible.pericopes = [
 			"EZK_38_20",
 			"EZK_38_21",
 			"EZK_38_22",
-			"EZK_38_23",
+			"EZK_38_23"
+		]
+	},
+	{
+		"heading": "The Lord’s Great Victory Over the Nations",
+		"start": "EZK_39_1",
+		"end": "EZK_39_29",
+		"range": [			
 			"EZK_39_1",
 			"EZK_39_2",
 			"EZK_39_3",
