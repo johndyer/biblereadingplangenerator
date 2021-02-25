@@ -298,17 +298,17 @@ input[type=button]:hover {
 }
 
 
-.plan-color .section-pentateuch { background: #cbf4fb; #469eac;  }		
-.plan-color .section-historical { background: #e2f7bd; #839f50;  }
-.plan-color .section-poetic { background: #fbf5c3; #beb45a;  }
-.plan-color .section-major { background: #f7ddef; #b38fa8;  }
-.plan-color .section-minor { background: #f7ddef; #b18da7;  }
-.plan-color .section-gospel { background: #fdc6ca; #ce1f2c;  }
-.plan-color .section-acts { background: #fbe6ac; #deb545;  }
-.plan-color .section-pauline, .plan-color .section-pastoral { background: #bafdf6; #008376;  }
-.plan-color .section-general { background: #c0f9ae; #5d974b;  }
-.plan-color .section-revelation { background: #b0a6f3; #6b6499;  }
-.plan-color .section-deuterocanonical { background: #efefef;   }
+.plan-color .section-pentateuch { background: #cbf4fb; fill: #cbf4fb;#469eac;  }		
+.plan-color .section-historical { background: #e2f7bd; fill: #e2f7bd; #839f50;  }
+.plan-color .section-poetic { background: #fbf5c3; fill: #fbf5c3; #beb45a;  }
+.plan-color .section-major { background: #f7ddef; fill: #f7ddef; #b38fa8;  }
+.plan-color .section-minor { background: #f7ddef; fill: #f7ddef; #b18da7;  }
+.plan-color .section-gospel { background: #fdc6ca; fill: #fdc6ca; #ce1f2c;  }
+.plan-color .section-acts { background: #fbe6ac; fill: #fbe6ac; #deb545;  }
+.plan-color .section-pauline, .plan-color .section-pastoral { background: #bafdf6; fill: #bafdf6; #008376;  }
+.plan-color .section-general { background: #c0f9ae; fill: #c0f9ae; #5d974b;  }
+.plan-color .section-revelation { background: #b0a6f3; fill: #b0a6f3; #6b6499;  }
+.plan-color .section-deuterocanonical { background: #efefef; fill: #efefef;   }
 
 
 .plan-books {
@@ -356,4 +356,8 @@ iframe.pdf {
 .plan-stats th, 
 .plan-stats td {
 	text-align: left;
+}
+
+#output svg {
+	width: 100%;
 }

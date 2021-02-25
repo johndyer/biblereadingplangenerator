@@ -367,3 +367,267 @@ function buildbooks(lang, data, startDate, duration, bookList, dayList, showStat
 	return html.join('\n');
 	
 }
+
+function buildcircle(lang, data, startDate, duration, bookList, dayList, showStats) {
+
+	var dateEntries = [];
+	for (var i=0; i<data.days.length; i++) {
+		var entry = data.days[i];
+		var bookInfo = entry.chapters.length > 0 ? bible.BIBLE_DATA[entry.chapters[0].usfm] : null;		
+		var cssClass = 'section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '');
+
+		dateEntries.push({
+			date: entry.date,
+			text: entry.formattedReading,
+			sliceColor: '#fff',
+			sliceCssClass: cssClass,
+		})
+	}
+
+	var svgNode = svgCalendar(dateEntries, lang);
+	
+	return svgNode.outerHTML;
+}
+
+function svgCalendar(dateEntries, lang) {
+
+	const settings = {
+		mainSize: 1000,		
+		radius: 490,
+		mainCircleFill: '#fcfcfc',
+		mainCircleStroke: '#111111',
+		monthLineLength: 180,
+		monthLineStroke: '#999',
+		weekLineLength: 150,
+		weekLineStroke: '#bbb',
+		dayLineLength: 150,
+		dayLineStroke: '#ddd',
+
+		monthFontFamily: 'Helvetica, Arial',
+		monthFontColor: '#333',
+		monthFontSize: '10px',
+
+		entryFontColor: '#333',
+		entryFontFamily: 'Helvetica, Arial',
+		entryFontSize: '6px',
+
+		dateFontColor: '#999',
+		dateFontFamily: 'Consolas, Courier New, monospace',		
+
+		titleText: 'Bible Reading Plan',
+		titleFontFamily: 'Helvetica, Arial',
+		titleFontSize: '24px',
+		titleFontFill: '#111',  		
+	};
+
+	const segments = dateEntries.length;
+
+	if (segments <= 180) {
+		settings.entryFontSize = '8px';
+	}
+	if (segments <= 60) {
+		settings.entryFontSize = '10px';
+	}
+
+	
+	// main nodes
+	//const targetDiv = document.getElementById('svg-area');
+	const svgNode = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+	svgNode.setAttributeNS(null, 'height', settings.mainSize);
+	svgNode.setAttributeNS(null, 'width', settings.mainSize);
+	svgNode.setAttributeNS(null, 'viewBox', '-' + (settings.mainSize/2) + ' -' + (settings.mainSize/2) + ' ' + (settings.mainSize) + ' ' + (settings.mainSize));
+	svgNode.setAttributeNS(null, 'transform', 'rotate(-90)');
+	//targetDiv.appendChild(svgNode);
+	//document.body.appendChild(svgNode);
+
+	const circleNode = createSvgNode('circle', {
+			'r': settings.radius, 
+			'fill': settings.mainCircleFill, 
+			'stroke': settings.mainCircleStroke, 
+			'stroke-width': 0.5});
+	svgNode.appendChild(circleNode);
+	
+
+	for (var i=0; i<segments; i++) {
+	
+		const dateEntry = dateEntries[i];		
+		const planDate = dateEntry.date;
+	
+		const secondHalf = i>segments/2;
+		const segmentAddition = 0.5; // move half way
+		const lineLocation = getCoordinatesForPercent(i/segments);
+		const sliceEndLocation = getCoordinatesForPercent((i+1)/segments);
+		const textLocation = getCoordinatesForPercent((i+segmentAddition)/segments);   
+	
+		// SLICE
+	
+		const sliceNode = createSvgNode('path', {			
+			'fill': dateEntry.sliceColor, 
+			'class': dateEntry.sliceCssClass,
+			'style': 'opacity: 0.3',
+			'd': [
+				`M ${lineLocation[0]*settings.radius} ${lineLocation[1]*settings.radius}`, // Move
+				`A ${settings.radius} ${settings.radius} 0 0 1 ${sliceEndLocation[0]*settings.radius} ${sliceEndLocation[1]*settings.radius}`, // Arc
+				`L 0 0`, // Line
+			  ].join(' ')
+		});
+		svgNode.appendChild(sliceNode);
+	   
+	
+		// LINEs
+		const lineLength = planDate.getDate() == 1 ? settings.monthLineLength : settings.dayLineLength;
+		const lineColor = planDate.getDate() == 1 ? settings.monthLineStroke : planDate.getDay() == 0 ? settings.weekLineStroke : settings.dayLineStroke;
+		const lineNode = createSvgNode('line', {
+							'x1': (settings.radius) * lineLocation[0] /* + center */, 
+							'y1': (settings.radius) * lineLocation[1] /* + center */, 
+							'x2': (settings.radius-lineLength) * lineLocation[0] /* + center */,
+							'y2': (settings.radius-lineLength) * lineLocation[1] /* + center */,
+							'stroke': lineColor});
+		svgNode.appendChild(lineNode);     
+	
+		// MONTH NAMEs
+		if (planDate.getDate() == 1 ) {
+
+			const curveEndLocation = getCoordinatesForPercent((i+30)/segments);
+
+			const monthRadius = 250;			
+			const id = 'mpath-' + planDate.getMonth();
+	
+			const monthPath = createSvgNode('path', {
+				'id': id, 
+				'fill': 'transparent', 
+				'stroke': 'transparent', 				
+				'd': `M ${monthRadius * lineLocation[0]} ${monthRadius * lineLocation[1]} A ${monthRadius} ${monthRadius} 0 0 1 ${monthRadius * curveEndLocation[0]} ${monthRadius * curveEndLocation[1]}`
+			});
+			svgNode.appendChild(monthPath);
+	
+			const monthTextNode = createSvgNode('text', {
+				'font-family': settings.monthFontFamily,
+				'font-size': settings.monthFontSize,
+				'fill': settings.monthFontColor,      
+			});
+			svgNode.appendChild(monthTextNode);
+			monthTextNode.appendChild(
+					createTextPath( planDate.toLocaleDateString(lang, {month:"long"}).toUpperCase(), {
+						'href': '#' + id, 
+						'startOffset':'50%', 
+						'text-anchor':'middle'
+					})
+			);
+		}
+
+		const 
+			textInset = 3,			
+			textX = (settings.radius-textInset) * textLocation[0],
+			textY = (settings.radius-textInset) * textLocation[1],
+			textR = ((i+segmentAddition)/segments * 360 + (secondHalf ? -180 : 0));  		
+	
+		// CREATE Text
+		const textNode = createSvgNode('text', {
+			'x': textX, 
+			'y': textY,  			
+			'transform': 'rotate(' + textR + ' ' + textX + ' ' +  textY + ')',			
+			'font-family': settings.entryFontFamily,
+			'font-size': settings.entryFontSize,
+			'fill': settings.entryFontColor,   
+			'dominant-baseline': 'middle',
+			'text-anchor': secondHalf ? 'start' : 'end',     
+		});
+	 
+		if (!secondHalf) {
+			textNode.appendChild(createTSpan(dateEntry.text + ' ', {"padding-right": '10px'}));
+		}
+
+		
+		const mm = dateEntry.date.getMonth() + 1;
+		const dd = dateEntry.date.getDate();
+		const formattedDate = [
+				(mm>9 ? '' : '0') + mm,
+				(dd>9 ? '' : '0') + dd
+			   ].join('/');
+	
+		textNode.appendChild( 
+					createTSpan(' ' + formattedDate + ' ', {
+						'fill': settings.dateFontColor, 
+						'font-family': settings.dateFontFamily,
+					}) 
+				);
+		
+		if (secondHalf) {
+			textNode.appendChild(createTSpan(' ' + dateEntry.text));
+		}
+	
+		svgNode.appendChild(textNode);
+	
+		// adjust position
+ 
+	}
+	
+	// INNER CIRCLE
+	const innerCircle = createSvgNode('circle', {r: 240, /* cx: center, cy: center, */ fill: '#fff', stroke: '#ccc'});
+	svgNode.appendChild(innerCircle);
+	
+	const innerCircle2 = createSvgNode('circle', {r: 200, /* cx: center, cy: center, */ fill: '#fff', stroke: '#ccc'});
+	svgNode.appendChild(innerCircle2);
+	
+	// TITLE
+	const titleNode = createSvgNode('text', {
+		'font-family': settings.titleFontFamily, 
+		'font-size': settings.titleFontSize, 
+		'fill': settings.titleFontFill,		 		
+		'transform': 'rotate(90)',
+		'dominant-baseline': 'middle',
+		'text-anchor': 'middle',    
+	});
+	svgNode.appendChild(titleNode);
+	titleNode.appendChild(createTSpan(settings.titleText));
+	
+	//document.body.removeChild(svgNode);
+
+	return svgNode;
+
+}
+
+Date.prototype.formattedDate = function() {
+    var mm = this.getMonth() + 1; // getMonth() is zero-based
+    var dd = this.getDate();
+  
+    return [
+            (mm>9 ? '' : '0') + mm,
+            (dd>9 ? '' : '0') + dd
+           ].join('/');
+};
+function getCoordinatesForPercent(percent) {
+    const x = Math.cos(2 * Math.PI * percent);
+    const y = Math.sin(2 * Math.PI * percent);
+
+    return [x, y];
+}
+
+function createSvgNode(typeName, attributes = {}) {
+    const svgNode = document.createElementNS('http://www.w3.org/2000/svg', typeName);
+
+    setSvgAtts(svgNode, attributes);
+
+    return svgNode;
+}
+
+function setSvgAtts(node, attributes = {}) {
+    for (const [key, value] of Object.entries(attributes)) {
+        node.setAttributeNS(null, key, value);
+    }
+}
+
+function createTSpan(text, attributes = {}) {
+    const tSpan = createSvgNode('tspan', attributes);
+    var spanText = document.createTextNode( text );
+    tSpan.appendChild(spanText);
+    return tSpan;
+}
+
+function createTextPath(text, attributes = {}) {
+    const tSpan = createSvgNode('textPath', attributes);
+    var spanText = document.createTextNode( text );
+    tSpan.appendChild(spanText);
+    return tSpan;
+}
