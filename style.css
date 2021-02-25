@@ -348,3 +348,12 @@ iframe.pdf {
 	border: 0;
 	height: 8in;
 }
+
+.plan-stats {
+	margin: 0.5in auto 0;
+	width: 250px;
+}
+.plan-stats th, 
+.plan-stats td {
+	text-align: left;
+}

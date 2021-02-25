@@ -76,4 +76,4 @@ for (var usfm in wordcounts) {
 
 exports.wordcounts = wordcounts;
 	
-})(bible);
+})(bible || {});

@@ -1,32 +1,3 @@
-/*
-(function() {
-	
-	var totalVerses = 0;
-	
-	for (var i=0; i<bible.pericopes.length;i++ ) {
-		totalVerses += bible.pericopes[i].range.length;
-	}
-	console.log('pericopes total', totalVerses);
-
-})();
-
-(function() {
-	
-	var totalVerses = 0;
-	
-	for (var i=0; i<bible.DEFAULT_BIBLE.length;i++ ) {
-		var book = bible.BIBLE_DATA[bible.DEFAULT_BIBLE[i]];
-		for (var j=0; j<book.chapters.length; j++) {
-			totalVerses += book.chapters[j];
-		}
-	}
-	console.log('bible total', totalVerses);
-
-})();
-*/
-
-
-
 // EVENTS
 $('#section-time input, ' + 
 	'#section-days input, ' + 
