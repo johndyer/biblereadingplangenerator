@@ -206,6 +206,21 @@ bible.pericopes = [
 			"GEN_6_20",
 			"GEN_6_21",
 			"GEN_6_22",
+		]
+	},
+	{
+		"heading": "Noah and the Flood",
+		"start": "GEN_7_1",
+		"end": "GEN_7_24",
+		"range": [			
+			"GEN_7_1",
+			"GEN_7_2",
+			"GEN_7_3",
+			"GEN_7_4",
+			"GEN_7_5",
+			"GEN_7_6",
+			"GEN_7_7",
+			"GEN_7_8",
 			"GEN_7_9",
 			"GEN_7_10",
 			"GEN_7_11",
@@ -222,6 +237,13 @@ bible.pericopes = [
 			"GEN_7_22",
 			"GEN_7_23",
 			"GEN_7_24",
+		]
+	},
+	{
+		"heading": "Noah and the Flood",
+		"start": "GEN_8_1",
+		"end": "GEN_8_22",
+		"range": [			
 			"GEN_8_1",
 			"GEN_8_2",
 			"GEN_8_3",
@@ -7742,6 +7764,27 @@ bible.pericopes = [
 			"DEU_23_23",
 			"DEU_23_24",
 			"DEU_23_25",
+		]
+	},
+	{
+		"heading": "Miscellaneous Laws",
+		"start": "DEU_24_1",
+		"end": "DEU_24_22",
+		"range": [
+			"DEU_24_1",
+			"DEU_24_2",
+			"DEU_24_3",
+			"DEU_24_4",
+			"DEU_24_5",
+			"DEU_24_6",
+			"DEU_24_7",
+			"DEU_24_8",
+			"DEU_24_9",
+			"DEU_24_10",
+			"DEU_24_11",
+			"DEU_24_12",
+			"DEU_24_13",
+			"DEU_24_14",					
 			"DEU_24_15",
 			"DEU_24_16",
 			"DEU_24_17",
@@ -7750,6 +7793,13 @@ bible.pericopes = [
 			"DEU_24_20",
 			"DEU_24_21",
 			"DEU_24_22",
+		]
+	},
+	{
+		"heading": "Miscellaneous Laws",
+		"start": "DEU_25_1",
+		"end": "DEU_25_19",
+		"range": [			
 			"DEU_25_1",
 			"DEU_25_2",
 			"DEU_25_3",
@@ -8510,7 +8560,7 @@ bible.pericopes = [
 	},
 	{
 		"heading": "Northern Kings Defeated",
-		"start": "JOS_11_1",
+		"start": "JOS_12_1",
 		"end": "JOS_11_23",
 		"range": [
 			"JOS_11_1",
@@ -8550,7 +8600,23 @@ bible.pericopes = [
 			"JOS_12_5",
 			"JOS_12_6",
 			"JOS_12_7",
-			"JOS_12_8"
+			"JOS_12_8",
+			"JOS_12_9",
+			"JOS_12_10",
+			"JOS_12_11",
+			"JOS_12_12",
+			"JOS_12_13",
+			"JOS_12_14",
+			"JOS_12_15",
+			"JOS_12_16",
+			"JOS_12_17",
+			"JOS_12_18",
+			"JOS_12_19",
+			"JOS_12_20",
+			"JOS_12_21",
+			"JOS_12_22",
+			"JOS_12_23",
+			"JOS_12_24"
 		]
 	},
 	{
@@ -10224,10 +10290,9 @@ bible.pericopes = [
 	},
 	{
 		"heading": "Samuel Subdues the Philistines at Mizpah",
-		"start": "1SA_7_2",
+		"start": "1SA_7_3",
 		"end": "1SA_7_17",
-		"range": [
-			"1SA_7_2",
+		"range": [			
 			"1SA_7_3",
 			"1SA_7_4",
 			"1SA_7_5",
@@ -14552,6 +14617,8 @@ bible.pericopes = [
 		"start": "1CH_3_1",
 		"end": "1CH_3_24",
 		"range": [			
+			"1CH_3_1",
+			"1CH_3_2",
 			"1CH_3_3",
 			"1CH_3_4",
 			"1CH_3_5",
@@ -15534,7 +15601,7 @@ bible.pericopes = [
 	{
 		"heading": "The Musicians",
 		"start": "1CH_25_1",
-		"end": "1CH_25_8",
+		"end": "1CH_25_31",
 		"range": [
 			"1CH_25_1",
 			"1CH_25_2",
@@ -15543,7 +15610,30 @@ bible.pericopes = [
 			"1CH_25_5",
 			"1CH_25_6",
 			"1CH_25_7",
-			"1CH_25_8"
+			"1CH_25_8",
+			"1CH_25_9",
+			"1CH_25_10",
+			"1CH_25_11",
+			"1CH_25_12",
+			"1CH_25_13",
+			"1CH_25_14",
+			"1CH_25_15",
+			"1CH_25_16",
+			"1CH_25_17",
+			"1CH_25_18",
+			"1CH_25_19",
+			"1CH_25_20",
+			"1CH_25_21",
+			"1CH_25_22",
+			"1CH_25_23",
+			"1CH_25_24",
+			"1CH_25_25",
+			"1CH_25_26",
+			"1CH_25_27",
+			"1CH_25_28",
+			"1CH_25_29",
+			"1CH_25_30",
+			"1CH_25_31"
 		]
 	},
 	{
@@ -23068,6 +23158,20 @@ bible.pericopes = [
 		]
 	},
 	{
+		"heading": "Introduction",
+		"start": "PRO_1_1",
+		"end": "PRO_1_7",
+		"range": [
+			"PRO_1_1",
+			"PRO_1_2",
+			"PRO_1_3",
+			"PRO_1_4",
+			"PRO_1_5",
+			"PRO_1_6",
+			"PRO_1_7"
+		]
+	},
+	{
 		"heading": "Warning Against the Invitation of Sinful Men",
 		"start": "PRO_1_8",
 		"end": "PRO_1_19",
@@ -23958,7 +24062,7 @@ bible.pericopes = [
 	{
 		"heading": "More Proverbs of Solomon",
 		"start": "PRO_25_1",
-		"end": "PRO_29_27",
+		"end": "PRO_25_28",
 		"range": [
 			"PRO_25_1",
 			"PRO_25_2",
@@ -23988,6 +24092,13 @@ bible.pericopes = [
 			"PRO_25_26",
 			"PRO_25_27",
 			"PRO_25_28",
+		]
+	},
+	{
+		"heading": "More Proverbs of Solomon",
+		"start": "PRO_26_1",
+		"end": "PRO_26_28",
+		"range": [			
 			"PRO_26_1",
 			"PRO_26_2",
 			"PRO_26_3",
@@ -24016,6 +24127,13 @@ bible.pericopes = [
 			"PRO_26_26",
 			"PRO_26_27",
 			"PRO_26_28",
+		]
+	},
+	{
+		"heading": "More Proverbs of Solomon",
+		"start": "PRO_27_1",
+		"end": "PRO_27_27",
+		"range": [			
 			"PRO_27_1",
 			"PRO_27_2",
 			"PRO_27_3",
@@ -24043,6 +24161,13 @@ bible.pericopes = [
 			"PRO_27_25",
 			"PRO_27_26",
 			"PRO_27_27",
+		]
+	},
+	{
+		"heading": "More Proverbs of Solomon",
+		"start": "PRO_28_1",
+		"end": "PRO_28_28",
+		"range": [			
 			"PRO_28_1",
 			"PRO_28_2",
 			"PRO_28_3",
@@ -24071,6 +24196,13 @@ bible.pericopes = [
 			"PRO_28_26",
 			"PRO_28_27",
 			"PRO_28_28",
+		]
+	},
+	{
+		"heading": "More Proverbs of Solomon",
+		"start": "PRO_29_1",
+		"end": "PRO_29_27",
+		"range": [			
 			"PRO_29_1",
 			"PRO_29_2",
 			"PRO_29_3",
@@ -24529,7 +24661,7 @@ bible.pericopes = [
 	{
 		"heading": "Song",
 		"start": "SNG_1_1",
-		"end": "SNG_8_14",
+		"end": "SNG_1_17",
 		"range": [
 			"SNG_1_1",
 			"SNG_1_2",
@@ -24548,6 +24680,13 @@ bible.pericopes = [
 			"SNG_1_15",
 			"SNG_1_16",
 			"SNG_1_17",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_2_1",
+		"end": "SNG_2_17",
+		"range": [			
 			"SNG_2_1",
 			"SNG_2_2",
 			"SNG_2_3",
@@ -24565,6 +24704,13 @@ bible.pericopes = [
 			"SNG_2_15",
 			"SNG_2_16",
 			"SNG_2_17",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_3_1",
+		"end": "SNG_3_11",
+		"range": [			
 			"SNG_3_1",
 			"SNG_3_2",
 			"SNG_3_3",
@@ -24576,6 +24722,13 @@ bible.pericopes = [
 			"SNG_3_9",
 			"SNG_3_10",
 			"SNG_3_11",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_4_1",
+		"end": "SNG_4_16",
+		"range": [			
 			"SNG_4_1",
 			"SNG_4_2",
 			"SNG_4_3",
@@ -24592,6 +24745,13 @@ bible.pericopes = [
 			"SNG_4_14",
 			"SNG_4_15",
 			"SNG_4_16",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_5_1",
+		"end": "SNG_5_16",
+		"range": [			
 			"SNG_5_1",
 			"SNG_5_2",
 			"SNG_5_3",
@@ -24608,6 +24768,13 @@ bible.pericopes = [
 			"SNG_5_14",
 			"SNG_5_15",
 			"SNG_5_16",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_6_1",
+		"end": "SNG_6_13",
+		"range": [			
 			"SNG_6_1",
 			"SNG_6_2",
 			"SNG_6_3",
@@ -24621,6 +24788,13 @@ bible.pericopes = [
 			"SNG_6_11",
 			"SNG_6_12",
 			"SNG_6_13",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_7_1",
+		"end": "SNG_7_13",
+		"range": [			
 			"SNG_7_1",
 			"SNG_7_2",
 			"SNG_7_3",
@@ -24634,6 +24808,13 @@ bible.pericopes = [
 			"SNG_7_11",
 			"SNG_7_12",
 			"SNG_7_13",
+		]
+	},
+	{
+		"heading": "Song",
+		"start": "SNG_8_1",
+		"end": "SNG_8_14",
+		"range": [			
 			"SNG_8_1",
 			"SNG_8_2",
 			"SNG_8_3",
@@ -24652,9 +24833,10 @@ bible.pericopes = [
 	},
 	{
 		"heading": "A Rebellious Nation",
-		"start": "ISA_1_2",
+		"start": "ISA_1_1",
 		"end": "ISA_1_31",
 		"range": [
+			"ISA_1_1",
 			"ISA_1_2",
 			"ISA_1_3",
 			"ISA_1_4",
@@ -26494,7 +26676,7 @@ bible.pericopes = [
 	{
 		"heading": "Judgment and Hope",
 		"start": "ISA_66_1",
-		"end": "JER_1_3",
+		"end": "ISA_66_24",
 		"range": [
 			"ISA_66_1",
 			"ISA_66_2",
@@ -26519,10 +26701,17 @@ bible.pericopes = [
 			"ISA_66_21",
 			"ISA_66_22",
 			"ISA_66_23",
-			"ISA_66_24",
-			"ISA_1_1",
-			"ISA_1_2",
-			"ISA_1_3"
+			"ISA_66_24"
+		]
+	},
+	{
+		"heading": "",
+		"start": "JER_1_1",
+		"end": "JER_1_3",
+		"range": [			
+			"JER_1_1",
+			"JER_1_2",
+			"JER_1_3"
 		]
 	},
 	{
@@ -31009,7 +31198,7 @@ bible.pericopes = [
 	{
 		"heading": "Repentance to Bring Blessing",
 		"start": "HOS_14_1",
-		"end": "JOL_1_1",
+		"end": "HOS_14_9",
 		"range": [
 			"HOS_14_1",
 			"HOS_14_2",
@@ -31019,15 +31208,15 @@ bible.pericopes = [
 			"HOS_14_6",
 			"HOS_14_7",
 			"HOS_14_8",
-			"HOS_14_9",
-			"HOS_1_1"
+			"HOS_14_9"
 		]
 	},
 	{
 		"heading": "An Invasion of Locusts",
-		"start": "JOL_1_2",
+		"start": "JOL_1_1",
 		"end": "JOL_1_12",
 		"range": [
+			"JOL_1_1",
 			"JOL_1_2",
 			"JOL_1_3",
 			"JOL_1_4",
@@ -32349,7 +32538,7 @@ bible.pericopes = [
 	{
 		"heading": "The Lord Comes and Reigns",
 		"start": "ZEC_14_1",
-		"end": "MAL_1_1",
+		"end": "ZEC_14_21",
 		"range": [
 			"ZEC_14_1",
 			"ZEC_14_2",
@@ -32371,15 +32560,15 @@ bible.pericopes = [
 			"ZEC_14_18",
 			"ZEC_14_19",
 			"ZEC_14_20",
-			"ZEC_14_21",
-			"ZEC_1_1"
+			"ZEC_14_21"
 		]
 	},
 	{
 		"heading": "Israel Doubts God’s Love",
-		"start": "MAL_1_2",
+		"start": "MAL_1_1",
 		"end": "MAL_1_5",
 		"range": [
+			"MAL_1_1",
 			"MAL_1_2",
 			"MAL_1_3",
 			"MAL_1_4",
@@ -33562,7 +33751,7 @@ bible.pericopes = [
 	{
 		"heading": "Jesus Heals a Demon-Possessed Boy",
 		"start": "MAT_17_14",
-		"end": "MAT_17_20",
+		"end": "MAT_17_21",
 		"range": [
 			"MAT_17_14",
 			"MAT_17_15",
@@ -33570,7 +33759,8 @@ bible.pericopes = [
 			"MAT_17_17",
 			"MAT_17_18",
 			"MAT_17_19",
-			"MAT_17_20"
+			"MAT_17_20",
+			"MAT_17_21",
 		]
 	},
 	{
@@ -35207,7 +35397,7 @@ bible.pericopes = [
 	{
 		"heading": "Jesus Curses a Fig Tree and Clears the Temple Courts",
 		"start": "MRK_11_12",
-		"end": "MRK_11_25",
+		"end": "MRK_11_26",
 		"range": [
 			"MRK_11_12",
 			"MRK_11_13",
@@ -35222,7 +35412,8 @@ bible.pericopes = [
 			"MRK_11_22",
 			"MRK_11_23",
 			"MRK_11_24",
-			"MRK_11_25"
+			"MRK_11_25",
+			"MRK_11_26"
 		]
 	},
 	{
@@ -42441,27 +42632,15 @@ bible.pericopes = [
 			"GAL_6_15",
 			"GAL_6_16",
 			"GAL_6_17",
-			"GAL_6_18",
-			"GAL_1_1",
-			"GAL_1_2"
+			"GAL_6_18"
 		]
 	},
-	/*
-	{
-		"heading": "Greeting",
-		"start": "EPH_1_1",
-		"end": "EPH_1_2",
-		"range": [
-			"EPH_1_2",
-			"EPH_1_3"
-		]
-	},	
-	*/
 	{
 		"heading": "Praise for Spiritual Blessings in Christ",
 		"start": "EPH_1_1",
 		"end": "EPH_1_14",
 		"range": [
+			"EPH_1_1",
 			"EPH_1_2",
 			"EPH_1_3",			
 			"EPH_1_3",
@@ -42900,10 +43079,10 @@ bible.pericopes = [
 	},
 	{
 		"heading": "Greetings",
-		"start": "COL_1_3",
+		"start": "COL_1_1",
 		"end": "COL_1_2",
 		"range": [
-			"COL_1_3",
+			"COL_1_1",
 			"COL_1_2"
 		]
 	},	
@@ -43485,9 +43664,7 @@ bible.pericopes = [
 			"1TI_6_18",
 			"1TI_6_19",
 			"1TI_6_20",
-			"1TI_6_21",
-			"1TI_1_1",
-			"1TI_1_2"
+			"1TI_6_21"
 		]
 	},
 	{
@@ -44606,8 +44783,8 @@ bible.pericopes = [
 		"start": "2PE_1_1",
 		"end": "2PE_1_2",
 		"range": [
-			"1PE_1_1",
-			"1PE_1_2"
+			"2PE_1_1",
+			"2PE_1_2"
 		]
 	},
 	{
