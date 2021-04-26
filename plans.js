@@ -712,47 +712,6 @@ function appendDaysToSunday(days) {
 	return days;	
 }
 
-
-function formatChapterRangeComma(lang, chapters, isFullname) {
-	
-	isFullname = isFullname || false;
-	
-	if (!chapters || chapters == null || chapters.length == 0) {
-		return '';
-	}
-	
-	var formatted = '',
-		lastBookUsfm = '',
-		lastChapterNumber = 0;
-
-	for (var i=0; i<chapters.length; i++) {
-		var chapter = chapters[i],
-			bookInfo = bible.BIBLE_DATA[chapter.usfm];
-		
-		// new book
-		if (chapter.usfm != lastBookUsfm)  {
-			if (i > 0) {
-				formatted += '; ';
-			}			
-			
-			formatted += bible.getAbbr(bookInfo, lang) + 
-							( bookInfo.verses.length > 1 ? ' ' + (chapter.chapter) : '');
-
-		} else {
-			if (i > 0) {
-				formatted += ', ';
-			}			
-			
-			formatted += chapter.chapter.toString();
-		}
-		
-		lastBookUsfm = chapter.usfm;
-	}
-	
-	
-	return formatted;
-}
-
 function formatChapterGroupsRange(lang, chapterGroups, isFullname) {
 	var mergedChapters = [].concat.apply([], chapterGroups);
 	return formatChapterRange(lang, mergedChapters, isFullName)
@@ -778,14 +737,17 @@ function formatChapterRange(lang, chapters, isFullname) {
 
 		// new book
 		if (chapter.usfm != previousBookUsfm)  {
+			
+			
 			// past the first entry for this day
 			if (i > 0) {
 				// 
-				if (firstChapterOfBook != previousChapterNumber) {
+				if (firstChapterOfBook != previousChapterNumber && previousChapterWasRange) {
 					formatted += '-' + previousChapterNumber.toString();
 				}
 				formatted += '; ';
 			}
+			previousChapterWasRange = false;
 			
 			// stary with the book name/abbr
 			formatted += bible.getAbbr(bookInfo, lang);
@@ -838,50 +800,89 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 	if (!pericopes || pericopes == null || pericopes.length == 0) {
         return '';
 	}
+
+	// create pairs 
 	
-	var formatted = '',
-		firstPericope = pericopes[0],
-		firstBookUsfm = firstPericope.start.split('_')[0],
-		firstBook = bible.BIBLE_DATA[firstBookUsfm],
-		firstChapter = parseInt(firstPericope.start.split('_')[1], 10),
-		firstVerse = parseInt(firstPericope.start.split('_')[2], 10),
-		
-		lastPericope = pericopes[pericopes.length-1],
-		lastBookUsfm = lastPericope.end.split('_')[0],
-		lastBook = bible.BIBLE_DATA[lastBookUsfm],
-		lastChapter = parseInt(lastPericope.end.split('_')[1], 10),
-		lastVerse = parseInt(lastPericope.end.split('_')[2], 10),
-		lastVerseMax = lastBook.chapters[lastChapter-1];
-
-	// first pericope
-	formatted += bible.getAbbr(firstBook, lang) + ' ' + firstChapter;
-		
-	// show verse if the book or chapter is different
-	if (firstBookUsfm !== lastBookUsfm || firstChapter !== lastChapter || firstVerse !== 1 || lastVerse !== lastVerseMax) {
-		
-		// show the verse with the chapter
-		if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
-			formatted += ':' + firstVerse;
+	var pericopePairs = [];
+	pericopes.forEach(function (pericope, index) {
+		if (index == 0) {
+			pericopePairs.push({start: pericope.start, end: ''});
 		}
+		if (index > 0 && index < pericopes.length) {
+			// middle ones. what we gonna do.
+			var prevPericope = pericopes[index-1],
+				prevBookUsfm = prevPericope.end.split('_')[0],				
+				prevChapter = parseInt(prevPericope.end.split('_')[1], 10),							
+				thisBookUsfm = pericope.start.split('_')[0],				
+				thisChapter = parseInt(pericope.start.split('_')[1], 10)
+				;
 
-		formatted += '–';
-
-		// show the final book
-		if (firstBookUsfm !== lastBookUsfm) {
-			formatted += bible.getAbbr(lastBook, lang) + ' ';
-		}
-
-		// show the final chapter an verse
-		if (firstBookUsfm !== lastBookUsfm || firstChapter !== lastChapter) {
-			formatted += lastChapter;
-			if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
-				formatted += ':' + lastVerse;
+			if (prevBookUsfm != thisBookUsfm // change book 
+				|| thisChapter > prevChapter + 1
+				|| thisChapter < prevChapter
+			) {
+				// the last pericope should end a group
+				pericopePairs[pericopePairs.length-1].end = prevPericope.end;
+				// this one should start a new group
+				pericopePairs.push({start: pericope.start, end: ''});
 			} 
-		} else {
-			formatted += lastVerse;
-		}
 			
-	}
+			if (index == pericopes.length -1) {
+				pericopePairs[pericopePairs.length-1].end = pericope.end
+			}
 
+		}
+		
+	});
+	// EPH_1_1-EPH_1_15, EPH_1_16-EPH_1_31, EPH_2_1-EPH_2_15, PSA_1_1-PS_1_12, PSA_6_1-PSA_6_22	
+
+	var formatted = '';
+	pericopePairs.forEach(function(pair, index) {
+		var
+			firstBookUsfm = pair.start.split('_')[0],
+			firstBook = bible.BIBLE_DATA[firstBookUsfm],
+			firstChapter = parseInt(pair.start.split('_')[1], 10),
+			firstVerse = parseInt(pair.start.split('_')[2], 10),
+						
+			lastBookUsfm = pair.end.split('_')[0],
+			lastBook = bible.BIBLE_DATA[lastBookUsfm],
+			lastChapter = parseInt(pair.end.split('_')[1], 10),
+			lastVerse = parseInt(pair.end.split('_')[2], 10),
+			lastVerseMax = lastBook.chapters[lastChapter-1];
+
+		// first pericope
+		formatted += (index > 0 ? '; ' : '') + bible.getAbbr(firstBook, lang) + ' ' + firstChapter;
+			
+		// show verse if the book or chapter is different
+		if (firstBookUsfm !== lastBookUsfm || 
+			firstChapter !== lastChapter || 
+			firstVerse !== 1 || 
+			lastVerse !== lastVerseMax) {
+			
+			// show the verse with the chapter
+			if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
+				formatted += ':' + firstVerse;
+			}
+
+			formatted += '–';
+
+			// show the final book
+			if (firstBookUsfm !== lastBookUsfm) {
+				formatted += bible.getAbbr(lastBook, lang) + ' ';
+			}
+
+			// show the final chapter an verse
+			if (firstBookUsfm !== lastBookUsfm || firstChapter !== lastChapter) {
+				formatted += lastChapter;
+				if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
+					formatted += ':' + lastVerse;
+				} 
+			} else {
+				formatted += lastVerse;
+			}
+				
+		}		
+	});
+	
 	return formatted;
 }
