@@ -350,12 +350,13 @@ iframe.pdf {
 }
 
 .plan-stats {
-	margin: 0.5in auto 0;
-	width: 250px;
+	margin: 0 auto 0.3in;
+	width: 280px;
 }
 .plan-stats th, 
 .plan-stats td {
 	text-align: left;
+	padding-right: 0.175in;
 }
 
 #output svg {

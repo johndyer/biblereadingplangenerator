@@ -33,7 +33,7 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 	html.push('</div>');
 	
 	if (showStats) {
-		html.push(createFinalStats(data.days))
+		html.unshift(createFinalStats(data.days));
 	}	
 	
 	return html.join('\n');
@@ -84,7 +84,7 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 	html.push('</div>');
 	
 	if (showStats) {
-		html.push(createFinalStats(data.days))
+		html.unshift(createFinalStats(data.days))
 	}	
 	
 	return html.join('\n');
@@ -220,12 +220,12 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 				(showStats ?
 					'<span class="stats">' +
 						'verses: ' + dayInfo.versesForToday + '<br>' +
-						// (dayInfo.wordsForToday > 0 ? 
-						// 	'words: ' + dayInfo.wordsForToday + '<br>' +					
-						// 	'minutes: ' + (dayInfo.wordsForToday/250).toFixed(2)
-						// 	: 
-						// 	''
-						// ) + 						
+						(dayInfo.wordsForToday > 0 ? 
+							'words: ' + dayInfo.wordsForToday + '<br>' +					
+							'minutes: ' + (dayInfo.wordsForToday/250).toFixed(2)
+							: 
+							''
+						) + 						
 					'</span>' 
 					: '')
 				: '') + 
@@ -244,7 +244,7 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 	html.push('</table>');
 
 	if (showStats) {
-		html.push(createFinalStats(data.days))
+		html.unshift(createFinalStats(data.days))
 	}
 	
 	
@@ -253,21 +253,34 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 }
 
 function createFinalStats(days) {
-	var stats = getPlanStats(days),
+	var verseStats = getPlanStats(days),
+		wordStats = getPlanWordStats(days),
 		html = `
 			<div class="plan-stats">
 				<table>
 					<tr>
 						<th>Average Verses:</th>
-						<td>${stats.avg.toFixed(2)}</td>
+						<td>${verseStats.avg.toFixed(2)}</td>
+					</tr>`;
+	if (!isNaN(wordStats.avg)) {
+		html += `
+					<tr>
+						<th>Average Words:</th>
+						<td>${wordStats.avg.toFixed(2)}</td>
 					</tr>
 					<tr>
+						<th>Average Time:</th>
+						<td>${(wordStats.avg/200).toFixed(2)} minutes</td>
+					</tr>`;
+	}
+	html += `					
+					<tr>
 						<th>Longest Day:</th>
-						<td>${(days[stats.maxIndex].date.getMonth()+1) + '/' + days[stats.maxIndex].date.getDate()} - ${stats.max} verses</td>
+						<td>${(days[verseStats.maxIndex].date.getMonth()+1) + '/' + days[verseStats.maxIndex].date.getDate()} - ${verseStats.max} verses</td>
 					</tr>	
 					<tr>
 						<th>Shortest Day:</th>
-						<td>${(days[stats.minIndex].date.getMonth()+1) + '/' + days[stats.minIndex].date.getDate()} - ${stats.min} verses</td>
+						<td>${(days[verseStats.minIndex].date.getMonth()+1) + '/' + days[verseStats.minIndex].date.getDate()} - ${verseStats.min} verses</td>
 					</tr>										
 				</table>
 			</div>
