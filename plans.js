@@ -414,10 +414,10 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 						
 						// check if the number of words is more or less than half of what's left
 						var wordsInChapter = bookInfo.words ? bookInfo.words[dataChapterGroup.currentChapterNumber-1] : 500;
-						if (wordsInChapter/2 > wordsForDay && firstDayWithReadingHasPassed) {
+						if (wordsInChapter/2 > wordsForDay && chapterGroup.firstDayWithReadingHasPassed) {
 							break;
 						}
-						firstDayWithReadingHasPassed = true;
+						chapterGroup.firstDayWithReadingHasPassed = true;
 
 						// add this next one
 						dayChapterGroup.chapters.push({
@@ -451,9 +451,13 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 
 	// optimize
 	if (logic == 'pericopes' && dayInfo.chapterGroups.length == 1) { 
-		console.time('optimizePericopes');
+		//console.time('optimizePericopes');
+		try {
 		data.days = optimizePericopes(data.days);
-		console.timeEnd('optimizePericopes');
+		} catch {
+			console.log('error optimizing', data.days);
+		}
+		//console.timeEnd('optimizePericopes');
 	}
 
 	// format
@@ -668,6 +672,29 @@ function getPlanStats(days) {
     return stats;
 }
 
+function getPlanWordStats(days) {
+
+	var countPerGroup = days.filter(day => day.wordsForToday > 0).map(day => day.wordsForToday);
+    var minCount = Math.min(...countPerGroup);
+    var minIndex = countPerGroup.indexOf(minCount);
+    var maxCount = Math.max(...countPerGroup);
+    var maxIndex = countPerGroup.indexOf(maxCount);
+    
+    //console.log(countPerGroup);
+
+    var avgCount = countPerGroup.reduce((a,b) => a + b, 0) / countPerGroup.length;
+    
+    var stats = {
+        'min': minCount,
+        'max': maxCount,
+        'avg': avgCount,
+        'minIndex': minIndex,
+        'maxIndex': maxIndex
+    }
+
+    return stats;
+}
+
 function deepClone(obj) {
 	var regExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 	return JSON.parse(JSON.stringify(obj), function(k, v) {
@@ -805,9 +832,16 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 	
 	var pericopePairs = [];
 	pericopes.forEach(function (pericope, index) {
-		if (index == 0) {
+		// for singles
+		if (index == 0 && pericopes.length == 1) {
+			pericopePairs.push({start: pericope.start, end: pericope.end});
+		}		
+		// for the first one, just use the start and no end
+		if (index == 0 && pericopes.length > 1) {
 			pericopePairs.push({start: pericope.start, end: ''});
 		}
+
+		// for middle ones
 		if (index > 0 && index < pericopes.length) {
 			// middle ones. what we gonna do.
 			var prevPericope = pericopes[index-1],
