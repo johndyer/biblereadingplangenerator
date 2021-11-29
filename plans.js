@@ -414,10 +414,10 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 						
 						// check if the number of words is more or less than half of what's left
 						var wordsInChapter = bookInfo.words ? bookInfo.words[dataChapterGroup.currentChapterNumber-1] : 500;
-						if (wordsInChapter/2 > wordsForDay && chapterGroup.firstDayWithReadingHasPassed) {
+						if (wordsInChapter/2 > wordsForDay && dataChapterGroup.firstDayWithReadingHasPassed) {
 							break;
 						}
-						chapterGroup.firstDayWithReadingHasPassed = true;
+						dataChapterGroup.firstDayWithReadingHasPassed = true;
 
 						// add this next one
 						dayChapterGroup.chapters.push({
@@ -470,30 +470,32 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 			dayInfo.formattedReading = formatChapterRange(lang, dayInfo.chapters);
 		}
 
-		rangeIncludesPsalm = false;
-		rangeIncludesProverb = false;
-		for (var cc=0; cc<dayInfo.chapters.length; cc++) {
-			if (dayInfo.chapters[cc].usfm == 'PSA') {
-				rangeIncludesPsalm = true;
+		if (dayInfo.chapters.length > 0 || dayInfo.pericopes.length > 0) {
+			rangeIncludesPsalm = false;
+			rangeIncludesProverb = false;
+			for (var cc=0; cc<dayInfo.chapters.length; cc++) {
+				if (dayInfo.chapters[cc].usfm == 'PSA') {
+					rangeIncludesPsalm = true;
+				}
+				if (dayInfo.chapters[cc].usfm == 'PRO') {
+					rangeIncludesProverb = true;
+				}			
 			}
-			if (dayInfo.chapters[cc].usfm == 'PRO') {
-				rangeIncludesProverb = true;
-			}			
-		}
 
-		if (dailyPsalm && !rangeIncludesPsalm) {
-			dayInfo.formattedReading += '; Ps ' + psalmNumber;
-			psalmNumber++;
-			if (psalmNumber > psalmMax) {
-				psalmNumber = 1;
+			if (dailyPsalm && !rangeIncludesPsalm) {
+				dayInfo.formattedReading += '; Ps ' + psalmNumber;
+				psalmNumber++;
+				if (psalmNumber > psalmMax) {
+					psalmNumber = 1;
+				}
 			}
-		}
 
-		if (dailyProverb && !rangeIncludesProverb) {
-			dayInfo.formattedReading += '; Pro ' + proverbNumber;
-			proverbNumber++;
-			if (proverbNumber > proverbMax) {
-				proverbNumber = 1;
+			if (dailyProverb && !rangeIncludesProverb) {
+				dayInfo.formattedReading += '; Pro ' + proverbNumber;
+				proverbNumber++;
+				if (proverbNumber > proverbMax) {
+					proverbNumber = 1;
+				}
 			}
 		}
 	});
