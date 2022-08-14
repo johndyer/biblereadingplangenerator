@@ -1,21 +1,22 @@
+<?php include("title.php"); ?>
 <!doctype html>
 <html>
 <head lang="en">
 	<meta charset="utf-8">	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Bible Reading Plan Generator</title>
+	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="style.css?v=2021-11-28b" />
 
-	<meta property="og:title" content="Bible Reading Plan Generator" />
+	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
-	<meta property="og:url" content="https://www.biblereadingplangenerator.com/" />
+	<meta property="og:url" content="https://www.biblereadingplangenerator.com/<?php echo empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'] ?>" />
 	<meta property="og:image" content="https://www.biblereadingplangenerator.com/biblereadingplandemo.png" />
 
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:creator" content="@johndyer" />
-	<meta name="twitter:title" content="Bible Reading Plan Generator" />
+	<meta name="twitter:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta name="twitter:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
 	<meta name="twitter:image" content="https://www.biblereadingplangenerator.com/biblereadingplandemo.png" />	
 </head>
@@ -50,6 +51,7 @@
 						<option value="de">Deutsch (German)</option>
 						<option value="fr">le français (French)</option>
 						<option value="es">español (Spanish)</option>
+						<option value="ru">Ру́сский (Russia)</option>
 						<option value="sv">svenska (Swedish)</option>
 						<option value="sv">हिन्दी (Hindi)</option>
 						<option value="zh-CN">汉语 (Chinese Simplified)</option>
@@ -231,6 +233,7 @@
 		</main>
 		
 		<footer id="main-footer">
+			biblereadingplangenerator.com<br>
 			by <a href="https://j.hn/">John Dyer</a> (@<a href="https://twitter.com/johndyer/">johndyer</a>)
 		</footer>
 	
@@ -250,6 +253,7 @@
 	<script src="bible.data.hi.js?v=2021-11-28b"></script>
 	<script src="bible.data.zh-TW.js?v=2021-11-28b"></script>
 	<script src="bible.data.zh-CN.js?v=2021-11-28b"></script>
+	<script src="bible.data.ru.js?v=2021-11-28b"></script>
 	<script src="bible.data.wordcounts.js?v=2021-11-28b"></script>
 	<script src="bible.reference.js?v=2021-11-28b"></script>
 	<script src="bible.plans.js?v=2021-11-28b"></script>
