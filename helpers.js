@@ -7,9 +7,9 @@ Date.prototype.incrimentDay = function() {
     next.setDate(next.getDate() + 1);
 	return next;
 }
-Date.prototype.pretty = function() {
-	return months[this.getMonth()] + ' ' + this.getDate() + ', ' + this.getFullYear();
-}
+// Date.prototype.pretty = function() {
+// 	return months[this.getMonth()] + ' ' + this.getDate() + ', ' + this.getFullYear();
+// }
 Date.prototype.monthAbbr = function(lang) {
     return this.toLocaleDateString(lang, {month:"short"});
 	//return months[this.getMonth()];

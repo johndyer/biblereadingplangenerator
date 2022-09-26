@@ -28,7 +28,7 @@ select {
 
 
 #main-header {
-	background-color: #333; //#563d7c; /* #77530e; #3c43a6; */
+	background-color: #333; /* //#563d7c; #77530e; #3c43a6; */
 	color: #fff;
 	padding: 30px 0;	
 	margin: 0 0 20px 0;
@@ -164,6 +164,15 @@ input[type=button]:hover {
 #output {
 	flex: 1 1;
 }
+#output h1 {
+	margin-bottom: 0.5in;
+}
+#output h6 {
+	margin-bottom: 0.5in;
+	font-size: 14px;
+	color: #999;
+	display:none;
+}
 
 .is-today {	
 	background: #fff1b9 !important;
@@ -180,11 +189,18 @@ input[type=button]:hover {
 	}
 
 	#main-header {
-		
+		display: none;
 	}
 	#main-footer a {
 		color: #333;
 		text-decoration: none;
+	}
+
+	#output h1 {
+		margin-bottom: 0.125in;
+	}
+	#output h6 {
+		display: block;
 	}
 
 	section.decision {

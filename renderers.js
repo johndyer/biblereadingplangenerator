@@ -253,6 +253,10 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 }
 
 function createFinalStats(days) {
+
+	// calendar view adds dummy days to the front, so the stats need to be offset for that
+	var daysOffset = (days[0].day < 1) ? Math.abs(days[0].day) + 1 : 0;
+
 	var verseStats = getPlanStats(days),
 		wordStats = getPlanWordStats(days),
 		html = `
@@ -276,11 +280,11 @@ function createFinalStats(days) {
 	html += `					
 					<tr>
 						<th>Longest Day:</th>
-						<td>${(days[verseStats.maxIndex].date.getMonth()+1) + '/' + days[verseStats.maxIndex].date.getDate()} - ${verseStats.max} verses</td>
+						<td>${(days[verseStats.maxIndex + daysOffset].date.getMonth()+1) + '/' + days[verseStats.maxIndex + daysOffset].date.getDate()} - ${verseStats.max} verses</td>
 					</tr>	
 					<tr>
 						<th>Shortest Day:</th>
-						<td>${(days[verseStats.minIndex].date.getMonth()+1) + '/' + days[verseStats.minIndex].date.getDate()} - ${verseStats.min} verses</td>
+						<td>${(days[verseStats.minIndex + daysOffset].date.getMonth()+1) + '/' + days[verseStats.minIndex + daysOffset].date.getDate()} - ${verseStats.min} verses</td>
 					</tr>										
 				</table>
 			</div>
