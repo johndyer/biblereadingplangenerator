@@ -231,7 +231,7 @@ function generate(lang, format, doc) {
 	// BUG	
 	//var datastartDate = startDate.addDays(1);
 	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val());
-	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'));	
+	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'), $('#options-nodates').is(':checked'));	
 	
 	return code;
 }
@@ -301,6 +301,7 @@ function updateUrlAndTitle() {
 				'&otntoverlap=' + ($('#options-otntoverlap').is(':checked') ? '1' : '0') +
 				'&reverse=' + ($('#options-reverse').is(':checked') ? '1' : '0') +
 				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
+				'&nodates=' + ($('#options-nodates').is(':checked') ? '1' : '0') +
 				
 		  		''		
 				);
@@ -653,6 +654,9 @@ function startup() {
 	if (urlParams.get('reverse') == '1') {	
 		$('#options-reverse').prop('checked',true);	
 	}	
+	if (urlParams.get('nodates') == '1') {	
+		$('#options-nodates').prop('checked',true);	
+	}		
 	
 	if (urlParams.get('stats') == '1') {	
 		$('#options-stats').prop('checked',true);	

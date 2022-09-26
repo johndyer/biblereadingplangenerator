@@ -1,6 +1,6 @@
 
 
-function buildlist(lang, data, startDate, duration, bookList, dayList, showStats) {
+function buildlist(lang, data, startDate, duration, bookList, dayList, showStats, noDates) {
 	
 	var html = [],
 		today = new Date();
@@ -15,12 +15,12 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 			bookInfo = dayInfo.chapters.length > 0 ? bible.BIBLE_DATA[dayInfo.chapters[0].usfm] : null;
 		//var fixeddate = dayInfo.date.addDays(1);
 		//html.push('<tr>');
-		if (lastMonth != dayInfo.date.getMonth()) {
+		if (lastMonth != dayInfo.date.getMonth() && !noDates) {
 			html.push('<div class="entry month-divider">' + dayInfo.date.monthName(lang) + '</div>');
 		}
 
 		html.push('<div class="entry ' + (isSameDay(today, dayInfo.date) ? ' is-today': '') + ' section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
-		html.push('<div class="date">' + dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate()) + '</div>');		
+		html.push('<div class="date">' + (noDates ? '' : dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate())) + '</div>');		
 		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
 		if (dayInfo.formattedReading != '') {
 			html.push('<div class="verses">' + dayInfo.formattedReading + '</div>');		
@@ -40,7 +40,7 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 	
 }
 
-function buildweeks(lang, data, startDate, duration, bookList, dayList, showStats) {
+function buildweeks(lang, data, startDate, duration, bookList, dayList, showStats, noDates) {
 	
 	var html = [],
 		weekNumber = 1,
@@ -70,7 +70,7 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 		}
 			
 		html.push('<div class="entry ' + (isSameDay(today, dayInfo.date) ? ' is-today': '') + ' section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '') + '">');
-		html.push('<div class="date">' + dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate()) + '</div>');		
+		html.push('<div class="date">' + (noDates ? '' : dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate())) + '</div>');		
 		
 		if (dayInfo.formattedReading != '') {
 			html.push('<div class="verses">' + dayInfo.formattedReading + '</div>');		
@@ -156,7 +156,7 @@ function buildcsv(lang, data, startDate, duration, bookList, dayList, showStats)
 
 
 
-function buildcalendar(lang, data, startDate, duration, bookList, dayList, showStats) {
+function buildcalendar(lang, data, startDate, duration, bookList, dayList, showStats, noDates) {
 	
 	//var daysOfWeek = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	
@@ -213,7 +213,7 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 					(lastweek ? ' lastweek' : '') + 
 					(isSameDay(today, dayInfo.date) ? ' is-today': '') +
 			'">' + 
-			'<span class="date">' + (firstday ? dayInfo.date.monthAbbr(lang) + ' ' : '') + dayInfo.date.getDate() + '</span>' + 
+			'<span class="date">' + (noDates ? '' : (firstday ? dayInfo.date.monthAbbr(lang) + ' ' : '') + dayInfo.date.getDate()) + '</span>' + 
 			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
 			(dayInfo.formattedReading != '' ? 
 				'<span class="verses">' + dayInfo.formattedReading + '</span>' +
@@ -293,7 +293,7 @@ function createFinalStats(days) {
 
 }
 
-function buildbooks(lang, data, startDate, duration, bookList, dayList, showStats) {
+function buildbooks(lang, data, startDate, duration, bookList, dayList, showStats, noDates) {
 	
 	var html = [],
 		today = new Date();
@@ -363,7 +363,8 @@ function buildbooks(lang, data, startDate, duration, bookList, dayList, showStat
 			}
 			
 			html.push('<span class="box chapter ' + (isSameDay(today, dayInfo.date) ? ' is-today': '') + ' section-' + bible.SECTIONS[bookInfo.section] + ' chapters-' + chaptersOnThisDay + '">' + 
-				(dayInfo.date.getMonth()+1) + '/' + (dayInfo.date.getDate()) + ': ' + startChapter + (startChapter != endChapter ? '-' + endChapter : '') +
+				(noDates ? '' : (dayInfo.date.getMonth()+1) + '/' + (dayInfo.date.getDate()) + ': ' ) + 
+				startChapter + (startChapter != endChapter ? '-' + endChapter : '') +
 			'</span>');
 			
 			lastBookUsfm = chapter.usfm;	
@@ -385,7 +386,7 @@ function buildbooks(lang, data, startDate, duration, bookList, dayList, showStat
 	
 }
 
-function buildcircle(lang, data, startDate, duration, bookList, dayList, showStats) {
+function buildcircle(lang, data, startDate, duration, bookList, dayList, showStats, noDates) {
 
 	var dateEntries = [];
 	for (var i=0; i<data.days.length; i++) {
@@ -401,12 +402,12 @@ function buildcircle(lang, data, startDate, duration, bookList, dayList, showSta
 		})
 	}
 
-	var svgNode = svgCalendar(dateEntries, lang);
+	var svgNode = svgCalendar(dateEntries, lang, noDates);
 	
 	return svgNode.outerHTML;
 }
 
-function svgCalendar(dateEntries, lang) {
+function svgCalendar(dateEntries, lang, noDates) {
 
 	const settings = {
 		mainSize: 1000,		
@@ -558,10 +559,14 @@ function svgCalendar(dateEntries, lang) {
 		
 		const mm = dateEntry.date.getMonth() + 1;
 		const dd = dateEntry.date.getDate();
-		const formattedDate = [
+		let formattedDate = [
 				(mm>9 ? '' : '0') + mm,
 				(dd>9 ? '' : '0') + dd
 			   ].join('/');
+			
+		if (noDates) {
+			formattedDate = (i+1).toString().padStart(segments.toString().length, '0');
+		}
 	
 		textNode.appendChild( 
 					createTSpan(' ' + formattedDate + ' ', {
