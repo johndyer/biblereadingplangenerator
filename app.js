@@ -199,7 +199,7 @@ function updateDisplay() {
 		$('#output').attr('dir','ltr');
 	}
 
-	updateUrl();	
+	updateUrlAndTitle();
 }
 
 function generate(lang, format, doc) {
@@ -237,7 +237,7 @@ function generate(lang, format, doc) {
 }
 
 
-function updateUrl() {
+function updateUrlAndTitle() {
 	// params
 	var start = $('#time-startdate').val(),
 		total = $('#time-days').val(),
@@ -279,6 +279,10 @@ function updateUrl() {
 		
 	}
 
+	var dailypsalm = $('#options-dailypsalm').is(':checked') ? '1' : '0',
+		dailyproverb = $('#options-dailyproverb').is(':checked') ? '1' : '0';
+
+
 	// update URL
 	history.replaceState({}, 'page', 
 				'?start=' + start + 
@@ -298,11 +302,105 @@ function updateUrl() {
 				'&reverse=' + ($('#options-reverse').is(':checked') ? '1' : '0') +
 				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
 				
-
 		  		''		
 				);
 
 	
+	var title = '';
+	
+
+    // BOOKS
+    if (order == 'traditional') {
+        if (books == 'OT,NT') {
+            title = 'Bible Reading Plan';
+        } else if (books == 'NT') {
+            title = 'New Testament Reading Plan';
+        } else if (books == 'OT') {
+            title = 'Old Testament Reading Plan';
+        } else if (books == 'DC') {
+            title = 'Deuterocanonical Reading Plan';
+		} else if (books == 'OT,DC,NT') {
+            title = 'Bible Reading Plan (with Deuterocanonical)';			
+        } else {
+            title = 'Custom Reading Plan';
+        }
+    } else if (order == 'chronological') {
+        if (books == 'OT,NT') {
+        	title = 'Chronological Bible Reading Plan';
+        } else if (books == 'NT') {
+            title = 'Chronological NT Reading Plan';
+        } else if (books == 'OT') {
+            title = 'Chronological OT Reading Plan';
+        }
+    } else if (order == 'tanakh') {
+        title = 'Tanakh Reading Plan';
+    } else if (order == 'mcheyne') {
+        title = 'M\'Cheyne Reading Plan';
+    }
+
+    // extras
+    if (dailypsalm == '1' && dailyproverb == '1') {
+        title += ' with daily Psalm and Proverb';
+    } else if (dailyproverb == '1') {
+        title += ' with daily Proverb';
+    } else if (dailypsalm == '1') {
+        title += ' with daily Psalm';
+    }
+
+    // days
+
+    if (daysofweek == '1,2,3,4,5,6,7') {
+        title += ' - Daily Reading';
+    } else if (daysofweek == '2,3,4,5,6') {
+        title += ' - Weekends Off';
+    } else if (daysofweek == '2,3,4,5,6,7') {
+        title += ' - Sundays Off';
+    } else if (daysofweek == '1,2,3,4,5,6') {
+        title += ' - Saturdays Off';
+    } else {
+        nums = array("1","2","3","4","5","6","7");
+        days = array("S","M","T","W","R","F","S");
+		nums.forEach(function(val, index) {
+			daysofweek = daysofweek.replace(val, days[i])
+		});
+
+        $title += ' - ' + daysofweek;
+    }
+
+    // date 
+	var dateparts = start.split('-'),
+		startDate = new Date(parseInt(dateparts[0], 10), parseInt(dateparts[1], 10)-1,parseInt(dateparts[2], 10)),
+		endDate = startDate.addDays(parseInt(total, 10));
+
+    if (total == 365 || total == 366) {
+        title += ' (' + startDate.getFullYear() + ')';
+    } else {
+        title += ' (';
+
+        // title += startDate.getDate() + ' ' + startDate.monthAbbr();
+
+        // if (startDate.getFullYear() !== endDate.getFullYear()) {
+        //     title += startDate.getFullYear();  
+        // }
+
+        // title += ' — ' + endDate.getDate() + ' ' + endDate.monthAbbr() + ' ' + endDate.getFullYear();
+
+		var options = {month: 'short', day: 'numeric', year: 'numeric'};
+		var startRange = startDate.toLocaleDateString(lang, options);
+      
+		if (startDate.getFullYear() === endDate.getFullYear()) {
+            startRange = startRange.replace(/[\/\\\-\.,]?\s?\d{4}[\/\\\-\.]?/gi, '');
+        }
+
+		title += startRange + ' - ' + endDate.toLocaleDateString(lang, options);
+
+        title += ')';
+    }
+	
+	document.title = title + ' | Bible Reading Plan Generator';
+
+	//$('#main-header h1').html(title);
+	$('#output').prepend( $('<h1>' + title + '</h1><h6>biblereadingplangenerator.com</h6>') );
 }
 
 function createBookLists() {
