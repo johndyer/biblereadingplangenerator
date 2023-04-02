@@ -5,13 +5,24 @@ $('#section-time input, ' +
 	'#section-options input, #section-options select, #options-language, ' + 
 	'#section-format input').on('change keyup', updateDisplay);
 
+$('#section-format input').on('change click', function() {
+	// if circle
+	var format = $('input:radio[name="formatstyle"]:checked').val();
+	if (['circle','books'].indexOf(format) > -1) {
+		// turn on color
+		$('#options-sectioncolors').prop('checked', true);
+	}
+});	
+
 // traditional ot/nt clicking
 $('.order-traditional, .order-tanakh').on('click', 'input', adjustBooks);
+$('.order-mcheyne').on('click', 'input', mcheyneDivisionCheck);
 $('[name=bibleorder]').on('click', enableTestaments);
 
 $('#download-ics').on('click', downloadics);
 $('#download-pdf').on('click', downloadpdf);
 $('#download-csv').on('click', downloadcsv);
+$('#action-print').on('click', actionprint);
 
 function enableTestaments() {
 	var check = $(this);
@@ -25,6 +36,11 @@ function enableTestaments() {
 			.find('input[type=checkbox]')
 			.prop('disabled',true);
 
+}
+
+function mcheyneDivisionCheck() {
+	// default to 
+	$('#options-logic').val('chapters');
 }
 
 function adjustBooks() {
@@ -64,6 +80,11 @@ function adjustBooks() {
 	updateDisplay();
 }
 
+function actionprint() {
+	print();
+	return false;	
+}
+
 function downloadics() {
 	var lang = $('#options-language').val();
 	var code = generate(lang, 'ics');
@@ -71,6 +92,8 @@ function downloadics() {
 	var blob = new Blob([code], {type: "text/calendar;charset=utf-8"});
 	saveData(blob, 'bibleplan.ics');	
 }
+
+
 
 function downloadcsv() {
 	var lang = $('#options-language').val();
@@ -179,6 +202,32 @@ function updateDisplay() {
 
 	if ($('#options-sectioncolors').is(':checked')) {
 		$('#output').addClass('plan-color');
+
+		var colorlist = [
+			['pentateuch','Pentateuch'],
+			['historical','Historical'],
+			['major','Prophets'],
+			['poetic','Poetic'],
+			['deuterocanonical','Deuterocanonical'],
+			['gospel','Gospels'],
+			['acts','Acts'],
+			['pauline','Pauline'],
+			['general','Epistles'],
+			['revelation','Revelation'],
+		];
+		var colorlistHtml = '<div id="color-key">';
+
+		for (var i=0; i<colorlist.length; i++) {
+			colorlistHtml += `
+			<div class="key-item">
+				<div class="key-color section-${colorlist[i][0]}"></div>
+				<div class="key-text">${colorlist[i][1]}</div>
+			</div>`;
+		}
+		colorlistHtml += `</div>`;
+
+		code += colorlistHtml;
+
 	} else {
 		$('#output').removeClass('plan-color');
 	}
@@ -193,7 +242,7 @@ function updateDisplay() {
 		.attr('lang', lang)
 		.html(code);
 
-	if (["ar","he"].indexOf(lang) > -1) {
+	if (["ar","iw"].indexOf(lang) > -1) {
 		$('#output').attr('dir','rtl');
 	} else {
 		$('#output').attr('dir','ltr');
@@ -231,7 +280,7 @@ function generate(lang, format, doc) {
 	// BUG	
 	//var datastartDate = startDate.addDays(1);
 	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val());
-	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'), $('#options-nodates').is(':checked'));	
+	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'), $('#options-dailystats').is(':checked'), $('#options-nodates').is(':checked'));	
 	
 	return code;
 }
@@ -301,6 +350,7 @@ function updateUrlAndTitle() {
 				'&otntoverlap=' + ($('#options-otntoverlap').is(':checked') ? '1' : '0') +
 				'&reverse=' + ($('#options-reverse').is(':checked') ? '1' : '0') +
 				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
+				'&dailystats=' + ($('#options-dailystats').is(':checked') ? '1' : '0') +
 				'&nodates=' + ($('#options-nodates').is(':checked') ? '1' : '0') +
 				
 		  		''		
@@ -401,7 +451,7 @@ function updateUrlAndTitle() {
 	document.title = title + ' | Bible Reading Plan Generator';
 
 	//$('#main-header h1').html(title);
-	$('#output').prepend( $('<h1>' + title + '</h1><h6>biblereadingplangenerator.com</h6>') );
+	$('#output').prepend( $('<h1 contenteditable="true">' + title + '</h1><h6>biblereadingplangenerator.com</h6>') );
 }
 
 function createBookLists() {
@@ -660,6 +710,10 @@ function startup() {
 	
 	if (urlParams.get('stats') == '1') {	
 		$('#options-stats').prop('checked',true);	
+	}	
+
+	if (urlParams.get('dailystats') == '1') {	
+		$('#options-dailystats').prop('checked',true);	
 	}	
 
 	if (urlParams.get('logic') != '' && urlParams.get('logic') != null) {	

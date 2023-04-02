@@ -6,6 +6,10 @@
 
 body {
 	font: 16px/1.2 'Source Sans Pro', sans-serif;; /* 'Merriweather', serif ; /* Helvetica */
+
+	/* include background colors when printing */
+	-webkit-print-color-adjust:exact !important;
+	print-color-adjust:exact !important;
 }
 h1, h2, h3, h4, h5, h6 {
 	--font-family: 'Source Sans Pro', sans-serif;
@@ -33,10 +37,29 @@ select {
 	padding: 30px 0;	
 	margin: 0 0 20px 0;
 }
-#main-header h1 {
+#main-header-padding {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 0 20px;
+}
+#main-header h1 {
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+}
+#main-header a.support {
+	padding: 6px 8px;
+	
+	color: #fff;
+	border-radius: 3px;;
+	text-decoration: none;
+	margin: 10px 0;
+	float: none;	
+	display: inline-block;
+	background:#29ae4a;
+}
+#main-header a.support:hover {
+	background:#2cd556;
 }
 
 main {
@@ -61,6 +84,12 @@ main {
 	#settings {
 		width: 250px;
 		margin-right: 20px;
+	}
+
+	#main-header a.support {
+		float: right;
+		margin: 0;
+		display: block;
 	}
 }
 
@@ -89,6 +118,14 @@ section.decision header {
 	background: #ccc;
 }
 
+#section-time label {
+	width: 6em;
+}
+
+#time-days {
+	width: 4em;
+}
+
 label {
 	margin: 0 0 0 0;
 }
@@ -98,8 +135,9 @@ label input {
 
 input[type=button] {
 	
-	padding: 0.5em;
-	background:#3fda67;
+	padding: 0.25em 0.4em;
+	
+	background:#0b73d4;
 	color: #fff;
 	border: none;
 	font-size: 1.0em;
@@ -108,9 +146,7 @@ input[type=button] {
 	cursor: pointer;
 }
 input[type=button]:hover {
-	
-	background:#32c357;
-
+	background:#1867b1;
 }
 
 #section-options label {
@@ -139,6 +175,7 @@ input[type=button]:hover {
 	display: block;
 }
 
+
 #section-books details summary::-webkit-details-marker {
 	display: none;
 }
@@ -156,6 +193,24 @@ input[type=button]:hover {
 #section-books details[open] > summary:after {
     content: "-";
 }
+/*
+#section-books details ::marker {
+    content: "";
+}
+*/
+details summary::-webkit-details-marker,
+details summary::marker {
+ display: none; 
+ content: "";
+}
+
+#divide-by {
+	margin-top: 1em;
+	font-size: 0.8em;
+}
+#divide-by select {
+	
+}
 
 .books-list label {
 	display: block;
@@ -166,6 +221,10 @@ input[type=button]:hover {
 }
 #output h1 {
 	margin-bottom: 0.5in;
+	outline: 1px dotted #efefef;
+}
+#output h1:hover {
+	outline: 1px dotted #2c7fa3;
 }
 #output h6 {
 	margin-bottom: 0.5in;
@@ -195,9 +254,15 @@ input[type=button]:hover {
 		color: #333;
 		text-decoration: none;
 	}
+	#main-footer {
+		margin-top: 0.5em;
+		padding: 0;
+	}	
 
 	#output h1 {
 		margin-bottom: 0.125in;
+		outline: 0;
+		border: 0;
 	}
 	#output h6 {
 		display: block;
@@ -208,6 +273,15 @@ input[type=button]:hover {
 	}
 	#settings {
 		display: none;
+	}
+	.plan-list, .plan-weeks, .plan-calendar {
+		font-size: 0.8em;
+	}
+	svg {
+		margin: -100px 0 -70px;	
+	}
+	#color-key {
+		-margin: 0;
 	}
 }
 
@@ -229,12 +303,12 @@ input[type=button]:hover {
 	margin: 6px 0;	
 }
 
-@media (max-width: 800px) {
+@media only screen and (max-width: 900px) {
 	.week-block {
 		width: 50%;
 	}
 }
-@media (max-width: 500px) {
+@media only screen and (max-width: 500px) {
 	.week-block {
 		width: 100%
 	}
@@ -251,14 +325,14 @@ input[type=button]:hover {
 	-moz-column-count: 3; 	
 	column-count: 3;	
 }
-@media (max-width: 800px) {
+@media only screen and (max-width: 900px) {
 	.plan-list {
 		-webkit-column-count: 2; 
 		-moz-column-count: 2; 	
 		column-count: 2;
 	}
 }
-@media (max-width: 500px) {
+@media only screen and (max-width: 500px) {
 	.plan-list {
 		-webkit-column-count: 1; 
 		-moz-column-count: 1; 	
@@ -377,4 +451,26 @@ iframe.pdf {
 
 #output svg {
 	width: 100%;
+	margin: -70px 0 -55px;
+}
+
+#color-key {
+	display: block;
+	float: none;
+	display: flex;
+	justify-content: center;
+	-justify-content: space-around;
+	margin: 16px 0 0 0;
+	font-size: 9pt;
+}
+#color-key .key-item {
+	display: flex;
+	padding-right: 10px;
+}
+
+#color-key .key-color {
+	width: 10px;
+	height: 10px;
+	outline: 1px solid black;
+	margin-right: 5px;
 }
