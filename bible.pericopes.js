@@ -190,7 +190,7 @@ bible.pericopes = [
 	{
 		"heading": "Noah and the Flood",
 		"start": "GEN_6_9",
-		"end": "GEN_8_22",
+		"end": "GEN_6_22",
 		"range": [
 			"GEN_6_9",
 			"GEN_6_10",
@@ -209,7 +209,7 @@ bible.pericopes = [
 		]
 	},
 	{
-		"heading": "Noah and the Flood",
+		"heading": "Noah Enters the Ark",
 		"start": "GEN_7_1",
 		"end": "GEN_7_24",
 		"range": [			
@@ -240,7 +240,7 @@ bible.pericopes = [
 		]
 	},
 	{
-		"heading": "Noah and the Flood",
+		"heading": "The Flood Subsides",
 		"start": "GEN_8_1",
 		"end": "GEN_8_22",
 		"range": [			
