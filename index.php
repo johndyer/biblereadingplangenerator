@@ -67,7 +67,11 @@
 						<option value="hi">हिन्दी (Hindi)</option>
 						<option value="ml">മലയാളം (Malayalam)</option>
 						<option value="ja">日本 (Japanese)</option>
-						<option value="kr">한국어 (Korean)</option>							
+						<option value="kr">한국어 (Korean)</option>
+						<option value="mr">मराठी (Marathi)</option>	
+						<option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>						
+						<option value="te">తెలుగు (Telugu)</option>
+						<option value="ur">اردو (Urdu)</option>
 					</select>
 					
 					<label>
@@ -277,6 +281,16 @@
   gtag('js', new Date());
 
   gtag('config', 'UA-3734687-20');
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F0YZLVR7KE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F0YZLVR7KE');
 </script>
 
 </body>
