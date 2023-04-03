@@ -14,10 +14,14 @@ $('#section-format input').on('change click', function() {
 	}
 });	
 
+// lang
+$('#options-language').on('change click', updateBookLists);
+
 // traditional ot/nt clicking
 $('.order-traditional, .order-tanakh').on('click', 'input', adjustBooks);
 $('.order-mcheyne').on('click', 'input', mcheyneDivisionCheck);
 $('[name=bibleorder]').on('click', enableTestaments);
+
 
 $('#download-ics').on('click', downloadics);
 $('#download-pdf').on('click', downloadpdf);
@@ -454,6 +458,21 @@ function updateUrlAndTitle() {
 	$('#output').prepend( $('<h1 contenteditable="true">' + title + '</h1><h6>biblereadingplangenerator.com</h6>') );
 }
 
+function updateBookLists() {
+	var lang = $('#options-language').val();
+	
+	// Traditional
+	for (var i=0; i<bible.DEUTEROCANONICAL_BIBLE.length; i++) {
+		var usfm = bible.DEUTEROCANONICAL_BIBLE[i],
+			book = bible.BIBLE_DATA[ usfm ],
+			newName = bible.getName(book, lang);
+
+		console.log(i, newName);
+
+		$(`label input[value="${usfm}"]`).siblings('span').html(newName);
+	}
+}
+
 function createBookLists() {
 
 	var lang = $('#options-language').val();
@@ -476,7 +495,7 @@ function createBookLists() {
 			//console.log(usfm);
 
 			list.append(
-				$('<label><input type="checkbox" value="' + usfm + '">' + bible.getName(book, lang) + '</label>')
+				$('<label><input type="checkbox" value="' + usfm + '"><span>' + bible.getName(book, lang) + '</span></label>')
 			);
 		}
 	}
@@ -489,7 +508,7 @@ function createBookLists() {
 
 		//console.log(usfm);
 		tanakh_list.append(
-			$('<label><input type="checkbox" value="' + usfm + '">' + bible.getName(book, lang) + '</label>')
+			$('<label><input type="checkbox" value="' + usfm + '"><span>' + bible.getName(book, lang) + '</span></label>')
 		);
 	}
 

@@ -7,7 +7,7 @@
 	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2022-08-13" />
+	<link rel="stylesheet" href="style.css?v=2023-04-03" />
 
 	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -24,7 +24,10 @@
 	
 	<div id="container">		
 		<header id="main-header">
-			<h1>Bible Reading Plan Generator</h1>
+			<div id="main-header-padding">
+				<h1>Bible Reading Plan Generator</h1>
+				<a class="support" href="https://patreon.com/johndyer?utm_medium=website&utm_source=biblereadingplangenetor.com&utm_campaign=mainlink">Support on Patreon</a>
+			</div>
 		</header>
 		
 		<main>
@@ -35,8 +38,8 @@
 				</header>
 						
 				<div class="decision-body">				
-					Start: 	<input type="date" id="time-startdate" placeholder="Start Date" />
-					Days: 	<input type="number" id="time-days" placeholder="Days in plan" />
+					<label for="time-startdate">Start:</label> 	<input type="date" id="time-startdate" placeholder="Start Date" />
+					<label for="time-days">Days:</label> 	<input type="number" id="time-days" placeholder="Days in plan" />
 				</div>
 			</section>
 			
@@ -49,14 +52,22 @@
 					<select id="options-language">
 						<option value="en">English</option>
 						<option value="de">Deutsch (German)</option>
-						<option value="fr">le français (French)</option>
 						<option value="es">español (Spanish)</option>
+						<option value="fi">Finnish (Suomalainen)</option>
+						<option value="fr">le français (French)</option>
+						<option value="po">Português (Portuguese)</option>
 						<option value="ru">Ру́сский (Russia)</option>
-						<option value="sv">svenska (Swedish)</option>
-						<option value="sv">हिन्दी (Hindi)</option>
-						<option value="zh-CN">汉语 (Chinese Simplified)</option>
-						<option value="zh-TW">漢語 (Chinese Traditional)</option>
+						<option value="sv">svenska (Swedish)</option>											
 						<option value="ar">العَرَبِيَّة‎ (Arabic)</option>
+						<option value="bn">বাংলা (Bengali)</option>
+						<option value="zh-CN">汉语 (Chinese Simplified)</option>
+						<option value="zh-TW">漢語 (Chinese Traditional)</option>	
+						<option value="el">Ελληνικά (Greek)</option>	
+						<option value="iw">עִברִית (Hebrew)</option>												
+						<option value="hi">हिन्दी (Hindi)</option>
+						<option value="ml">മലയാളം (Malayalam)</option>
+						<option value="ja">日本 (Japanese)</option>
+						<option value="kr">한국어 (Korean)</option>							
 					</select>
 					
 					<label>
@@ -89,8 +100,7 @@
 											
 					<input type="button" id="download-ics" value="iCal">
 					<input type="button" id="download-csv" value="CSV">
-					
-					
+					<input type="button" id="action-print" value="Print">					
 				</div>
 			</section>				
 			
@@ -166,7 +176,17 @@
 					<div class="order-mcheyne order-group">
 						<br>
 						<label><input type="radio" name="bibleorder" value="mcheyne" >M'Cheyne</label>						
-					</div>																
+					</div>	
+					
+					<div id="divide-by">
+						<label>Divide by
+							<select id="options-logic">
+								<option value="chapters" >Number of Chapters</option>
+								<option value="words" selected>Words per Chapter</option>
+								<option value="pericopes">Pericopes</option>
+							</select>
+						</label> 										
+					</div>
 				</div>
 			</section>	
 			
@@ -206,18 +226,11 @@
 					
 					<label><input type="checkbox" id="options-reverse" > Reverse</label>
 
-					<label><input type="checkbox" id="options-stats"> Show Stats</label>
+					<label><input type="checkbox" id="options-nodates" > Remove Dates</label>
 
-					<label>Divide by
-						<select id="options-logic">
-							<option value="chapters" >Number of Chapters</option>
-							<option value="words" selected>Words per Chapter</option>
-							<option value="pericopes">Pericopes</option>
-						</select>
-					</label> 
-						
-					
+					<label><input type="checkbox" id="options-stats"> Show Overall Stats</label>
 
+					<label><input type="checkbox" id="options-dailystats"> Show Daily Stats</label>
 
 				</div>
 			</section>
@@ -228,8 +241,7 @@
 			<div id="output">
 				
 				
-			</div>
-						
+			</div>	
 		</main>
 		
 		<footer id="main-footer">
@@ -242,27 +254,19 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2022-08-13"></script>
+	<script src="helpers.js?v=2023-04-03"></script>
 	
-	<script src="bible.data.js?v=2022-08-13"></script>
-	<script src="bible.data.sv.js?v=2022-08-13"></script>
-	<script src="bible.data.es.js?v=2022-08-13"></script>
-	<script src="bible.data.fr.js?v=2022-08-13"></script>
-	<script src="bible.data.de.js?v=2022-08-13"></script>
-	<script src="bible.data.ar.js?v=2022-08-13"></script>
-	<script src="bible.data.hi.js?v=2022-08-13"></script>
-	<script src="bible.data.zh-TW.js?v=2022-08-13"></script>
-	<script src="bible.data.zh-CN.js?v=2022-08-13"></script>
-	<script src="bible.data.ru.js?v=2022-08-13"></script>
-	<script src="bible.data.wordcounts.js?v=2022-08-13"></script>
-	<script src="bible.reference.js?v=2022-08-13"></script>
-	<script src="bible.plans.js?v=2022-08-13"></script>
+	<script src="bible.data.js?v=2023-04-03"></script>
+	<script src="bible.data.languages.js?v=2023-04-03"></script>
+	<script src="bible.data.wordcounts.js?v=2023-04-03"></script>
+	<script src="bible.reference.js?v=2023-04-03"></script>
+	<script src="bible.plans.js?v=2023-04-03"></script>
 	
-	<script src="bible.pericopes.js?v=2022-08-13"></script>
+	<script src="bible.pericopes.js?v=2023-04-03"></script>
 
-	<script src="plans.js?v=2022-08-13"></script>
-	<script src="renderers.js?v=2022-08-13"></script>
-	<script src="app.js?v=2022-08-13"></script>
+	<script src="plans.js?v=2023-04-03"></script>
+	<script src="renderers.js?v=2023-04-03"></script>
+	<script src="app.js?v=2023-04-03"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
