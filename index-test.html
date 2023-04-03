@@ -57,7 +57,8 @@
 						<option value="fr">le français (French)</option>
 						<option value="po">Português (Portuguese)</option>
 						<option value="ru">Ру́сский (Russia)</option>
-						<option value="sv">svenska (Swedish)</option>											
+						<option value="sv">svenska (Swedish)</option>	
+						<option value="tr">Türkçe (Turkish)</option>											
 						<option value="ar">العَرَبِيَّة‎ (Arabic)</option>
 						<option value="bn">বাংলা (Bengali)</option>
 						<option value="zh-CN">汉语 (Chinese Simplified)</option>
@@ -65,6 +66,7 @@
 						<option value="el">Ελληνικά (Greek)</option>	
 						<option value="iw">עִברִית (Hebrew)</option>												
 						<option value="hi">हिन्दी (Hindi)</option>
+						<option value="jv">ꦧꦱꦗꦮ (Javanese)</option>
 						<option value="ml">മലയാളം (Malayalam)</option>
 						<option value="ja">日本 (Japanese)</option>
 						<option value="kr">한국어 (Korean)</option>
