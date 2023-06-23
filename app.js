@@ -246,7 +246,7 @@ function updateDisplay() {
 		.attr('lang', lang)
 		.html(code);
 
-	if (["ar","iw"].indexOf(lang) > -1) {
+	if (["ar","iw","ur"].indexOf(lang) > -1) {
 		$('#output').attr('dir','rtl');
 	} else {
 		$('#output').attr('dir','ltr');
