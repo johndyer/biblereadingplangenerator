@@ -1,7 +1,7 @@
 // EVENTS
 $('#section-time input, ' + 
 	'#section-days input, ' + 
-	'#section-books input, ' + 
+	'#section-books input, #section-books select, ' + 
 	'#section-options input, #section-options select, #options-language, ' + 
 	'#section-format input').on('change keyup', updateDisplay);
 
