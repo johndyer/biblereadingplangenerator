@@ -13,6 +13,8 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 	for (var i=0; i<days.length; i++) {
 		var dayInfo = days[i],
 			bookInfo = dayInfo.chapters.length > 0 ? bible.BIBLE_DATA[dayInfo.chapters[0].usfm] : null;
+
+		var dayKey = currentKey + '-' + i.toString();
 		//var fixeddate = dayInfo.date.addDays(1);
 		//html.push('<tr>');
 		if (lastMonth != dayInfo.date.getMonth() && !noDates) {
@@ -23,7 +25,14 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 		html.push('<div class="date">' + (noDates ? '' : dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate())) + '</div>');		
 		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
 		if (dayInfo.formattedReading != '') {
-			html.push('<div class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</div>');		
+
+			html.push(
+			`<div class="verses"> 
+				<input type="checkbox" class="reading-check" id="${dayKey}" ${getLocalStorage(dayKey, false) ? " checked" : ""} />
+				<label for="${dayKey}">${includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading}</label> 
+			</div>`);
+
+			//html.push('<div class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</div>');		
 		}
 		html.push('</div>');
 
@@ -58,6 +67,8 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 		var dayInfo = days[i],
 			bookInfo = dayInfo.chapters.length > 0 ? bible.BIBLE_DATA[dayInfo.chapters[0].usfm] : null;
 
+			var dayKey = currentKey + '-' + i.toString();
+
 		if (dayInfo.date.getDay() == 0 && i > 0) {
 			html.push('</div>');
 			html.push('<div class="week-block">');
@@ -73,7 +84,12 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 		html.push('<div class="date">' + (noDates ? '' : dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate())) + '</div>');		
 		
 		if (dayInfo.formattedReading != '') {
-			html.push('<div class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</div>');		
+			html.push(
+				`<div class="verses"> 
+					<input type="checkbox" class="reading-check" id="${dayKey}" ${getLocalStorage(dayKey, false) ? " checked" : ""} />
+					<label for="${dayKey}">${includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading}</label> 
+				</div>`);			
+			//html.push('<div class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</div>');		
 		}
 		html.push('</div>');
 	}
@@ -182,7 +198,9 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 	html.push('</tr></thead>');
 	
 	// fill in until Sunday
+	var lengthBeforeSetToSunday = data.days.length;
 	var days = appendDaysToSunday(data.days);
+	var numberOfDaysAdded = data.days.length - lengthBeforeSetToSunday;
 	
 	html.push('<tbody>');
 	
@@ -208,6 +226,8 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 		var firstweek = dayInfo.date.getDate() < 7 && dayInfo.date.getDay() < 8 - firstdayofweek;
 		var lastweek = dayInfo.date.getDate() > lastdayofmonth.getDate()-7; //  && dayInfo.date.getDay() < 8 - lastdayofweek;;
 		
+		var dayKey = currentKey + '-' + (i-numberOfDaysAdded).toString();
+
 		html.push('<td class="' + 
 					(bookInfo != null ? 'section-' + bible.SECTIONS[bookInfo.section] : '') + 
 					(!noDates && firstday ? ' monthstart' : '') + 
@@ -219,7 +239,10 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 			'<span class="date">' + (noDates ? '' : (firstday ? dayInfo.date.monthAbbr(lang) + ' ' : '') + dayInfo.date.getDate()) + '</span>' + 
 			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
 			(dayInfo.formattedReading != '' ? 
-				'<span class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</span>' +
+				`<span class="verses"> 
+					<input type="checkbox" class="reading-check" id="${dayKey}" ${getLocalStorage(dayKey, false) ? " checked" : ""} />
+					<label for="${dayKey}">${includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading}</label> 
+				</span>` +
 				(showDailyStats ?
 					'<span class="stats">' +
 						'verses: ' + dayInfo.versesForToday + '<br>' +
@@ -656,3 +679,20 @@ function createTextPath(text, attributes = {}) {
     tSpan.appendChild(spanText);
     return tSpan;
 }
+
+
+function getLocalStorage(id, defaultValue) {
+	var value = localStorage.getItem(id);
+	if (value !== null) {
+		return value;
+	}
+	return defaultValue;
+}
+function setLocalStorage(id, value) {
+	localStorage.setItem(id,value);
+}
+
+$('main').on('click', '.reading-check', function() {
+	// store
+	setLocalStorage($(this).prop('id'),$(this).is(':checked'));	
+});

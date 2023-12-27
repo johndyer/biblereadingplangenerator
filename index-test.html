@@ -7,7 +7,7 @@
 	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2023-12-18" />
+	<link rel="stylesheet" href="style.css?v=2023-12-26" />
 
 	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -30,7 +30,18 @@
 			</div>
 		</header>
 		
+		<div id="sample-plans">
+			Samples: <a id="demo-bibleyear" href="/?start=01-01&books=OT,NT&logic=words">Bible in a Year List</a> | 
+			<a id="demo-ntweekendsoff" href="/?start=01-01&books=NT&format=weeks&logic=chapters&daysofweek=2,3,4,5,6">New Testament, Weekends Off</a> | 
+			<a id="demo-bibleyear" href="/?format=list&total=180&books=OT&order=chronological">Chronological OT in 6 months</a> |
+			<a id="demo-bibleyear" href="/?format=circle&colors=1">Pretty Color Wheel</a> |
+			<a id="demo-bibleyear" href="/?format=books&colors=1&books=OT,NT,DC">Deuterocanonical by Book</a> |
+			<a id="demo-bibleyear" href="/?lang=es">español</a> |
+			<a id="demo-bibleyear" href="/?lang=hi">हिन्दी</a>
+		</div>
+
 		<main>
+			
 			<nav id="settings">
 			<section class="decision" id="section-time">
 				<header>
@@ -247,15 +258,34 @@
 							<option value="youversion" >YouVersion</option>
 							<option value="biblia">Biblia</option>
 						</select>	
-						<select id="options-urlversion">
-							<option value="NIV" selected>NIV</option>
-							<option value="CSB" >CSB</option>
-							<option value="NASB">NASB</option>
-							<option value="KJV">KJV</option>	
-							<option value="NRSV">NRSV</option>	
-							<option value="ESV">ESV</option>	
-							<option value="MSG">MSG</option>	
-							<option value="NET">NET</option>								
+						<select id="options-urlversion">													
+							<optgroup label="English" lang="en">
+								<option value="AMP" yv="1588">AMP</option>
+								<option value="CSB" yv="1713">CSB</option>
+								<option value="ESV" yv="59">ESV</option>	
+								<option value="KJV" yv="1">KJV</option>	
+								<option value="NRSV" yv="2016">NRSV</option>	
+								<option value="MSG" yv="97">MSG</option>	
+								<option value="NASB" yv="2692">NASB</option>
+								<option value="NET" yv="107">NET</option>	
+								<option value="NIRV" yv="110">NIRV</option>						
+								<option value="NIV" yv="111" selected>NIV</option>									
+								<option value="NET" yv="107">NET</option>								
+							</optgroup>	
+
+							<optgroup label="Deutsch" lang="de">
+								<option value="NGU-DE" yv="108">NGU</option>	
+							</optgroup>
+
+							<optgroup label="Espanol" lang="es">
+								<option value="NVI" yv="1637">NVI</option>	
+							</optgroup>
+
+							<optgroup label="Ру́сский" lang="ru">
+								<option value="CARS" yv="385">CARS</option>	
+								<option value="SYNO" yv="400">SYNO</option>	
+							</optgroup>							
+						
 						</select>
 					</div>
 
@@ -282,19 +312,19 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2023-12-18"></script>
+	<script src="helpers.js?v=2023-12-26"></script>
 	
-	<script src="bible.data.js?v=2023-12-18"></script>
-	<script src="bible.data.languages.js?v=2023-12-18"></script>
-	<script src="bible.data.wordcounts.js?v=2023-12-18"></script>
-	<script src="bible.reference.js?v=2023-12-18"></script>
-	<script src="bible.plans.js?v=2023-12-18"></script>
+	<script src="bible.data.js?v=2023-12-26"></script>
+	<script src="bible.data.languages.js?v=2023-12-26"></script>
+	<script src="bible.data.wordcounts.js?v=2023-12-26"></script>
+	<script src="bible.reference.js?v=2023-12-26"></script>
+	<script src="bible.plans.js?v=2023-12-26"></script>
 	
-	<script src="bible.pericopes.js?v=2023-12-18"></script>
+	<script src="bible.pericopes.js?v=2023-12-26"></script>
 
-	<script src="plans.js?v=2023-12-18"></script>
-	<script src="renderers.js?v=2023-12-18"></script>
-	<script src="app.js?v=2023-12-18"></script>
+	<script src="plans.js?v=2023-12-26"></script>
+	<script src="renderers.js?v=2023-12-26"></script>
+	<script src="app.js?v=2023-12-26"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->

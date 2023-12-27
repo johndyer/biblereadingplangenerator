@@ -955,19 +955,8 @@ function createUrl(verseList, bookUsfm, chapter, site, version) {
 			
 			break;			
 		case 'youversion':
-			let yvVersions = {
-				'NIV': 111,
-				'ESV': 59,
-				'NASB': 2692,
-				'NRSV': 2016,
-				'CSB': 1713,
-				'KJV': 1,
-				'MSG': 97
-			};
-			let yvVersion = yvVersions[version];
-			if (!yvVersion) {
-				yvVersion = 111
-			}
+			
+			yvVersion = $('option[value="' + version + '"]').attr('yv');
 		
 			url = `https://www.bible.com/bible/${yvVersion}/${bookUsfm}.${chapter}`;
 			

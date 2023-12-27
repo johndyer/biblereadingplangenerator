@@ -97,8 +97,6 @@ function downloadics() {
 	saveData(blob, 'bibleplan.ics');	
 }
 
-
-
 function downloadcsv() {
 	var lang = $('#options-language').val();
 	var code = generate(lang, 'csv');
@@ -199,8 +197,10 @@ function buildpdf(lang, data, days, bookList, dayList, doc) {
 
 function updateDisplay() {
 
+	updateUrlAndTitle();
+
 	var format = $('input:radio[name="formatstyle"]:checked').val();
-	var lang = $('#options-language').val();
+	var lang = $('#options-language').val();	
 
 	var code = generate(lang, format);
 
@@ -251,8 +251,6 @@ function updateDisplay() {
 	} else {
 		$('#output').attr('dir','ltr');
 	}
-
-	updateUrlAndTitle();
 }
 
 function generate(lang, format, doc) {
@@ -280,7 +278,6 @@ function generate(lang, format, doc) {
 		}).get();
 	}
 	
-	
 	// BUG	
 	//var datastartDate = startDate.addDays(1);
 	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val(), $('#options-includeurls').is(':checked'), $('#options-urlsite').val(), $('#options-urlversion').val());
@@ -289,6 +286,7 @@ function generate(lang, format, doc) {
 	return code;
 }
 
+let currentKey = '';
 
 function updateUrlAndTitle() {
 	// params
@@ -304,7 +302,6 @@ function updateUrlAndTitle() {
 		  .get()
 		  .join( ',' ),
 		books = [];
-
 	
 	if (order == 'traditional') {
 
@@ -332,9 +329,13 @@ function updateUrlAndTitle() {
 		
 	}
 
+
 	var dailypsalm = $('#options-dailypsalm').is(':checked') ? '1' : '0',
 		dailyproverb = $('#options-dailyproverb').is(':checked') ? '1' : '0';
 
+
+	// things that affect the overall plan (missing: overlap)
+	currentKey = [start,total,order,logic,daysofweek,books,dailypsalm,dailyproverb].join('|');
 
 	// update URL
 	history.replaceState({}, 'page', 
@@ -554,17 +555,26 @@ function startup() {
 
 	// start
 	var startdate = null;
+	var today = new Date();
 	if (urlParams.has('start')) {	
 		var dateparts = urlParams.get('start').split('-');
 		
-		startdate = new Date(parseInt(dateparts[0], 10), parseInt(dateparts[1], 10)-1,parseInt(dateparts[2], 10));
+		if (dateparts.length == 3) {
+			startdate = new Date(parseInt(dateparts[0], 10), parseInt(dateparts[1], 10)-1,parseInt(dateparts[2], 10));
+		} else if (dateparts.length == 2) {
+			var year = today.getFullYear();
+			// if december, shift to next year
+			if (today.getMonth() == 11) {
+				year++;
+			}
+			startdate = new Date(year, parseInt(dateparts[0], 10)-1,parseInt(dateparts[0], 10));
+		}
 		// time zone screws it up?
 		//if (startdate) {
 		//	startdate = startdate.addDays(1);
 		//}
 	}
 	if (!startdate) {
-		var today = new Date(),
 		startdate = new Date(today.getFullYear(), today.getMonth()+1, 1);
 	}
 	$('#time-startdate').val(startdate.toInputField() );		

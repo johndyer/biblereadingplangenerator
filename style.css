@@ -62,10 +62,18 @@ select {
 	background:#2cd556;
 }
 
+
+#sample-plans {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+	--background: red;
+}
+
 main {
 	max-width: 1200px;
 	margin: 20px auto;
-	padding: 20px;	
+	padding: 0 20px;	
 }
 
 #settings {
@@ -255,6 +263,10 @@ details summary::marker {
 }
 
 @media print {
+	#sample-plans {
+		display: none;
+	}
+	
 	#main-header, #main-footer {
 		background: #fff;
 		color: #333;
@@ -367,6 +379,7 @@ details summary::marker {
 	width: 70%; 	
 }
 
+/*
 .plan-checkbox .plan-list .verses::before,
 .plan-checkbox .plan-weeks .verses::before,
 .plan-checkbox .plan-calendar .verses::before {
@@ -381,12 +394,22 @@ details summary::marker {
 	text-indent: -15px;
     padding-left: 15px;
 }
+*/
+
+.verses input[type="checkbox"] {
+	display: none;
+}
+
+.plan-checkbox .verses input[type="checkbox"] {
+	display: inline-block;
+	margin-right: 0.5em;
+}
 
 .plan-calendar { border-collapse: collapse; border: 1px solid #000;}		
 .plan-calendar td,.plan-calendar th  { padding: 1em; vertical-align: top; width: 14%; border: 1px solid #ccc; }	
 .plan-calendar th  { border: 1px solid #000; }	
 .plan-calendar .date { display: block; font-size: 0.7em; text-align: right; margin-bottom: 0.3em; }		
-.plan-calendar .verses { display: block;  font-size: 0.85em; }	
+.plan-calendar .verses { display: flex;  font-size: 0.85em; align-items: start; line-height: 1; }	
 .plan-calendar .monthstart { border-left-color: #000; border-top-color: #000;  }		
 .plan-calendar .monthend { border-right-color: #000; border-bottom-color: #000; }			
 .plan-calendar .firstweek { border-top-color: #000;  }		
