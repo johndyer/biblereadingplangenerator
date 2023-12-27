@@ -7,7 +7,7 @@
 	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2023-06-23" />
+	<link rel="stylesheet" href="style.css?v=2023-12-18" />
 
 	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -72,6 +72,7 @@
 						<option value="kr">한국어 (Korean)</option>
 						<option value="mr">मराठी (Marathi)</option>	
 						<option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>						
+						<option value="ta">தமிழ் (Tamil)</option>
 						<option value="te">తెలుగు (Telugu)</option>
 						<option value="ur">اردو (Urdu)</option>
 					</select>
@@ -220,23 +221,44 @@
 				
 				<div class="decision-body">
 
-					<label><input type="checkbox" id="options-checkbox"> Include Checkbox</label>
+					<label><input type="checkbox" id="options-checkbox">Include Checkbox</label>
 
-					<label><input type="checkbox" id="options-sectioncolors"> Section Colors</label>
+					<label><input type="checkbox" id="options-sectioncolors">Section Colors</label>
 
-					<label><input type="checkbox" id="options-dailypsalm" > Daily Psalm</label>					
+					<label><input type="checkbox" id="options-dailypsalm" >Daily Psalm</label>					
 					
-					<label><input type="checkbox" id="options-dailyproverb" > Daily Proverb</label>
+					<label><input type="checkbox" id="options-dailyproverb" >Daily Proverb</label>
 
-					<label><input type="checkbox" id="options-otntoverlap" > OT/NT Overlap</label>
+					<label><input type="checkbox" id="options-otntoverlap" >OT/NT Overlap</label>
 					
-					<label><input type="checkbox" id="options-reverse" > Reverse</label>
+					<label><input type="checkbox" id="options-reverse" >Reverse</label>
 
-					<label><input type="checkbox" id="options-nodates" > Remove Dates</label>
+					<label><input type="checkbox" id="options-nodates" >Remove Dates</label>
 
-					<label><input type="checkbox" id="options-stats"> Show Overall Stats</label>
+					<label><input type="checkbox" id="options-stats">Show Overall Stats</label>
 
-					<label><input type="checkbox" id="options-dailystats"> Show Daily Stats</label>
+					<label><input type="checkbox" id="options-dailystats">Show Daily Stats</label>
+
+					<label><input type="checkbox" id="options-includeurls">Add Reading Links</label>
+
+					<div id="options-siteandversion">
+						<select id="options-urlsite">
+							<option value="biblegateway" selected>Bible Gateway</option>
+							<option value="youversion" >YouVersion</option>
+							<option value="biblia">Biblia</option>
+						</select>	
+						<select id="options-urlversion">
+							<option value="NIV" selected>NIV</option>
+							<option value="CSB" >CSB</option>
+							<option value="NASB">NASB</option>
+							<option value="KJV">KJV</option>	
+							<option value="NRSV">NRSV</option>	
+							<option value="ESV">ESV</option>	
+							<option value="MSG">MSG</option>	
+							<option value="NET">NET</option>								
+						</select>
+					</div>
+
 
 				</div>
 			</section>
@@ -260,19 +282,19 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2023-06-23"></script>
+	<script src="helpers.js?v=2023-12-18"></script>
 	
-	<script src="bible.data.js?v=2023-06-23"></script>
-	<script src="bible.data.languages.js?v=2023-06-23"></script>
-	<script src="bible.data.wordcounts.js?v=2023-06-23"></script>
-	<script src="bible.reference.js?v=2023-06-23"></script>
-	<script src="bible.plans.js?v=2023-06-23"></script>
+	<script src="bible.data.js?v=2023-12-18"></script>
+	<script src="bible.data.languages.js?v=2023-12-18"></script>
+	<script src="bible.data.wordcounts.js?v=2023-12-18"></script>
+	<script src="bible.reference.js?v=2023-12-18"></script>
+	<script src="bible.plans.js?v=2023-12-18"></script>
 	
-	<script src="bible.pericopes.js?v=2023-06-23"></script>
+	<script src="bible.pericopes.js?v=2023-12-18"></script>
 
-	<script src="plans.js?v=2023-06-23"></script>
-	<script src="renderers.js?v=2023-06-23"></script>
-	<script src="app.js?v=2023-06-23"></script>
+	<script src="plans.js?v=2023-12-18"></script>
+	<script src="renderers.js?v=2023-12-18"></script>
+	<script src="app.js?v=2023-12-18"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->

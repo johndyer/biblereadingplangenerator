@@ -1,6 +1,6 @@
 
 
-function buildlist(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates) {
+function buildlist(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates, includeUrls) {
 	
 	var html = [],
 		today = new Date();
@@ -23,7 +23,7 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 		html.push('<div class="date">' + (noDates ? '' : dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate())) + '</div>');		
 		//html.push('<span>' + formatChapterRange(dayInfo.chapters) + '</span>');		
 		if (dayInfo.formattedReading != '') {
-			html.push('<div class="verses">' + dayInfo.formattedReading + '</div>');		
+			html.push('<div class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</div>');		
 		}
 		html.push('</div>');
 
@@ -40,7 +40,7 @@ function buildlist(lang, data, startDate, duration, bookList, dayList, showStats
 	
 }
 
-function buildweeks(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates) {
+function buildweeks(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates, includeUrls) {
 	
 	var html = [],
 		weekNumber = 1,
@@ -73,7 +73,7 @@ function buildweeks(lang, data, startDate, duration, bookList, dayList, showStat
 		html.push('<div class="date">' + (noDates ? '' : dayInfo.date.monthAbbr(lang) + ' ' + (dayInfo.date.getDate())) + '</div>');		
 		
 		if (dayInfo.formattedReading != '') {
-			html.push('<div class="verses">' + dayInfo.formattedReading + '</div>');		
+			html.push('<div class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</div>');		
 		}
 		html.push('</div>');
 	}
@@ -97,7 +97,7 @@ function isSameDay(d1, d2) {
 	  d1.getMonth() === d2.getMonth();
   }
 
-function buildics(lang, data, startDate, duration, bookList, dayList, showStats) {
+function buildics(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates, includeUrls) {
 	
 
 	var ics = [];	
@@ -124,7 +124,10 @@ function buildics(lang, data, startDate, duration, bookList, dayList, showStats)
 			//ics.push('DTSTAMP:' + startFormatted + 'T000000Z');
 			ics.push('DTSTART;VALUE=DATE:' + startFormatted + '');
 			ics.push('DTEND;VALUE=DATE:' + endFormatted + '');
-			ics.push('SUMMARY:' + dayInfo.formattedReading);		
+			ics.push('SUMMARY:' + dayInfo.formattedReading);	
+			if (includeUrls) {
+				ics.push('X-ALT-DESC;FMTTYPE=text/html:<!doctype html><html><body>' + dayInfo.formattedReadingUrls + '</body></html>');
+			}	
 			ics.push('END:VEVENT');
 		}
 	}
@@ -156,7 +159,7 @@ function buildcsv(lang, data, startDate, duration, bookList, dayList, showStats,
 
 
 
-function buildcalendar(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates) {
+function buildcalendar(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates, includeUrls) {
 	
 	//var daysOfWeek = ['Sunday','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 	
@@ -216,7 +219,7 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 			'<span class="date">' + (noDates ? '' : (firstday ? dayInfo.date.monthAbbr(lang) + ' ' : '') + dayInfo.date.getDate()) + '</span>' + 
 			//'<span class="verses">' + formatChapterRange(dayInfo.chapters) + '</span>' + 
 			(dayInfo.formattedReading != '' ? 
-				'<span class="verses">' + dayInfo.formattedReading + '</span>' +
+				'<span class="verses">' + (includeUrls ? dayInfo.formattedReadingUrls : dayInfo.formattedReading) + '</span>' +
 				(showDailyStats ?
 					'<span class="stats">' +
 						'verses: ' + dayInfo.versesForToday + '<br>' +

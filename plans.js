@@ -1,5 +1,5 @@
 
-function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb, combineOTandNT, reverse, logic) {
+function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek, dailyPsalm, dailyProverb, combineOTandNT, reverse, logic, includeUrls, urlSite, urlVersion) {
 	
 	var psalmNumber = 1;
 	var psalmMax = 150;
@@ -210,6 +210,7 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 
 			// merged down from groups
 			formattedReading: '',
+			formattedReadingUrls: '',
 			chapters: [],
 			pericopes: [],
 			wordsForToday: 0,
@@ -465,9 +466,11 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 
 
 		if (logic == 'pericopes') { 
-			dayInfo.formattedReading = formatPericopeRange(lang, dayInfo.pericopes);
+			dayInfo.formattedReading = formatPericopeRange(lang, dayInfo.pericopes, false, urlSite, urlVersion);
+			dayInfo.formattedReadingUrls = formatPericopeRange(lang, dayInfo.pericopes, true, urlSite, urlVersion);
 		} else {
-			dayInfo.formattedReading = formatChapterRange(lang, dayInfo.chapters);
+			dayInfo.formattedReading = formatChapterRange(lang, dayInfo.chapters, false, urlSite, urlVersion);
+			dayInfo.formattedReadingUrls = formatChapterRange(lang, dayInfo.chapters, true, urlSite, urlVersion);
 		}
 
 		if (dayInfo.chapters.length > 0 || dayInfo.pericopes.length > 0) {
@@ -484,6 +487,7 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 
 			if (dailyPsalm && !rangeIncludesPsalm) {
 				dayInfo.formattedReading += '; Ps ' + psalmNumber;
+				dayInfo.formattedReadingUrls += '; <a href="' + createUrl('','PSA', psalmNumber, urlSite, urlVersion) + '">Ps ' + psalmNumber + '</a>';
 				psalmNumber++;
 				if (psalmNumber > psalmMax) {
 					psalmNumber = 1;
@@ -492,6 +496,7 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 
 			if (dailyProverb && !rangeIncludesProverb) {
 				dayInfo.formattedReading += '; Pro ' + proverbNumber;
+				dayInfo.formattedReadingUrls += '; <a href="' + createUrl('','PRO', proverbNumber, urlSite, urlVersion) + '">Pro ' + proverbNumber + '</a>';
 				proverbNumber++;
 				if (proverbNumber > proverbMax) {
 					proverbNumber = 1;
@@ -746,9 +751,9 @@ function formatChapterGroupsRange(lang, chapterGroups, isFullname) {
 	return formatChapterRange(lang, mergedChapters, isFullName)
 }
 
-function formatChapterRange(lang, chapters, isFullname) {
+function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
 	
-	isFullname = isFullname || false;
+	//isFullname = isFullname || false;
 	
 	if (!chapters || chapters == null || chapters.length == 0) {
         return '';
@@ -767,19 +772,19 @@ function formatChapterRange(lang, chapters, isFullname) {
 		// new book
 		if (chapter.usfm != previousBookUsfm)  {
 			
-			
 			// past the first entry for this day
 			if (i > 0) {
 				// 
 				if (firstChapterOfBook != previousChapterNumber && previousChapterWasRange) {
-					formatted += '-' + previousChapterNumber.toString();
+					formatted += '-' + previousChapterNumber.toString();				
 				}
-				formatted += '; ';
+				formatted += '; ';	
 			}
 			previousChapterWasRange = false;
 			
 			// stary with the book name/abbr
-			formatted += bible.getAbbr(bookInfo, lang);
+			formatted += //(includeUrls ? '<a href="' + createUrl(lang, '','',chapter.usfm, chapter.chapter, '', '') + '" target="_blank">' : '') +
+				bible.getAbbr(bookInfo, lang);
 
 			// add the first chapter (unless it's a single chapter book)
 			if (bookInfo.chapters.length > 1) {
@@ -800,8 +805,7 @@ function formatChapterRange(lang, chapters, isFullname) {
 					previousChapterWasRange = false;
 				} else {
 					// wait for next one
-					previousChapterWasRange = true;
-					//formatted += ',' + chapter.chapter.toString();					
+					previousChapterWasRange = true;					
 				}
 			} else {
 				if (previousChapterWasRange) {
@@ -818,12 +822,13 @@ function formatChapterRange(lang, chapters, isFullname) {
 		previousBookUsfm = chapter.usfm;
 	}
 	
-	
-	return formatted;
+	return (includeUrls ? '<a href="' + createUrl(formatted, chapters[0].usfm, chapters[0].chapter, urlSite, urlVersion) + '" target="_blank">' : '') 
+		+ formatted
+		+ (includeUrls ? '</a>' : '');
 }
 
-function formatPericopeRange(lang, pericopes, isFullname) {
-	
+function formatPericopeRange(lang, pericopes, includeUrls, urlSite, urlVersion) {
+
 	isFullname = isFullname || false;
 	
 	if (!pericopes || pericopes == null || pericopes.length == 0) {
@@ -885,10 +890,9 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 			lastChapter = parseInt(pair.end.split('_')[1], 10),
 			lastVerse = parseInt(pair.end.split('_')[2], 10),
 			lastVerseMax = lastBook.chapters[lastChapter-1];
-
-		// first pericope
-		formatted += (index > 0 ? '; ' : '') + bible.getAbbr(firstBook, lang) + ' ' + firstChapter;
 			
+		let verseRange = '';
+		
 		// show verse if the book or chapter is different
 		if (firstBookUsfm !== lastBookUsfm || 
 			firstChapter !== lastChapter || 
@@ -897,28 +901,78 @@ function formatPericopeRange(lang, pericopes, isFullname) {
 			
 			// show the verse with the chapter
 			if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
-				formatted += ':' + firstVerse;
+				verseRange += ':' + firstVerse;
 			}
 
-			formatted += '–';
+			verseRange += '–';
 
 			// show the final book
 			if (firstBookUsfm !== lastBookUsfm) {
-				formatted += bible.getAbbr(lastBook, lang) + ' ';
+				verseRange += bible.getAbbr(lastBook, lang) + ' ';
 			}
 
 			// show the final chapter an verse
 			if (firstBookUsfm !== lastBookUsfm || firstChapter !== lastChapter) {
-				formatted += lastChapter;
+				verseRange += lastChapter;
 				if (firstBookUsfm !== lastBookUsfm || firstVerse !== 1 || lastVerse !== lastVerseMax) {
-					formatted += ':' + lastVerse;
+					verseRange += ':' + lastVerse;
 				} 
 			} else {
-				formatted += lastVerse;
-			}
-				
-		}		
+				verseRange += lastVerse;
+			}	
+		}	
+
+		// first pericope
+		formatted += (index > 0 ? '; ' : '') + bible.getAbbr(firstBook, lang) + ' ' + firstChapter;
+
+		formatted += verseRange;
 	});
 	
 	return formatted;
+}
+
+function createUrl(verseList, bookUsfm, chapter, site, version) {
+
+	if (!site || site == '') {
+		site = 'biblegateway';
+	}
+	if (!version || version == '') {
+		version = 'NIV';
+	}	
+	
+	var url = '';
+
+	switch (site) {
+		case 'biblegateway':		
+			let bookInfo = bible.BIBLE_DATA[bookUsfm];
+			
+			url = `https://www.biblegateway.com/passage/?search=${verseList}&version=${version}`;
+			
+			break;
+		case 'biblia':		
+			
+			url = `https://biblia.com/books/${version.toLowerCase()}/${bookUsfm}${chapter}`;
+			
+			break;			
+		case 'youversion':
+			let yvVersions = {
+				'NIV': 111,
+				'ESV': 59,
+				'NASB': 2692,
+				'NRSV': 2016,
+				'CSB': 1713,
+				'KJV': 1,
+				'MSG': 97
+			};
+			let yvVersion = yvVersions[version];
+			if (!yvVersion) {
+				yvVersion = 111
+			}
+		
+			url = `https://www.bible.com/bible/${yvVersion}/${bookUsfm}.${chapter}`;
+			
+			break;
+	}
+
+	return url;
 }

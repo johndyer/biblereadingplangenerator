@@ -283,8 +283,8 @@ function generate(lang, format, doc) {
 	
 	// BUG	
 	//var datastartDate = startDate.addDays(1);
-	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val());
-	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'), $('#options-dailystats').is(':checked'), $('#options-nodates').is(':checked'));	
+	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val(), $('#options-includeurls').is(':checked'), $('#options-urlsite').val(), $('#options-urlversion').val());
+	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'), $('#options-dailystats').is(':checked'), $('#options-nodates').is(':checked'), $('#options-includeurls').is(':checked'));	
 	
 	return code;
 }
@@ -356,6 +356,10 @@ function updateUrlAndTitle() {
 				'&stats=' + ($('#options-stats').is(':checked') ? '1' : '0') +
 				'&dailystats=' + ($('#options-dailystats').is(':checked') ? '1' : '0') +
 				'&nodates=' + ($('#options-nodates').is(':checked') ? '1' : '0') +
+				
+				'&includeurls=' + ($('#options-includeurls').is(':checked') ? '1' : '0') +
+				'&urlsite=' + $('#options-urlsite').val() +
+				'&urlversion=' + $('#options-urlversion').val() +
 				
 		  		''		
 				);
@@ -734,6 +738,17 @@ function startup() {
 	if (urlParams.get('dailystats') == '1') {	
 		$('#options-dailystats').prop('checked',true);	
 	}	
+
+	if (urlParams.get('includeurls') == '1') {	
+		$('#options-includeurls').prop('checked',true);	
+	}	
+	if (urlParams.get('urlsite') != '' && urlParams.get('urlsite') != null) {	
+		$('#options-urlsite').val(urlParams.get('urlsite'));	
+	}
+	if (urlParams.get('urlversion') != '' && urlParams.get('urlversion') != null) {	
+		$('#options-urlversion').val(urlParams.get('urlversion'));	
+	}				
+
 
 	if (urlParams.get('logic') != '' && urlParams.get('logic') != null) {	
 		$('#options-logic').val(urlParams.get('logic'));	

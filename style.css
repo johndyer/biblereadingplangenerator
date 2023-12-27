@@ -211,6 +211,9 @@ details summary::marker {
 #divide-by select {
 	
 }
+#options-siteandversion {
+	font-size: 0.8em;
+}
 
 .books-list label {
 	display: block;
@@ -231,6 +234,16 @@ details summary::marker {
 	font-size: 14px;
 	color: #999;
 	display:none;
+}
+#output a {
+	color: #056200;
+	text-decoration: none;
+}
+#output a:hover {
+	text-decoration: underline;
+}
+#output a:visited {
+	color: #3e0062;
 }
 
 .is-today {	
