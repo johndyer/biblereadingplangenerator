@@ -281,11 +281,14 @@ function buildcalendar(lang, data, startDate, duration, bookList, dayList, showS
 function createFinalStats(days) {
 
 	// calendar view adds dummy days to the front, so the stats need to be offset for that
-	var daysOffset = (days[0].day < 1) ? Math.abs(days[0].day) + 1 : 0;
+	var daysOffset = 0; //(days[0].day < 1) ? Math.abs(days[0].day) + 1 : 0;
 
 	var verseStats = getPlanStats(days),
-		wordStats = getPlanWordStats(days),
-		html = `
+		wordStats = getPlanWordStats(days);
+
+	console.log('STATS',verseStats);
+	
+	var	html = `
 			<div class="plan-stats">
 				<table>
 					<tr>

@@ -453,11 +453,11 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 	// optimize
 	if (logic == 'pericopes' && dayInfo.chapterGroups.length == 1) { 
 		//console.time('optimizePericopes');
-		try {
+		//try {
 		data.days = optimizePericopes(data.days);
-		} catch {
-			console.log('error optimizing', data.days);
-		}
+		//} catch {
+		//	console.log('error optimizing', data.days);
+		//}
 		//console.timeEnd('optimizePericopes');
 	}
 
@@ -546,6 +546,10 @@ function optimizePericopes(days) {
         improved = false;
         attempts++;
 
+		if (!results || results == null) {
+			break;
+		}
+
 		// attempt to reduce the largest one
         let oldStats = getPlanStats(results),
             adjustedMax = pushFromMax(results, oldStats),            
@@ -582,7 +586,7 @@ function pushFromMax(days, stats) {
 
     // skip if only 1 element
     if (daysCopy[stats.maxIndex].pericopes.length <= 1) {
-        return;
+        return daysCopy;
     }
 
 	var dayWithMax = daysCopy[stats.maxIndex],
@@ -657,6 +661,10 @@ function pullForMin(days, stats) {
 }
 
 function getPlanStats(days) {
+
+	if (!days || days == null) {
+		return null;
+	}
 	//var countPerGroup = days.filter(day => day.versesForToday > 0).map(day => day.pericopes.reduce((a,b) => a + (b.range.length || 0), 0)); // .versesForToday);
 	var countPerGroup = days.filter(day => day.versesForToday > 0).map(day => day.versesForToday);
     var minCount = Math.min(...countPerGroup);
@@ -829,8 +837,6 @@ function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
 
 function formatPericopeRange(lang, pericopes, includeUrls, urlSite, urlVersion) {
 
-	isFullname = isFullname || false;
-	
 	if (!pericopes || pericopes == null || pericopes.length == 0) {
         return '';
 	}
@@ -877,6 +883,8 @@ function formatPericopeRange(lang, pericopes, includeUrls, urlSite, urlVersion) 
 	});
 	// EPH_1_1-EPH_1_15, EPH_1_16-EPH_1_31, EPH_2_1-EPH_2_15, PSA_1_1-PS_1_12, PSA_6_1-PSA_6_22	
 
+	var startBookUsfm = '';
+	var startChapter = '';
 	var formatted = '';
 	pericopePairs.forEach(function(pair, index) {
 		var
@@ -890,6 +898,12 @@ function formatPericopeRange(lang, pericopes, includeUrls, urlSite, urlVersion) 
 			lastChapter = parseInt(pair.end.split('_')[1], 10),
 			lastVerse = parseInt(pair.end.split('_')[2], 10),
 			lastVerseMax = lastBook.chapters[lastChapter-1];
+
+		// store for URL
+		if (index == 0) {
+			startBookUsfm = firstBookUsfm;
+			startChapter = firstChapter;
+		}
 			
 		let verseRange = '';
 		
@@ -927,8 +941,12 @@ function formatPericopeRange(lang, pericopes, includeUrls, urlSite, urlVersion) 
 
 		formatted += verseRange;
 	});
+
+	return (includeUrls ? '<a href="' + createUrl(formatted, startBookUsfm, startChapter, urlSite, urlVersion) + '" target="_blank">' : '') 
+		+ formatted
+		+ (includeUrls ? '</a>' : '');	
 	
-	return formatted;
+	//return formatted;
 }
 
 function createUrl(verseList, bookUsfm, chapter, site, version) {

@@ -1,22 +1,28 @@
 <?php
 
-$default_title = 'Bible Reading PLan Generator';
-$title = '';
+$default_title = 'Bible Reading Plan Generator';
+$title = null;
+
 
 if ($_GET['order']) {
 
     $order = $_GET['order'] ?? 'traditional';
     $books = $_GET['books'] ?? 'OT,NT';
 
-    $default_start = new DateTime("now");
-    $start = date_create($_GET['start'] ?? $default_start);
-    $days = $_GET['days'] ?? 365;
+    
+    $start = date_create($_GET['start'] ?? "now"); 
+    $days = $_GET['total'] ?? 365;
+    
+    
     $end = date_create(date_format($start,"Y-m-d"));
     date_add($end, date_interval_create_from_date_string($days . " days"));
     $daysofweek = $_GET['daysofweek'] ?? '1,2,3,4,5,6';
 
     $dailypsalm = $_GET['dailypsalm'] ?? '0';
     $dailyproverb = $_GET['dailyproverb'] ?? '0';
+
+    
+    
 
     // BOOKS
     if ($order == 'traditional') {
@@ -42,6 +48,8 @@ if ($_GET['order']) {
     } else if ($order == 'mcheyne') {
         $title = 'M\'Cheyne Reading Plan';
     }
+
+   
 
     // extras
     if ($dailypsalm == '1' && $dailyproverb == '1') {
@@ -87,6 +95,8 @@ if ($_GET['order']) {
         
         //. $start["year"] . ')';
     }
-
+    
 }
+
+
 ?>

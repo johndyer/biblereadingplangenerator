@@ -7,7 +7,7 @@
 	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2023-12-19" />
+	<link rel="stylesheet" href="style.css?v=2023-12-27" />
 
 	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -32,6 +32,7 @@
 		
 		<div id="sample-plans">
 			Samples: <a id="demo-bibleyear" href="/?start=01-01&books=OT,NT&logic=words">Bible in a Year List</a> | 
+			<a id="demo-bibleyear" href="/?total=40&format=calendar&order=traditional&daysofweek=2,3,4,5,6,7&books=JHN&lang=en&logic=pericopes&checkbox=1dailystats=1&includeurls=1">John in 40 Days</a> |
 			<a id="demo-ntweekendsoff" href="/?start=01-01&books=NT&format=weeks&logic=chapters&daysofweek=2,3,4,5,6">New Testament, Weekends Off</a> | 
 			<a id="demo-bibleyear" href="/?format=list&total=180&books=OT&order=chronological">Chronological OT in 6 months</a> |
 			<a id="demo-bibleyear" href="/?format=circle&colors=1">Pretty Color Wheel</a> |
@@ -268,8 +269,9 @@
 								<option value="MSG" yv="97">MSG</option>	
 								<option value="NASB" yv="2692">NASB</option>
 								<option value="NET" yv="107">NET</option>	
-								<option value="NIV" yv="111" selected>NIV</option>							
-								<option value="NET" yv="107">NET</option>
+								<option value="NIRV" yv="110">NIRV</option>						
+								<option value="NIV" yv="111" selected>NIV</option>									
+								<option value="NET" yv="107">NET</option>								
 							</optgroup>	
 
 							<optgroup label="Deutsch" lang="de">
@@ -311,19 +313,19 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2023-12-19"></script>
+	<script src="helpers.js?v=2023-12-27"></script>
 	
-	<script src="bible.data.js?v=2023-12-19"></script>
-	<script src="bible.data.languages.js?v=2023-12-19"></script>
-	<script src="bible.data.wordcounts.js?v=2023-12-19"></script>
-	<script src="bible.reference.js?v=2023-12-19"></script>
-	<script src="bible.plans.js?v=2023-12-19"></script>
+	<script src="bible.data.js?v=2023-12-27"></script>
+	<script src="bible.data.languages.js?v=2023-12-27"></script>
+	<script src="bible.data.wordcounts.js?v=2023-12-27"></script>
+	<script src="bible.reference.js?v=2023-12-27"></script>
+	<script src="bible.plans.js?v=2023-12-27"></script>
 	
-	<script src="bible.pericopes.js?v=2023-12-19"></script>
+	<script src="bible.pericopes.js?v=2023-12-27"></script>
 
-	<script src="plans.js?v=2023-12-19"></script>
-	<script src="renderers.js?v=2023-12-19"></script>
-	<script src="app.js?v=2023-12-19"></script>
+	<script src="plans.js?v=2023-12-27"></script>
+	<script src="renderers.js?v=2023-12-27"></script>
+	<script src="app.js?v=2023-12-27"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->

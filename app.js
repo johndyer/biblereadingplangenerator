@@ -251,6 +251,10 @@ function updateDisplay() {
 	} else {
 		$('#output').attr('dir','ltr');
 	}
+
+	//$('#main-header h1').html(title);
+	$('#output').prepend( $('<h1 contenteditable="true">' + currentTitle + '</h1><h6>biblereadingplangenerator.com</h6>') );
+
 }
 
 function generate(lang, format, doc) {
@@ -287,6 +291,7 @@ function generate(lang, format, doc) {
 }
 
 let currentKey = '';
+let currentTitle = '';
 
 function updateUrlAndTitle() {
 	// params
@@ -459,8 +464,7 @@ function updateUrlAndTitle() {
 	
 	document.title = title + ' | Bible Reading Plan Generator';
 
-	//$('#main-header h1').html(title);
-	$('#output').prepend( $('<h1 contenteditable="true">' + title + '</h1><h6>biblereadingplangenerator.com</h6>') );
+	currentTitle = title;
 }
 
 function updateBookLists() {
