@@ -281,9 +281,15 @@ function generate(lang, format, doc) {
 			return $(this).val();
 		}).get();
 	}
-	
-	// BUG	
-	//var datastartDate = startDate.addDays(1);
+
+	// QUIRK of 2024
+	if (startDate.getTime() == new Date(2024,0,1).getTime() && 
+		books.join(',') == 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV' && 
+		daysOfWeek.join(',') == '1,2,3,4,5' && 
+		duration == 366) {
+		duration == 364; //
+	}
+
 	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val(), $('#options-includeurls').is(':checked'), $('#options-urlsite').val(), $('#options-urlversion').val());
 	var code = window['build' + format](lang, data, startDate, duration, books, daysOfWeek, $('#options-stats').is(':checked'), $('#options-dailystats').is(':checked'), $('#options-nodates').is(':checked'), $('#options-includeurls').is(':checked'));	
 	
@@ -582,23 +588,7 @@ function startup() {
 		startdate = new Date(today.getFullYear(), today.getMonth()+1, 1);
 	}
 	$('#time-startdate').val(startdate.toInputField() );		
-
-	// total days
-	var total = null;
-	if (urlParams.has('total')) {
-		total = urlParams.get('total');
-	}
-	if (!total) {
-		total = 365;
-		// check for leap year
-		year = startdate.getYear();
-		if ( ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0) ) {
-			total = 366;
-		}	
-	}	
-	$('#time-days').val( total );	
 	
-
 	// format
 	var format = '';
 	if (urlParams.has('format')) {		
@@ -720,6 +710,29 @@ function startup() {
 				.prop('disabled',true);			
 	}
 	
+	// total days
+	var total = null;
+	if (urlParams.has('total')) {
+		total = urlParams.get('total');
+	}
+	if (!total) {
+		total = 365;
+		// check for leap year
+		year = startdate.getYear();
+		if ( ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0) ) {
+			total = 366;
+		}		
+	}	
+
+	if (
+		startdate.getTime() == new Date(2024,0,1).getTime() &&
+		books == 'NT' &&
+		daysofweek.join(',') == '2,3,4,5,6' &&
+		total == 366) {
+			total = 364;
+	}
+
+	$('#time-days').val( total );
 
 
 	// options
