@@ -22,6 +22,14 @@ $('.order-traditional, .order-tanakh').on('click', 'input', adjustBooks);
 $('.order-mcheyne').on('click', 'input', mcheyneDivisionCheck);
 $('[name=bibleorder]').on('click', enableTestaments);
 
+// yallversion
+$('#options-urlsite').on('change', function() {
+	if ($(this).val() == 'yallversion') {
+		$('#options-urlversion').hide();
+	} else {
+		$('#options-urlversion').show();
+	}
+});
 
 $('#download-ics').on('click', downloadics);
 $('#download-pdf').on('click', downloadpdf);
@@ -429,13 +437,13 @@ function updateUrlAndTitle() {
     } else if (daysofweek == '1,2,3,4,5,6') {
         title += ' - Saturdays Off';
     } else {
-        nums = array("1","2","3","4","5","6","7");
-        days = array("S","M","T","W","R","F","S");
+        nums = ["1","2","3","4","5","6","7"];
+        days = ["S","M","T","W","R","F","S"];
 		nums.forEach(function(val, index) {
-			daysofweek = daysofweek.replace(val, days[i])
+			daysofweek = daysofweek.replace(val, days[index]);
 		});
 
-        $title += ' - ' + daysofweek;
+        title += ' - ' + daysofweek;
     }
 
     // date 
@@ -724,11 +732,14 @@ function startup() {
 		}		
 	}	
 
+	// special case for NT weekends off (when first day of the year is a weekday)
 	if (
-		startdate.getTime() == new Date(2024,0,1).getTime() &&
-		books == 'NT' &&
-		daysofweek.join(',') == '2,3,4,5,6' &&
-		total == 366) {
+		startdate.getMonth() == 0 && // jan
+		startdate.getDate() == 1 && // first
+		[2,3,4,5,6].indexOf(startdate.getDay()) > -1 && // weekday 
+		books == 'NT' && // NT plan
+		daysofweek.join(',') == '2,3,4,5,6' && // weekend off
+		(total == 366 || total == 365)) {
 			total = 364;
 	}
 

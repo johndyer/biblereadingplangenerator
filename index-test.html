@@ -7,7 +7,7 @@
 	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2023-12-29" />
+	<link rel="stylesheet" href="style.css?v=2024-04-27" />
 
 	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -70,7 +70,8 @@
 						<option value="po">Português (Portuguese)</option>
 						<option value="ru">Ру́сский (Russia)</option>
 						<option value="sv">svenska (Swedish)</option>	
-						<option value="tr">Türkçe (Turkish)</option>											
+						<option value="tr">Türkçe (Turkish)</option>
+						<option value="uk">українська (Ukranian)</option>
 						<option value="ar">العَرَبِيَّة‎ (Arabic)</option>
 						<option value="bn">বাংলা (Bengali)</option>
 						<option value="zh-CN">汉语 (Chinese Simplified)</option>
@@ -254,10 +255,11 @@
 					<label><input type="checkbox" id="options-includeurls">Add Reading Links</label>
 
 					<div id="options-siteandversion">
-						<select id="options-urlsite">
+						<select id="options-urlsite">							
 							<option value="biblegateway" selected>Bible Gateway</option>
+							<option value="biblia">Biblia</option>							
 							<option value="youversion" >YouVersion</option>
-							<option value="biblia">Biblia</option>
+							<option value="yallversion" >Y’all Version</option>
 						</select>	
 						<select id="options-urlversion">													
 							<optgroup label="English" lang="en">
@@ -283,23 +285,20 @@
 							</optgroup>
 
 							<optgroup label="Ру́сский" lang="ru">
-								<option value="CARS" yv="385">CARS</option>	
-								<option value="SYNO" yv="400">SYNO</option>	
+								<option value="UMT" yv="204" bg="ERV-UK">UMT</option>	
+								<option value="UBIO" yv="186" bg="UKR">UBIO</option>	
 							</optgroup>							
 						
 						</select>
 					</div>
 
-
 				</div>
 			</section>
-
 
 			</nav>				
 			
 			<div id="output">
-				
-				
+
 			</div>	
 		</main>
 		
@@ -313,19 +312,19 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2023-12-29"></script>
+	<script src="helpers.js?v=2024-04-27"></script>
 	
-	<script src="bible.data.js?v=2023-12-29"></script>
-	<script src="bible.data.languages.js?v=2023-12-29"></script>
-	<script src="bible.data.wordcounts.js?v=2023-12-29"></script>
-	<script src="bible.reference.js?v=2023-12-29"></script>
-	<script src="bible.plans.js?v=2023-12-29"></script>
+	<script src="bible.data.js?v=2024-04-27"></script>
+	<script src="bible.data.languages.js?v=2024-04-27"></script>
+	<script src="bible.data.wordcounts.js?v=2024-04-27"></script>
+	<script src="bible.reference.js?v=2024-04-27"></script>
+	<script src="bible.plans.js?v=2024-04-27"></script>
 	
-	<script src="bible.pericopes.js?v=2023-12-29"></script>
+	<script src="bible.pericopes.js?v=2024-04-27"></script>
 
-	<script src="plans.js?v=2023-12-29"></script>
-	<script src="renderers.js?v=2023-12-29"></script>
-	<script src="app.js?v=2023-12-29"></script>
+	<script src="plans.js?v=2024-04-27"></script>
+	<script src="renderers.js?v=2024-04-27"></script>
+	<script src="app.js?v=2024-04-27"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
