@@ -59,7 +59,7 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 	data.chapterGroups.push( Object.create(chapterGroupModel) );
 	
 	// create chapter lists and groups
-	if (order == 'traditional' || order == 'tanakh') {
+	if (order == 'traditional' || order == 'alternate' || order == 'tanakh') {
 
 		// determine if a second group is needed
 		if (combineOTandNT) {
@@ -115,7 +115,17 @@ function getPlanData(lang, order, startDate, numberOfDays, bookList, daysOfWeek,
 		// chronological
 
 		if (bookList.indexOf('OT') > -1) {
-			data.chapterGroups[0].chapters = data.chapterGroups[0].chapters.concat( bible.plans.chronological.OT );
+			var otChronoList = [...bible.plans.chronological.OT];
+
+			if (dailyProverb) {
+				otChronoList = otChronoList.filter(chapterCode => chapterCode.indexOf('PRO') == -1);
+			}
+			if (dailyPsalm) {
+				otChronoList = otChronoList.filter(chapterCode => chapterCode.indexOf('PSA') == -1);
+			}			
+
+
+			data.chapterGroups[0].chapters = data.chapterGroups[0].chapters.concat(otChronoList );
 		}		
 
 		if (bookList.indexOf('NT') > -1) {
@@ -768,6 +778,7 @@ function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
     }
 	
 	var formatted = '',
+		formattedEnglish = '',
 		previousBookUsfm = '',
 		previousChapterNumber = 0,
 		previousChapterWasRange = false,
@@ -784,19 +795,22 @@ function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
 			if (i > 0) {
 				// 
 				if (firstChapterOfBook != previousChapterNumber && previousChapterWasRange) {
-					formatted += '-' + previousChapterNumber.toString();				
+					formatted += '-' + previousChapterNumber.toString();
+					formattedEnglish += '-' + previousChapterNumber.toString();
 				}
 				formatted += '; ';	
+				formattedEnglish += '; ';	
 			}
 			previousChapterWasRange = false;
 			
 			// stary with the book name/abbr
-			formatted += //(includeUrls ? '<a href="' + createUrl(lang, '','',chapter.usfm, chapter.chapter, '', '') + '" target="_blank">' : '') +
-				bible.getAbbr(bookInfo, lang);
+			formatted += bible.getAbbr(bookInfo, lang);
+			formattedEnglish += bible.getAbbr(bookInfo, 'en');
 
 			// add the first chapter (unless it's a single chapter book)
 			if (bookInfo.chapters.length > 1) {
                 formatted +=  ' ' + (chapter.chapter);
+				formattedEnglish += ' ' + (chapter.chapter);
             }
 			
 			// store the first chapter we're using
@@ -810,6 +824,7 @@ function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
 				// same book, but last entry
 				if (i == chapters.length-1) {
 					formatted += '-' + chapter.chapter.toString();
+					formattedEnglish += '-' + chapter.chapter.toString();
 					previousChapterWasRange = false;
 				} else {
 					// wait for next one
@@ -818,8 +833,11 @@ function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
 			} else {
 				if (previousChapterWasRange) {
 					formatted += '-' + previousChapterNumber.toString();
+					formattedEnglish += '-' + previousChapterNumber.toString();
+
 				}
 				formatted += ', ' + chapter.chapter.toString();
+				formattedEnglish += ', ' + chapter.chapter.toString();
 				previousChapterWasRange = false;
 			}
 			
@@ -830,7 +848,7 @@ function formatChapterRange(lang, chapters, includeUrls, urlSite, urlVersion) {
 		previousBookUsfm = chapter.usfm;
 	}
 	
-	return (includeUrls ? '<a href="' + createUrl(formatted, chapters[0].usfm, chapters[0].chapter, urlSite, urlVersion) + '" target="_blank">' : '') 
+	return (includeUrls ? '<a href="' + createUrl(formattedEnglish, chapters[0].usfm, chapters[0].chapter, urlSite, urlVersion) + '" target="_blank">' : '') 
 		+ formatted
 		+ (includeUrls ? '</a>' : '');
 }
@@ -963,8 +981,13 @@ function createUrl(verseList, bookUsfm, chapter, site, version) {
 	switch (site) {
 		case 'biblegateway':		
 			let bookInfo = bible.BIBLE_DATA[bookUsfm];
+
+			let bgVersion = $('option[value="' + version + '"]').attr('bg');
+			if (!bgVersion || bgVersion == '') {
+				bgVersion = version;
+			}
 			
-			url = `https://www.biblegateway.com/passage/?search=${verseList}&version=${version}`;
+			url = `https://www.biblegateway.com/passage/?search=${verseList}&version=${bgVersion}`;
 			
 			break;
 		case 'biblia':		
@@ -979,6 +1002,12 @@ function createUrl(verseList, bookUsfm, chapter, site, version) {
 			url = `https://www.bible.com/bible/${yvVersion}/${bookUsfm}.${chapter}`;
 			
 			break;
+		
+		case 'yallversion':
+	
+			url = `https://yallversion.com/${bookUsfm}/${chapter}`;
+			
+			break;			
 	}
 
 	return url;

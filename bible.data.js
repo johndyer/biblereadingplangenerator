@@ -232,7 +232,7 @@ bible.BIBLE_DATA = {
 },
 "ADE":{"name":"Additions to Esther","order":44,"osis":"AddEsth","section":11,
 	"abbr":{"en":["AddEst"]},
-	"chapters":[11,12,6,18,19,6,16,26],
+	"chapters":[17,12,6,18,19,6],
 	"names":{"en":["Additions to Esther"]}
 },
 "WIS":{"name":"Wisdom of Solomon","order":45,"osis":"Wis","section":11,
@@ -590,6 +590,11 @@ bible.TANAKH_BOOKS = ["GEN","EXO","LEV","NUM","DEU",
 "DAN","EZR","NEH","1CH","2CH"];
 
 
+bible.GOSPEL_BOOKS = [
+	"MAT","HEB","JAS",
+	"MRK","1PE","2PE","JUD",
+	"LUK","ACT","1TH","2TH","1CO","2CO","GAL","ROM","COL","EPH","PHM","PHP","1TI","TIT","2TI",		
+	"JHN","1JN","2JN","3JN","REV"];
 
 
 

@@ -18,7 +18,7 @@ $('#section-format input').on('change click', function() {
 $('#options-language').on('change click', updateBookLists);
 
 // traditional ot/nt clicking
-$('.order-traditional, .order-tanakh').on('click', 'input', adjustBooks);
+$('.order-traditional, .order-alternate').on('click', 'input', adjustBooks);
 $('.order-mcheyne').on('click', 'input', mcheyneDivisionCheck);
 $('[name=bibleorder]').on('click', enableTestaments);
 
@@ -203,19 +203,8 @@ function buildpdf(lang, data, days, bookList, dayList, doc) {
 	return '';
 }
 
-function updateDisplay() {
-
-	updateUrlAndTitle();
-
-	var format = $('input:radio[name="formatstyle"]:checked').val();
-	var lang = $('#options-language').val();	
-
-	var code = generate(lang, format);
-
-	if ($('#options-sectioncolors').is(':checked')) {
-		$('#output').addClass('plan-color');
-
-		var colorlist = [
+function generateColorListHtml() {
+	var colorlist = [
 			['pentateuch','Pentateuch'],
 			['historical','Historical'],
 			['major','Prophets'],
@@ -238,7 +227,22 @@ function updateDisplay() {
 		}
 		colorlistHtml += `</div>`;
 
-		code += colorlistHtml;
+	return colorlistHtml;
+}
+
+function updateDisplay() {
+
+	updateUrlAndTitle();
+
+	var format = $('input:radio[name="formatstyle"]:checked').val();
+	var lang = $('#options-language').val();	
+
+	var code = generate(lang, format);
+
+	if ($('#options-sectioncolors').is(':checked')) {
+		$('#output').addClass('plan-color');
+
+		code += generateColorListHtml();
 
 	} else {
 		$('#output').removeClass('plan-color');
@@ -280,7 +284,7 @@ function generate(lang, format, doc) {
 	}).get();
 
 	
- 	if (order == 'traditional' || order == 'tanakh') {
+ 	if (order == 'traditional' || order == 'alternate' || order == 'tanakh') {
 		books = $('.order-' + order + ' .books-list input[type=checkbox]:checked').map(function(index, el) { 
 			return $(this).val();
 		}).get();	
@@ -291,10 +295,10 @@ function generate(lang, format, doc) {
 	}
 
 	// QUIRK of 2024
-	if (startDate.getTime() == new Date(2024,0,1).getTime() && 
-		books.join(',') == 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV' && 
+	if (/*startDate.getTime() == new Date(2024,0,1).getTime() && */
+		(books == 'NT' || books.join(',') == 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV') && 
 		daysOfWeek.join(',') == '1,2,3,4,5' && 
-		duration == 366) {
+		(duration == 365 || duration == 366)) {
 		duration == 364; //
 	}
 
@@ -322,15 +326,15 @@ function updateUrlAndTitle() {
 		  .join( ',' ),
 		books = [];
 	
-	if (order == 'traditional') {
+	if (order == 'traditional' || order == 'alternate') {
 
 		for (var i=0; i<bible.TESTAMENTS.length; i++) {
 			var testament = bible.TESTAMENTS[i];
 
-			if ($('.order-traditional input[value="' + testament + '"]').is(':checked')) {
+			if ($('.order-' + order + ' input[value="' + testament + '"]').is(':checked')) {
 				books.push(testament);
 			} else {
-				$('.order-traditional .section-' + testament  + ' .books-list input').each(function() {
+				$('.order-' + order + ' .section-' + testament  + ' .books-list input').each(function() {
 					if ($(this).is(':checked'))
 						books.push($(this).val());
 				});
@@ -411,8 +415,14 @@ function updateUrlAndTitle() {
         } else if (books == 'OT') {
             title = 'Chronological OT Reading Plan';
         }
-    } else if (order == 'tanakh') {
-        title = 'Tanakh Reading Plan';
+    } else if (order == 'tanakh' || order == 'alternate') {
+        if (books == 'OT,NT') {
+        	title = 'Alterate Reading Plan';
+        } else if (books == 'NT') {
+            title = 'Gospel Writers Reading Plan';
+        } else if (books == 'OT') {
+            title = 'Tanakh Reading Plan';
+        }		        
     } else if (order == 'mcheyne') {
         title = 'M\'Cheyne Reading Plan';
     }
@@ -523,8 +533,10 @@ function createBookLists() {
 		}
 	}
 
+	// ALTERNATE 
+
 	// Tanakh
-	var tanakh_list = $('.order-tanakh .section-OT .books-list').empty();
+	var tanakh_list = $('.order-alternate .section-OT .books-list').empty();
 	for (var j=0; j<bible.TANAKH_BOOKS.length; j++) {
 		var usfm = bible.TANAKH_BOOKS[j],
 			book = bible.BIBLE_DATA[ usfm ];
@@ -534,6 +546,18 @@ function createBookLists() {
 			$('<label><input type="checkbox" value="' + usfm + '"><span>' + bible.getName(book, lang) + '</span></label>')
 		);
 	}
+
+	// NT
+	var gospel_writers_list = $('.order-alternate .section-NT .books-list').empty();
+	for (var j=0; j<bible.GOSPEL_BOOKS.length; j++) {
+		var usfm = bible.GOSPEL_BOOKS[j],
+			book = bible.BIBLE_DATA[ usfm ];
+
+		//console.log(usfm);
+		gospel_writers_list.append(
+			$('<label><input type="checkbox" value="' + usfm + '"><span>' + bible.getName(book, lang) + '</span></label>')
+		);
+	}	
 
 }
 
@@ -623,6 +647,9 @@ function startup() {
 	var order = '';
 	if (urlParams.has('order')) {		
 		order = urlParams.get('order');
+		if (order == 'tanakh') {
+			order = 'alternate';
+		}
 	} else {
 		order = 'traditional';
 	}
@@ -660,25 +687,31 @@ function startup() {
 				.prop('checked',true)
 				.prop('disabled',true);
 
-			$('.order-tanakh input[type=checkbox]')
+			$('.order-alternate input[type=checkbox]')
 				.prop('checked',true)
 				.prop('disabled',true);	
-			break;	
+			break;
+		case 'alternate':	
 		case 'tanakh':
 			if (urlParams.has('books')) {		
 				books = urlParams.get('books');
 				books = books.split(',');
 
 				if (books[0] == 'OT') {
-					$('.order-tanakh .section-OT input').prop('checked',true);
+					$('.order-alternate .section-OT input').prop('checked',true);
 				}
+				if (books[0] == 'NT') {
+					$('.order-alternate .section-NT input').prop('checked',true);
+				}				
+				
 				
 				for (var i=0; i<books.length; i++) {
 					$('input[value="' + books[i] + '"]').prop('checked',true);
 				}
+				
 
 			} else {
-				$('.order-tanakh .section-OT input').prop('checked',true);
+				$('.order-alternate .section-OT input').prop('checked',true);
 			}
 			
 			$('.order-traditional input[type=checkbox]')
@@ -713,7 +746,7 @@ function startup() {
 				.prop('checked',true)
 				.prop('disabled',true);
 
-			$('.order-tanakh input[type=checkbox]')
+			$('.order-alternate input[type=checkbox]')
 				.prop('checked',true)
 				.prop('disabled',true);			
 	}
