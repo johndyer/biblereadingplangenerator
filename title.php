@@ -43,8 +43,14 @@ if ($_GET['order']) {
         } else if ($books == 'OT') {
             $title = 'Chronological OT Reading Plan';
         }
-    } else if ($order == 'tanakh') {
-        $title = 'Tanakh Reading Plan';
+    } else if ($order == 'alternate') {
+        if ($books == 'OT,NT') {
+            $title = 'Alternate Bible Reading Plan';
+        } else if ($books == 'NT') {
+            $title = 'Gospel Writers Reading Plan';
+        } else if ($books == 'OT') {
+            $title = 'Tanakh Reading Plan';
+        }        
     } else if ($order == 'mcheyne') {
         $title = 'M\'Cheyne Reading Plan';
     }

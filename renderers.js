@@ -417,6 +417,9 @@ function buildbooks(lang, data, startDate, duration, bookList, dayList, showStat
 
 function buildcircle(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates) {
 
+	// simplify the format for the circle
+	// get the CSS class for the slivers
+
 	var dateEntries = [];
 	for (var i=0; i<data.days.length; i++) {
 		var entry = data.days[i];
@@ -428,15 +431,56 @@ function buildcircle(lang, data, startDate, duration, bookList, dayList, showSta
 			text: entry.formattedReading,
 			sliceColor: '#fff',
 			sliceCssClass: cssClass,
-		})
+		});
 	}
 
-	var svgNode = svgCalendar(dateEntries, lang, noDates);
+	var svgNode = renderSvgCircle(dateEntries, lang, noDates);
 	
-	return svgNode.outerHTML;
+	var outer = document.createElement('div');
+	outer.appendChild(svgNode);
+
+	var colorList = document.createElement('div');
+	colorList.innerHTML =  generateColorListHtml();
+	outer.appendChild(colorList);
+
+	var topright = svgNode.cloneNode(true);
+	topright.setAttribute("viewBox", "0 0 500 500");
+	topright.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(topright);
+
+	var bottomright = svgNode.cloneNode(true);
+	bottomright.setAttribute("viewBox", "-500 0 500 500");
+	bottomright.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(bottomright);	
+
+	var bottomleft = svgNode.cloneNode(true);
+	bottomleft.setAttribute("viewBox", "-500 -500 500 500");
+	bottomleft.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(bottomleft);	
+	
+	var topleft = svgNode.cloneNode(true);
+	topleft.setAttribute("viewBox", "0 -500 500 500");
+	topleft.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(topleft);	
+	
+
+	return outer.outerHTML;
+
+	//return svgNode.outerHTML;
 }
 
-function svgCalendar(dateEntries, lang, noDates) {
+function renderSvgCircle(dateEntries, lang, noDates) {
+
+	/* internal functions */
+
+	function getCoordinatesForPercent(percent) {
+		const x = Math.cos(2 * Math.PI * percent);
+		const y = Math.sin(2 * Math.PI * percent);
+
+		return [x, y];
+	}
+
+
 
 	const settings = {
 		mainSize: 1000,		
@@ -480,8 +524,8 @@ function svgCalendar(dateEntries, lang, noDates) {
 	// main nodes
 	//const targetDiv = document.getElementById('svg-area');
 	const svgNode = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-	svgNode.setAttributeNS(null, 'height', settings.mainSize);
-	svgNode.setAttributeNS(null, 'width', settings.mainSize);
+	svgNode.setAttributeNS(null, 'height', 890); //settings.mainSize);
+	svgNode.setAttributeNS(null, 'width', 890); //settings.mainSize);
 	svgNode.setAttributeNS(null, 'viewBox', '-' + (settings.mainSize/2) + ' -' + (settings.mainSize/2) + ' ' + (settings.mainSize) + ' ' + (settings.mainSize));
 	svgNode.setAttributeNS(null, 'transform', 'rotate(-90)');
 	//targetDiv.appendChild(svgNode);
@@ -639,63 +683,458 @@ function svgCalendar(dateEntries, lang, noDates) {
 
 }
 
-Date.prototype.formattedDate = function() {
-    var mm = this.getMonth() + 1; // getMonth() is zero-based
-    var dd = this.getDate();
-  
-    return [
-            (mm>9 ? '' : '0') + mm,
-            (dd>9 ? '' : '0') + dd
-           ].join('/');
-};
-function getCoordinatesForPercent(percent) {
-    const x = Math.cos(2 * Math.PI * percent);
-    const y = Math.sin(2 * Math.PI * percent);
 
-    return [x, y];
+function buildcirclecal(lang, data, startDate, duration, bookList, dayList, showStats, showDailyStats, noDates) {
+
+	/*
+	var dateEntries = [];
+	for (var i=0; i<data.days.length; i++) {
+		var entry = data.days[i];
+		var bookInfo = entry.chapters.length > 0 ? bible.BIBLE_DATA[entry.chapters[0].usfm] : null;		
+		var cssClass = 'section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '');
+
+		dateEntries.push({
+			date: entry.date,
+			text: entry.formattedReading,
+			sliceColor: '#fff',
+			sliceCssClass: cssClass,
+		})
+	}
+	*/
+
+    // base measurements: 300,300
+    let start = 300;
+    let depth = 25;
+
+    // how many days is this?
+    let totalDays = data.days.length;
+   
+    let weeks = Math.ceil(totalDays/7);
+
+    // make 7 layers (empty for mow)
+    let layers = [];
+    for (let inner=1; inner<=7; inner++) {
+        layers.push({
+            segments: Array( weeks ), 
+			//segments: weeks,
+            dayLabels: Array.from({length:weeks}, (_,i)=> ''), 
+            textLabels: Array.from({length:weeks}, (_,i)=> ''), 
+			cssClasses: Array.from({length:weeks}, (_,i)=> ''), 
+            outerR: start - ((inner-1) * depth),
+            innerR: start - (inner * depth),      
+            gapDeg: 0,
+            colors: Array.from({length:weeks}, (_,i)=>'#eeeeee')
+        })
+    }
+
+    // add days to first week to ensure sunday start
+	while (data.days[0].date.getDay() > 0) {
+
+		let emptyDay = {
+			date: data.days[0].date.addDays(-1),
+			formattedReading: '',
+            empty: true
+		};
+			
+		data.days.splice(0,0,emptyDay);
+    }
+    // add days to final week to ensure saturday end
+	while (data.days[data.days.length-1].date.getDay() < 6) {
+
+		let emptyDay = {
+			date: data.days[data.days.length-1].date.addDays(1),
+			formattedReading: '',
+            empty: true
+		};
+			
+		data.days.push(emptyDay);
+    }
+
+    let dayArray = [6,5,4,3,2,1,0];
+
+    // fill in the layers with day info
+    for (var dayIndex=0; dayIndex < data.days.length; dayIndex++) {
+
+        var passage = data.days[dayIndex];
+        var layerIndex = dayArray[ data.days[dayIndex].date.getDay() ];
+        var weekIndex = Math.floor( (dayIndex) / 7 );
+
+		var segment = {monthLabel: '', dayLabel: '', weeksInMonth: 0, firstIsSunday: 0, textLabel: '', color: '#ffffff', isFirstOfMonth: false, isFirstWeek: false};
+		
+		if (!passage.empty) {
+
+			segment.color = passage.date.getMonth() % 2 == 0 ? '#eeeeee' : '#dddddd';			
+			segment.textLabel = passage.formattedReading;
+			segment.dayLabel = passage.date.getDate();
+
+			segment.isFirstWeek = passage.date.getDate() <= 7; 
+
+			if (passage.date.getDate() == 1) {
+				segment.isFirstOfMonth = true;
+				segment.firstIsSunday = passage.date.getDay() == 0 ? 1 : 0;
+				segment.dayLabel = passage.date.toLocaleDateString(lang, {month:"short"}) + ' ' + passage.date.getDate();
+				
+				segment.monthLabel = passage.date.toLocaleDateString(lang, {month:"long"});
+
+				// count the number of weeks
+				let weekStartDay = 0; // sunday
+				let weekCount = 0;
+				let currentDate = passage.date;
+				let endDate = new Date(passage.date.getFullYear(), passage.date.getMonth() + 1, 0);
+				while(currentDate.getTime() <= endDate.getTime()){
+					if(currentDate.getDay() === weekStartDay){
+						weekCount++;
+					}
+					currentDate.setDate(currentDate.getDate() + 1);
+				}
+				segment.weeksInMonth = weekCount;				
+
+			}
+
+
+
+			
+			
+			var entry = data.days[dayIndex];
+			var bookInfo = entry.chapters && entry.chapters.length > 0 ? bible.BIBLE_DATA[entry.chapters[0].usfm] : null;		
+			
+			segment.cssClass = 'section-' + (bookInfo != null ? bible.SECTIONS[bookInfo.section] : '');				;				
+		}
+
+		layers[layerIndex].segments[weekIndex] = segment;
+    }
+
+	var svgNode = renderSvgCircleCal(layers);
+
+	var outer = document.createElement('div');
+
+	outer.appendChild(svgNode);
+
+	var colorList = document.createElement('div');
+	colorList.innerHTML =  generateColorListHtml();
+	outer.appendChild(colorList);
+
+	var topright = svgNode.cloneNode(true);
+	topright.setAttribute("viewBox", "300 0 300 300");
+	topright.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(topright);
+
+	var bottomright = svgNode.cloneNode(true);
+	bottomright.setAttribute("viewBox", "300 300 300 300");
+	bottomright.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(bottomright);	
+
+	var bottomleft = svgNode.cloneNode(true);
+	bottomleft.setAttribute("viewBox", "0 300 300 300");
+	bottomleft.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(bottomleft);	
+	
+	var topleft = svgNode.cloneNode(true);
+	topleft.setAttribute("viewBox", "0 0 300 300");
+	topleft.setAttribute("style", "margin: 20px 0");
+	outer.appendChild(topleft);		
+
+	return outer.outerHTML;
+	//return svgNode.outerHTML;
+}
+
+function renderSvgCircleCal(layers) {
+
+	/* utility functions */
+	function degToRad(d) {
+		return d * Math.PI / 180;
+	}
+	
+	function polar(cx, cy, r, a) {
+		const rad = degToRad(a - 90);
+		return { 
+				x: cx + r * Math.cos(rad), 
+				y: cy + r * Math.sin(rad) 
+		};
+	}
+
+	function largeArc(a) {
+		return a > 180 ? 1 : 0;
+	}
+
+	function makeWedgePath(cx, cy, r0, r1, a0, a1) {
+		const p0 = polar(cx, cy, r1, a0);
+		const p1 = polar(cx, cy, r1, a1);
+		const q0 = polar(cx, cy, r0, a0);
+		const q1 = polar(cx, cy, r0, a1);
+
+		return `
+			M ${p0.x} ${p0.y}
+			A ${r1} ${r1} 0 ${largeArc(a1 - a0)} 1 ${p1.x} ${p1.y}
+			L ${q1.x} ${q1.y}
+			A ${r0} ${r0} 0 ${largeArc(a1 - a0)} 0 ${q0.x} ${q0.y}
+			Z
+		`;
+	}
+
+	function makeCornerOutline(cx, cy, r0, r1, a0, a1) {
+		const p0 = polar(cx, cy, r1, a0);
+		const p1 = polar(cx, cy, r1, a1);
+		const q0 = polar(cx, cy, r0, a0);
+		const q1 = polar(cx, cy, r0, a1);
+
+		return `
+			M ${q1.x} ${q1.y}
+			A ${r0} ${r0} 0 ${largeArc(a1 - a0)} 0 ${q0.x} ${q0.y}
+			L ${p0.x} ${p0.y}			
+		`;
+	}	
+
+	function makeTopOutline(cx, cy, r0, r1, a0, a1) {
+		const p0 = polar(cx, cy, r1, a0);
+		const p1 = polar(cx, cy, r1, a1);
+		const q0 = polar(cx, cy, r0, a0);
+		const q1 = polar(cx, cy, r0, a1);
+
+		return `
+			M ${q0.x} ${q0.y}
+			L ${p0.x} ${p0.y}
+		`;
+	}		
+
+	/* ---------- Arc path for text ---------- */
+	/* This creates an arc along the *middle* radius of the wedge */
+	function makeArcPath(cx, cy, radius, a0, a1) {
+		const p0 = polar(cx, cy, radius, a0);
+		const p1 = polar(cx, cy, radius, a1);
+		return `
+			M ${p0.x} ${p0.y}
+			A ${radius} ${radius} 0 ${largeArc(a1 - a0)} 1 ${p1.x} ${p1.y}
+		`;
+	}
+
+
+	/// START
+	let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	svg.setAttribute("viewBox", "0 0 600 600");
+	svg.setAttribute("width",890);
+	svg.setAttribute("height",890);
+	//svg.setAttribute("style","margin: 0");
+	svg.innerHTML = ""; // clear SVG
+	
+	const cx = 300;
+ 	const cy = 300;
+
+
+	// INNER CIRCLE
+	const innerCircle = createSvgNode('circle', {r: layers[layers.length-1].innerR, cx: cx, cy: cy, fill: '#fff', stroke: '#ccc'});
+	svg.appendChild(innerCircle);
+	
+	const innerCircle2 = createSvgNode('circle', {r: layers[layers.length-1].innerR-20, cx: cx, cy: cy,  fill: '#fff', stroke: '#ccc'});
+	svg.appendChild(innerCircle2);
+
+	const outlineCircle = createSvgNode('circle', {r: layers[0].outerR, cx: cx, cy: cy,  fill: 'transparent', stroke: '#ccc'});
+	svg.appendChild(outlineCircle);
+	
+	// layers
+
+	layers.forEach((layer, layerIndex) => {
+		
+		const {
+			segments,
+			//dayLabels = [],
+			//textLabels = [],
+			//cssClasses = [],
+			innerR,
+			outerR,
+			gapDeg = 0,
+			//colors = null
+		} = layer;
+		
+		//const segments = layer.ls
+
+		const full = 360;
+		const rawAngle = full / segments.length;
+		const segAngle = rawAngle - gapDeg;
+		const textRadius = (innerR + outerR) / 2;  // place text at mid-radius
+
+		for (let i = 0; i < segments.length; i++) {
+			const segment = segments[i];
+			const start = i * rawAngle + gapDeg / 2;
+			const end = start + segAngle;
+			const color = segment.color;
+			/*
+			const color = typeof colors === "function"
+				? colors(i)
+				: Array.isArray(colors)
+					? colors[i % colors.length]
+					: `hsl(${(i/segments.length)*360} 60% 65%)`;
+			*/
+
+			/* ----- Wedge shape ----- */
+			const wedge = document.createElementNS("http://www.w3.org/2000/svg", "path");
+			wedge.setAttribute("d", makeWedgePath(cx, cy, innerR, outerR, start, end));
+			wedge.setAttribute("fill", color);
+			wedge.setAttribute("style","stroke: #fff; stroke-width:0.5; opacity: 0.5;"); // should be CSS?
+			//wedge.classList.add("wedge");
+			wedge.classList.add(segment.cssClass);
+
+			// for interactive work
+			wedge.dataset.layer = layerIndex;
+			wedge.dataset.index = i;
+			svg.appendChild(wedge); 
+
+
+			// create left and top
+			if (segment.isFirstOfMonth && !segment.firstIsSunday) {
+				const wedgeOutline = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				wedgeOutline.setAttribute("d", makeCornerOutline(cx, cy, innerR, outerR, start, end));
+				wedgeOutline.setAttribute("fill", 'transparent');
+				wedgeOutline.setAttribute("style","stroke: #333; stroke-width:0.5;"); // should be CSS?
+				svg.appendChild(wedgeOutline); 
+			}
+			// just top
+			if (segment.isFirstWeek) {
+				const wedgeOutline = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				wedgeOutline.setAttribute("d", makeTopOutline(cx, cy, innerR, outerR, start, end));
+				wedgeOutline.setAttribute("fill", 'transparent');
+				wedgeOutline.setAttribute("style","stroke: #333; stroke-width:0.5;"); // should be CSS?
+				svg.appendChild(wedgeOutline); 
+			}			
+
+
+			// calculate position of text (foreignObject)
+			const mid = start + segAngle / 2;
+			const rMid = (innerR + outerR) / 2;
+			const { x, y } = polar(cx, cy, rMid, start+1.5) // mid);
+			
+			// foreignObject (so text can flow)
+			const fomid = start+2.1;
+			const fopos = polar(cx, cy, innerR+2.5, fomid);        
+			const outerSvg = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+			outerSvg.setAttribute("transform", `translate(${fopos.x},${fopos.y}) rotate(${mid-90})`);
+			outerSvg.setAttribute("width", `20`); 
+			outerSvg.setAttribute("height", `14`);  // allows three lines in outer rungs
+			
+			const wedgeContent = document.createElement("p");
+			wedgeContent.textContent = segment.textLabel;
+			wedgeContent.setAttribute("style", `margin: 0; padding: 0; line-height: 1.1; 
+										font-size: 4.5px; fill: #1a1a1a; 
+										text-anchor: middle; dominant-baseline: middle;`); 
+
+			if (segment.textLabel.length > 20 && layerIndex > 2) {
+				wedgeContent.style.fontSize = '4.0px';
+				wedgeContent.style.lineHeight = '1.0';
+			}
+			if (segment.textLabel.length > 20 && layerIndex > 4) {
+				wedgeContent.style.fontSize = '3.5px';
+				wedgeContent.style.lineHeight = '1.0';
+			}			
+		
+			outerSvg.appendChild(wedgeContent);
+			svg.appendChild(outerSvg);
+
+			// ------ top left number -----
+			const nmid = start+0.3;
+			const nrMid = (innerR + outerR) / 2;
+			const numpos = polar(cx, cy, innerR+2.5 , nmid+0.5+ (layerIndex*0.2)); // for some reason, the angle needs to be lessened teh further out it goes
+			const numberLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			numberLabel.setAttribute("transform", `translate(${numpos.x},${numpos.y}) rotate(${start-90})`);
+			numberLabel.setAttribute("style", `padding-left: 1px; font-size: 4px; fill: #666;`); 
+			numberLabel.textContent = segment.dayLabel;       
+			svg.appendChild(numberLabel);
+
+
+			if (segment.isFirstOfMonth && segment.monthLabel != '') {
+				/*
+				const monthmid = start + (360/layer.segments.length*segment.weeksInMonth/2); // start at this wedge, then add 4 weeks
+				const monthrMid = layers[layers.length-1].innerR-10; // just inside the last layer
+				const monthpos = polar(cx, cy, monthrMid, monthmid); 
+				const monthLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+				monthLabel.setAttribute("transform", `translate(${monthpos.x},${monthpos.y}) rotate(${monthmid})`);
+				monthLabel.setAttribute("style", `text-anchor: middle; dominant-baseline: middle;
+												 font-size: 5px; fill: #666;`); 
+				monthLabel.textContent = segment.monthLabel;				
+				svg.appendChild(monthLabel);
+				*/
+
+				console.log(segment.monthLabel, segment.firstIsSunday, segment.weeksInMonth, start);
+
+				const weekWidth = 360/layer.segments.length;
+				const arcId = `arc-${layerIndex}-${i}`;
+				const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				arc.setAttribute("id", arcId);
+				arc.setAttribute("d", makeArcPath(cx, cy, layers[layers.length-1].innerR-12, 
+						start + (!segment.firstIsSunday * weekWidth), 
+						start + (weekWidth*(segment.weeksInMonth+1) - (segment.firstIsSunday * weekWidth))
+					));
+				arc.setAttribute("fill", "none");
+				arc.setAttribute("stroke", "none"); // segment.color); //"#f00");
+				svg.appendChild(arc);
+
+				// ----- Text following arc -----
+				const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+				text.setAttribute("style", `text-transform: uppercase;
+									font-size: 5px; fill: #666;`); 
+
+				const textPath = document.createElementNS("http://www.w3.org/2000/svg", "textPath");
+				textPath.setAttributeNS("http://www.w3.org/1999/xlink", "href", `#${arcId}`);
+				textPath.setAttribute("startOffset", "50%");
+				textPath.setAttribute("text-anchor", "middle");
+		
+				textPath.textContent = segment.monthLabel;
+				
+
+				text.appendChild(textPath);
+				svg.appendChild(text);				
+
+
+			}
+
+			
+		
+		} // segments
+	}); // layers
+
+
+
+	
+	// TITLE
+	const titleNode = createSvgNode('text', {
+		//'font-family': settings.titleFontFamily, 
+		//'font-size': settings.titleFontSize, 
+		//'fill': settings.titleFontFill,		 		
+		//'transform': 'rotate(90)',
+		'dominant-baseline': 'middle',
+		'text-anchor': 'middle',  
+		x: cx, y: cy, 
+	});
+	svg.appendChild(titleNode);
+	titleNode.appendChild(createTSpan('Bible Reading Plan'));
+
+
+	return svg;
 }
 
 function createSvgNode(typeName, attributes = {}) {
-    const svgNode = document.createElementNS('http://www.w3.org/2000/svg', typeName);
+	const svgNode = document.createElementNS('http://www.w3.org/2000/svg', typeName);
 
-    setSvgAtts(svgNode, attributes);
+	setSvgAtts(svgNode, attributes);
 
-    return svgNode;
+	return svgNode;
 }
 
 function setSvgAtts(node, attributes = {}) {
-    for (const [key, value] of Object.entries(attributes)) {
-        node.setAttributeNS(null, key, value);
-    }
+	for (const [key, value] of Object.entries(attributes)) {
+		node.setAttributeNS(null, key, value);
+	}
 }
 
 function createTSpan(text, attributes = {}) {
-    const tSpan = createSvgNode('tspan', attributes);
-    var spanText = document.createTextNode( text );
-    tSpan.appendChild(spanText);
-    return tSpan;
+	const tSpan = createSvgNode('tspan', attributes);
+	var spanText = document.createTextNode( text );
+	tSpan.appendChild(spanText);
+	return tSpan;
 }
 
 function createTextPath(text, attributes = {}) {
-    const tSpan = createSvgNode('textPath', attributes);
-    var spanText = document.createTextNode( text );
-    tSpan.appendChild(spanText);
-    return tSpan;
+	const tSpan = createSvgNode('textPath', attributes);
+	var spanText = document.createTextNode( text );
+	tSpan.appendChild(spanText);
+	return tSpan;
 }
-
-
-function getLocalStorage(id, defaultValue) {
-	var value = localStorage.getItem(id);
-	if (value !== null) {
-		return value;
-	}
-	return defaultValue;
-}
-function setLocalStorage(id, value) {
-	localStorage.setItem(id,value);
-}
-
-$('main').on('click', '.reading-check', function() {
-	// store
-	setLocalStorage($(this).prop('id'),$(this).is(':checked'));	
-});

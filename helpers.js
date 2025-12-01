@@ -31,6 +31,32 @@ Date.prototype.toInputField = function() {
 
 	return f;
 }
+Date.prototype.formattedDate = function() {
+    var mm = this.getMonth() + 1; // getMonth() is zero-based
+    var dd = this.getDate();
+  
+    return [
+            (mm>9 ? '' : '0') + mm,
+            (dd>9 ? '' : '0') + dd
+           ].join('/');
+};
+
+function getLocalStorage(id, defaultValue) {
+	var value = localStorage.getItem(id);
+	if (value !== null) {
+		return value;
+	}
+	return defaultValue;
+}
+function setLocalStorage(id, value) {
+	localStorage.setItem(id,value);
+}
+
+$('main').on('click', '.reading-check', function() {
+	// store
+	setLocalStorage($(this).prop('id'),$(this).is(':checked'));	
+});
+
 
 // save
 var saveData = (function () {

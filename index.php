@@ -7,7 +7,7 @@
 	<title><?php echo $title ?? $default_title; ?></title>
 
 	<link href="https://fonts.googleapis.com/css?family=Merriweather|Source+Sans+Pro&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css?v=2024-04-27" />
+	<link rel="stylesheet" href="style.css?v=2025-12-01" />
 
 	<meta property="og:title" content="<?php echo $title ?? $default_title; ?>" />
 	<meta property="og:description" content="Choose your time frame, format, and the books of the Bible you want to read, then print it out!" />
@@ -67,11 +67,12 @@
 						<option value="es">español (Spanish)</option>
 						<option value="fi">Finnish (Suomalainen)</option>
 						<option value="fr">le français (French)</option>
+						<option value="id">Indonesia (Indonesian)</option>
 						<option value="po">Português (Portuguese)</option>
 						<option value="ru">Ру́сский (Russia)</option>
 						<option value="sv">svenska (Swedish)</option>	
 						<option value="tr">Türkçe (Turkish)</option>
-						<option value="uk">українська (Ukranian)</option>
+						<option value="uk">українська (Ukrainian)</option>
 						<option value="ar">العَرَبِيَّة‎ (Arabic)</option>
 						<option value="bn">বাংলা (Bengali)</option>
 						<option value="zh-CN">汉语 (Chinese Simplified)</option>
@@ -80,9 +81,10 @@
 						<option value="iw">עִברִית (Hebrew)</option>												
 						<option value="hi">हिन्दी (Hindi)</option>
 						<option value="jv">ꦧꦱꦗꦮ (Javanese)</option>
+						<option value="ko">한국어 (Korean)</option>
 						<option value="ml">മലയാളം (Malayalam)</option>
 						<option value="ja">日本 (Japanese)</option>
-						<option value="kr">한국어 (Korean)</option>
+						<option value="ko">한국어 (Korean)</option>
 						<option value="mr">मराठी (Marathi)</option>	
 						<option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>						
 						<option value="ta">தமிழ் (Tamil)</option>
@@ -112,9 +114,13 @@
 					
 					<label>
 						<input type="radio" id="formatstyle-books" name="formatstyle" value="circle">
-						Circle
-					</label>						
-				
+						Circle (Slices)
+					</label>	
+
+					<label>
+						<input type="radio" id="formatstyle-books" name="formatstyle" value="circlecal">
+						Circle (Calendar)
+					</label>					
 
 					<input type="button" id="download-pdf" value="Get PDF" style="display:none;">
 											
@@ -176,19 +182,29 @@
 					</div>
 
 
-					<div class="order-tanakh order-group">
+					<div class="order-alternate order-group">
 						<br>
-						<label><input type="radio" name="bibleorder" value="tanakh">Tanakh</label>
+						<label><input type="radio" name="bibleorder" value="alternate">Alternate</label>
 						
 						<details class="section-OT">
 							<summary>
-								<label class="books-testament"><input type="checkbox" value="OT">Hebrew Bible</label>
+								<label class="books-testament"><input type="checkbox" value="OT">Hebrew Tanakh</label>
 							</summary>
 
 							<div class="books-list">						
 								
 							</div>						
-						</details>						
+						</details>	
+						
+						<details class="section-NT">
+							<summary>
+								<label class="books-testament"><input type="checkbox" value="NT">Gospel Writers</label>
+							</summary>
+
+							<div class="books-list">						
+								
+							</div>						
+						</details>							
 
 					</div>	
 
@@ -267,13 +283,13 @@
 								<option value="CSB" yv="1713">CSB</option>
 								<option value="ESV" yv="59">ESV</option>	
 								<option value="KJV" yv="1">KJV</option>	
-								<option value="NRSV" yv="2016">NRSV</option>	
 								<option value="MSG" yv="97">MSG</option>	
 								<option value="NASB" yv="2692">NASB</option>
 								<option value="NET" yv="107">NET</option>	
 								<option value="NIRV" yv="110">NIRV</option>						
-								<option value="NIV" yv="111" selected>NIV</option>									
-								<option value="NET" yv="107">NET</option>								
+								<option value="NIV" yv="111" selected>NIV</option>																	
+								<option value="NLT" yv="116">NLT</option>	
+								<option value="NRSV" yv="2016">NRSV</option>									
 							</optgroup>	
 
 							<optgroup label="Deutsch" lang="de">
@@ -285,20 +301,28 @@
 							</optgroup>
 
 							<optgroup label="Ру́сский" lang="ru">
+								<option value="CARS" yv="385">CARS</option>	
+								<option value="SYNO" yv="400">SYNO</option>	
+							</optgroup>
+							
+							<optgroup label="українська" lang="uk">
 								<option value="UMT" yv="204" bg="ERV-UK">UMT</option>	
 								<option value="UBIO" yv="186" bg="UKR">UBIO</option>	
-							</optgroup>							
+							</optgroup>									
 						
 						</select>
 					</div>
 
+
 				</div>
 			</section>
+
 
 			</nav>				
 			
 			<div id="output">
-
+				
+				
 			</div>	
 		</main>
 		
@@ -312,19 +336,19 @@
 	<script src="jquery.min.js"></script>
 	<scriptx src="jspdf.min.js"></scriptx>
 	<scriptx src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></scriptx>
-	<script src="helpers.js?v=2024-04-27"></script>
+	<script src="helpers.js?v=2025-12-01"></script>
 	
-	<script src="bible.data.js?v=2024-04-27"></script>
-	<script src="bible.data.languages.js?v=2024-04-27"></script>
-	<script src="bible.data.wordcounts.js?v=2024-04-27"></script>
-	<script src="bible.reference.js?v=2024-04-27"></script>
-	<script src="bible.plans.js?v=2024-04-27"></script>
+	<script src="bible.data.js?v=2025-12-01"></script>
+	<script src="bible.data.languages.js?v=2025-12-01"></script>
+	<script src="bible.data.wordcounts.js?v=2025-12-01"></script>
+	<script src="bible.reference.js?v=2025-12-01"></script>
+	<script src="bible.plans.js?v=2025-12-01"></script>
 	
-	<script src="bible.pericopes.js?v=2024-04-27"></script>
+	<script src="bible.pericopes.js?v=2025-12-01"></script>
 
-	<script src="plans.js?v=2024-04-27"></script>
-	<script src="renderers.js?v=2024-04-27"></script>
-	<script src="app.js?v=2024-04-27"></script>
+	<script src="plans.js?v=2025-12-01"></script>
+	<script src="renderers.js?v=2025-12-01"></script>
+	<script src="app.js?v=2025-12-01"></script>
 	
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -345,6 +369,11 @@
   gtag('js', new Date());
 
   gtag('config', 'G-F0YZLVR7KE');
+</script>
+
+<script>
+
+
 </script>
 
 </body>
