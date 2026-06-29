@@ -1,7 +1,7 @@
 <?php include("title.php"); ?>
 <!doctype html>
-<html>
-<head lang="en">
+<html lang="en">
+<head>
 	<meta charset="utf-8">	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><?php echo $title ?? $default_title; ?></title>
@@ -31,14 +31,14 @@
 		</header>
 		
 		<div id="sample-plans">
-			Samples: <a id="demo-bibleyear" href="/?start=01-01&books=OT,NT&logic=words">Bible in a Year List</a> | 
-			<a id="demo-bibleyear" href="/?total=40&format=calendar&order=traditional&daysofweek=2,3,4,5,6,7&books=JHN&lang=en&logic=pericopes&checkbox=1dailystats=1&includeurls=1">John in 40 Days</a> |
-			<a id="demo-ntweekendsoff" href="/?start=01-01&books=NT&format=weeks&logic=chapters&daysofweek=2,3,4,5,6">New Testament, Weekends Off</a> | 
-			<a id="demo-bibleyear" href="/?format=list&total=180&books=OT&order=chronological">Chronological OT in 6 months</a> |
-			<a id="demo-bibleyear" href="/?format=circle&colors=1">Pretty Color Wheel</a> |
-			<a id="demo-bibleyear" href="/?format=books&colors=1&books=OT,NT,DC">Deuterocanonical by Book</a> |
-			<a id="demo-bibleyear" href="/?lang=es">español</a> |
-			<a id="demo-bibleyear" href="/?lang=hi">हिन्दी</a>
+			Samples: <a href="/?start=01-01&books=OT,NT&logic=words">Bible in a Year List</a> | 
+			<a href="/?total=40&format=calendar&order=traditional&daysofweek=2,3,4,5,6,7&books=JHN&lang=en&logic=pericopes&checkbox=1dailystats=1&includeurls=1">John in 40 Days</a> |
+			<a href="/?start=01-01&books=NT&format=weeks&logic=chapters&daysofweek=2,3,4,5,6">New Testament, Weekends Off</a> | 
+			<a href="/?format=list&total=180&books=OT&order=chronological">Chronological OT in 6 months</a> |
+			<a href="/?format=circlecal&colors=1">Pretty Color Wheel</a> |
+			<a href="/?format=books&colors=1&books=OT,NT,DC">Deuterocanonical by Book</a> |
+			<a href="/?lang=es">español</a> |
+			<a href="/?lang=hi">हिन्दी</a>
 		</div>
 
 		<main>
@@ -80,11 +80,10 @@
 						<option value="el">Ελληνικά (Greek)</option>	
 						<option value="iw">עִברִית (Hebrew)</option>												
 						<option value="hi">हिन्दी (Hindi)</option>
+						<option value="ja">日本 (Japanese)</option>
 						<option value="jv">ꦧꦱꦗꦮ (Javanese)</option>
 						<option value="ko">한국어 (Korean)</option>
-						<option value="ml">മലയാളം (Malayalam)</option>
-						<option value="ja">日本 (Japanese)</option>
-						<option value="ko">한국어 (Korean)</option>
+						<option value="ml">മലയാളം (Malayalam)</option>					
 						<option value="mr">मराठी (Marathi)</option>	
 						<option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>						
 						<option value="ta">தமிழ் (Tamil)</option>
@@ -351,16 +350,6 @@
 	<script src="app.js?v=2025-12-01"></script>
 	
 
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-3734687-20"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-3734687-20');
-</script>
-
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-F0YZLVR7KE"></script>
 <script>
@@ -369,11 +358,6 @@
   gtag('js', new Date());
 
   gtag('config', 'G-F0YZLVR7KE');
-</script>
-
-<script>
-
-
 </script>
 
 </body>

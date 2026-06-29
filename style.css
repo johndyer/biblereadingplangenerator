@@ -20,7 +20,7 @@ input[type=number],
 input[type=date] {
 	--font-family: 'Source Sans Pro', sans-serif;
 	padding: 0.25em;
-	font-size: 1em;;
+	font-size: 1em;
 	height: 2em;
 }
 select {
@@ -51,7 +51,7 @@ select {
 	padding: 6px 8px;
 	
 	color: #fff;
-	border-radius: 3px;;
+	border-radius: 3px;
 	text-decoration: none;
 	margin: 10px 0;
 	float: none;	
@@ -81,7 +81,7 @@ main {
 }
 
 #options-language {
-	margin-bottom: 1em;;
+	margin-bottom: 1em;
 }
 
 @media (min-width: 700px) {
@@ -262,6 +262,59 @@ details summary::marker {
 	border: solid 1px #feda4b !important;
 }
 
+/* New Style */
+
+
+
+#main-header {
+    background: #2d3748;
+    padding: 22px 0;
+    border-bottom: 3px solid #68966b;
+}
+#main-header a.support {
+    background: #68966b;
+    border-radius: 4px;
+    padding: 7px 14px;
+}
+#main-header a.support:hover {
+    background: #7aab7d;
+}
+
+#main-footer {
+    background: #2d3748;
+    border-top: 3px solid #68966b;
+    padding: 1.25em 0;
+    font-size: 0.85em;
+}
+
+section.decision {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+}
+section.decision header {
+    background: #eef2f7;
+    border-bottom: 1px solid #d0dae8;
+    border-radius: 6px 6px 0 0;
+}
+section.decision header h2 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #4a5568;
+}
+
+/* unified button color */
+input[type=button] {
+    background: #68966b;
+    transition: background 0.15s;
+}
+input[type=button]:hover {
+    background: #7aab7d;
+}
+/* end: new style */
+
+
 @media print {
 	#sample-plans {
 		display: none;
@@ -278,10 +331,13 @@ details summary::marker {
 	#main-footer a {
 		color: #333;
 		text-decoration: none;
+		
 	}
 	#main-footer {
 		margin-top: 0.5em;
 		padding: 0;
+		background: none;
+		border: 0;
 	}	
 
 	#output h1 {
@@ -341,13 +397,7 @@ details summary::marker {
 
 
 .plan-list {
-	/*
-	-moz-column-rule: 1px solid #ccc; 
-	-webkit-column-rule: 1px solid #ccc; 
-	column-rule: 1px solid #ccc; 
-	*/
-	-webkit-column-count: 3; 
-	-moz-column-count: 3; 	
+	
 	column-count: 3;	
 }
 @media only screen and (max-width: 900px) {
@@ -491,11 +541,9 @@ iframe.pdf {
 }
 
 #color-key {
-	display: block;
 	float: none;
 	display: flex;
 	justify-content: center;
-	-justify-content: space-around;
 	margin: 16px 0 0 0;
 	font-size: 9pt;
 }

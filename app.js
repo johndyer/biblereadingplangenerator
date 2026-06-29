@@ -168,6 +168,7 @@ function downloadpdf() {
 
 	return;
 
+	/*
 	doc.fromHTML(html, 10, 20, { width: 50 }, {
 		callback: function (doc) {
 		  //doc.save();
@@ -186,6 +187,7 @@ function downloadpdf() {
 		//$('iframe').attr('src', data);
 		$('#output').html('<iframe class="pdf" type="application/pdf" src="' + data + '"></iframe>');
     }, 10)
+	*/
 
 	// demo
 	
@@ -294,12 +296,12 @@ function generate(lang, format, doc) {
 		}).get();
 	}
 
-	// QUIRK of 2024
+	// QUIRK of 2024 and possibly some future years
 	if (/*startDate.getTime() == new Date(2024,0,1).getTime() && */
 		(books == 'NT' || books.join(',') == 'MAT,MRK,LUK,JHN,ACT,ROM,1CO,2CO,GAL,EPH,PHP,COL,1TH,2TH,1TI,2TI,TIT,PHM,HEB,JAS,1PE,2PE,1JN,2JN,3JN,JUD,REV') && 
 		daysOfWeek.join(',') == '1,2,3,4,5' && 
 		(duration == 365 || duration == 366)) {
-		duration == 364; //
+		duration = 364; //
 	}
 
 	var data = getPlanData(lang, order, startDate, duration, books, daysOfWeek, $('#options-dailypsalm').is(':checked'), $('#options-dailyproverb').is(':checked'), $('#options-otntoverlap').is(':checked'), $('#options-reverse').is(':checked'), $('#options-logic').val(), $('#options-includeurls').is(':checked'), $('#options-urlsite').val(), $('#options-urlversion').val());
@@ -500,7 +502,7 @@ function updateBookLists() {
 			book = bible.BIBLE_DATA[ usfm ],
 			newName = bible.getName(book, lang);
 
-		console.log(i, newName);
+		//console.log(i, newName);
 
 		$(`label input[value="${usfm}"]`).siblings('span').html(newName);
 	}
